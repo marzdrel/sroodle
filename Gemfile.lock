@@ -103,6 +103,8 @@ GEM
     debug (1.10.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    delight (0.1.6)
+      zeitwerk (~> 2.6)
     dotenv (3.1.8)
     drb (2.2.1)
     ed25519 (1.4.0)
@@ -383,6 +385,7 @@ DEPENDENCIES
   brakeman
   capybara
   debug
+  delight
   importmap-rails
   jbuilder
   kamal

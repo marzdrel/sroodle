@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "bootsnap", require: false
+gem "delight"
 gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
@@ -16,10 +17,10 @@ gem "tailwindcss-rails", "~> 4.2"
 gem "tailwindcss-ruby", "~> 4.1"
 gem "thruster", require: false
 gem "turbo-rails"
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "tzinfo-data", platforms: %i[windows jruby]
 
 group :development, :test do
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "debug", platforms: %i[mri windows], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
 end
