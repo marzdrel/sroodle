@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "bootsnap", require: false
 gem "delight"
 gem "importmap-rails"
+gem "inertia_rails", "~> 3.8"
 gem "jbuilder"
 gem "kamal", require: false
 gem "propshaft"
@@ -18,6 +19,7 @@ gem "tailwindcss-ruby", "~> 4.1"
 gem "thruster", require: false
 gem "turbo-rails"
 gem "tzinfo-data", platforms: %i[windows jruby]
+gem "vite_rails", "~> 3.0"
 
 group :development, :test do
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
