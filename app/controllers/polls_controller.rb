@@ -1,5 +1,10 @@
 class PollsController < ApplicationController
   def new
-    render plain: "New Poll"
+    render(
+      inertia: "Poll/New",
+      props: {
+        poll: "POLL"
+      }
+    )
   end
 end
