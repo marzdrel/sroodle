@@ -3,7 +3,12 @@ class PollsController < ApplicationController
     render(
       inertia: "Poll/New",
       props: {
-        poll: "POLL"
+        poll: {
+          name: params[:name] || "My Event",
+          email: params[:email] || "me@example.com",
+          event: params[:event] || "My Event",
+          description: params[:description] || "My Event Description",
+        }
       }
     )
   end
