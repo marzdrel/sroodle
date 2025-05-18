@@ -1,14 +1,11 @@
 class PollsController < ApplicationController
   def new
+    result = NewFacade.call(params)
+
     render(
       inertia: "Poll/New",
       props: {
-        poll: {
-          name: params[:name] || "My Event",
-          email: params[:email] || "me@example.com",
-          event: params[:event] || "My Event",
-          description: params[:description] || "My Event Description",
-        }
+        poll: result.data
       }
     )
   end
