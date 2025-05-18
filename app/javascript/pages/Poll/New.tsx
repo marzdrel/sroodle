@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 
-// Define form field types
 interface FormValues {
   name: string;
   email: string;
@@ -24,7 +23,6 @@ interface FormValues {
   description: string;
 }
 
-// Define the props interface
 interface NewPollProps {
   poll?: {
     name?: string;
@@ -36,7 +34,6 @@ interface NewPollProps {
 }
 
 export default function New({ poll = {}, errors = {} as Record<string, string> }: NewPollProps) {
-  // Initialize the form without validation
   const form = useForm<FormValues>({
     defaultValues: {
       name: poll.name || '',
@@ -49,7 +46,6 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
   React.useEffect(() => {
     form.clearErrors();
 
-    // Set errors from server
     if (errors) {
       Object.entries(errors).forEach(([field, message]) => {
         if (field in form.getValues()) {
