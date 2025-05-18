@@ -1,12 +1,12 @@
 import Layout from '../Layout'
-import { Head } from '@inertiajs/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { router } from '@inertiajs/react'
+import { Head, router, usePage } from '@inertiajs/react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+
 import {
   Form,
   FormControl,
@@ -40,7 +40,6 @@ interface NewPollProps {
 }
 
 export default function New({ poll = {}, errors }: NewPollProps) {
-  // Initialize the form with default values from props
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,11 +48,9 @@ export default function New({ poll = {}, errors }: NewPollProps) {
       event: poll.event || '',
       description: poll.description || ''
     },
-    // Use server-side errors if available
     ...(errors && { errors })
   })
 
-  // Form submission handler
   function onSubmit(data: FormValues) {
     router.post('/polls', data)
   }
