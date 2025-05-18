@@ -31,7 +31,7 @@ everyone.
 - **Vite**: Next-generation frontend tooling
 - **Docker**: Containerized development environment
 - **Kamal**: Deployment orchestration
-- Claude Code: AI-powered code generation
+- **Claude Code**: AI-powered code generation
 
 ## License
 
