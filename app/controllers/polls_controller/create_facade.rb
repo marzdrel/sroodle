@@ -13,7 +13,10 @@ class PollsController
     end
 
     def call
-      Result.new(false, {}, [])
+      errors = Poll.create(name: params[:name]).errors.to_hash
+      errors = errors.transform_values(&:to_sentence)
+
+      Result.new(false, {}, errors)
     end
 
     private
