@@ -1,5 +1,6 @@
 ---
 plugins:
+  - rubocop-capybara
   - rubocop-rails
   - rubocop-performance
   - rubocop-factory_bot

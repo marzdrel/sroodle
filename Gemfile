@@ -27,6 +27,7 @@ group :development, :test do
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
   gem "foreman", require: false
   gem "rubocop", ">= 1.65.0"
+  gem "rubocop-capybara"
   gem "rubocop-factory_bot"
   gem "rubocop-performance"
   gem "rubocop-rails", ">= 2.10"
