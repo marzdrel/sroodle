@@ -19,7 +19,7 @@ class PollsController
         name: params[:name] || current_user_name,
         email: params[:email] || current_user_email,
         event: params[:event] || "My Event",
-        description: params[:description] || "Describe your event here..."
+        description: params[:description] || "Describe your event here...",
       }
 
       Result.new(true, default_data, [])
