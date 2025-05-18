@@ -28,15 +28,26 @@ const formSchema = z.object({
 // Infer the type from the schema
 type FormValues = z.infer<typeof formSchema>
 
-export default function New({ poll, errors }) {
-  // Initialize the form
+// Define the props interface
+interface NewPollProps {
+  poll?: {
+    name?: string;
+    email?: string;
+    event?: string;
+    description?: string;
+  };
+  errors?: Record<string, string>;
+}
+
+export default function New({ poll = {}, errors }: NewPollProps) {
+  // Initialize the form with default values from props
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      event: '',
-      description: ''
+      name: poll.name || '',
+      email: poll.email || '',
+      event: poll.event || '',
+      description: poll.description || ''
     },
     // Use server-side errors if available
     ...(errors && { errors })
