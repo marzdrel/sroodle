@@ -1,8 +1,12 @@
 ---
 alice:
   email: alice@example.com
+  encrypted_password: $2a$12$KIX5v1Qz4Z5xk8J6Y3g7eO
+  remember_token: abc123
   <%# name: Alice %>
 
 bob:
   email: bob@example.com
+  encrypted_password: $2a$12$KIX5v1Qz4Z5xk8J6Y3g7eO
+  remember_token: def456
   <%# name: Bob %>
