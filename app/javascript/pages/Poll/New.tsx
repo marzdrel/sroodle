@@ -1,8 +1,7 @@
 import Layout from '../Layout'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Head, router, usePage } from '@inertiajs/react'
+import { Head, router } from '@inertiajs/react'
+import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,16 +16,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 
-// Define the form schema with Zod
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  event: z.string().min(3, { message: 'Event must be at least 3 characters.' }),
-  description: z.string().min(10, { message: 'Description must be at least 10 characters.' })
-})
-
-// Infer the type from the schema
-type FormValues = z.infer<typeof formSchema>
+// Define form field types
+interface FormValues {
+  name: string;
+  email: string;
+  event: string;
+  description: string;
+}
 
 // Define the props interface
 interface NewPollProps {
@@ -39,17 +35,32 @@ interface NewPollProps {
   errors?: Record<string, string>;
 }
 
-export default function New({ poll = {}, errors }: NewPollProps) {
+export default function New({ poll = {}, errors = {} as Record<string, string> }: NewPollProps) {
+  // Initialize the form without validation
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
     defaultValues: {
       name: poll.name || '',
       email: poll.email || '',
       event: poll.event || '',
       description: poll.description || ''
-    },
-    ...(errors && { errors })
+    }
   })
+
+  React.useEffect(() => {
+    form.clearErrors();
+
+    // Set errors from server
+    if (errors) {
+      Object.entries(errors).forEach(([field, message]) => {
+        if (field in form.getValues()) {
+          form.setError(field as keyof FormValues, {
+            type: 'server',
+            message
+          });
+        }
+      });
+    }
+  }, [errors, form]);
 
   function onSubmit(data: FormValues) {
     router.post('/polls', data)
