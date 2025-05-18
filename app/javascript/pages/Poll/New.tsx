@@ -28,7 +28,7 @@ const formSchema = z.object({
 // Infer the type from the schema
 type FormValues = z.infer<typeof formSchema>
 
-export default function New({ poll }) {
+export default function New({ poll, errors }) {
   // Initialize the form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -37,20 +37,21 @@ export default function New({ poll }) {
       email: '',
       event: '',
       description: ''
-    }
+    },
+    // Use server-side errors if available
+    ...(errors && { errors })
   })
 
   // Form submission handler
   function onSubmit(data: FormValues) {
-    // Here you would typically submit to the server
     router.post('/polls', data)
   }
 
   return (
     <Layout>
       <Head title="Create New Poll" />
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="text-center">
+      <div>
+        <div className="text-center mb-6">
           <h1 className="text-2xl font-bold">Create New Poll</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Fill out the form below to create a new poll for your event.
@@ -58,7 +59,10 @@ export default function New({ poll }) {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 mx-auto max-w-2xl"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -131,7 +135,7 @@ export default function New({ poll }) {
               )}
             />
 
-            <div className="flex justify-center">
+            <div className="flex justify-center pt-2">
               <Button type="submit" size="lg" className="px-8">
                 Create Poll
               </Button>

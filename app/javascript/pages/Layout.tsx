@@ -125,7 +125,7 @@ export default function Layout({ children }) {
       {/* Main Content */}
       <main className="flex-grow py-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="bg-card rounded-lg shadow p-6 sm:p-8 min-h-[400px]">
+          <div className="bg-card rounded-lg shadow p-4 sm:p-8 min-h-[400px]">
             {children}
           </div>
         </div>
