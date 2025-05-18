@@ -49,16 +49,16 @@ export default function New({ poll }) {
   return (
     <Layout>
       <Head title="Create New Poll" />
-      <div className="space-y-6">
-        <div>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="text-center">
           <h1 className="text-2xl font-bold">Create New Poll</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-1">
             Fill out the form below to create a new poll for your event.
           </p>
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto">
             <FormField
               control={form.control}
               name="name"
@@ -119,7 +119,7 @@ export default function New({ poll }) {
                   <FormControl>
                     <textarea
                       placeholder="Describe your event..."
-                      className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                       {...field}
                     />
                   </FormControl>
@@ -131,9 +131,11 @@ export default function New({ poll }) {
               )}
             />
 
-            <Button type="submit" className="mt-4">
-              Create Poll
-            </Button>
+            <div className="flex justify-center">
+              <Button type="submit" size="lg" className="px-8">
+                Create Poll
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
