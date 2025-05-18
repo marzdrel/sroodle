@@ -23,10 +23,15 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 gem "vite_rails", "~> 3.0"
 
 group :development, :test do
-  gem "debug", platforms: %i[mri windows], require: "debug/prelude"
   gem "brakeman", require: false
-  gem "rubocop-rails-omakase", require: false
+  gem "debug", platforms: %i[mri windows], require: "debug/prelude"
   gem "foreman", require: false
+  gem "rubocop", ">= 1.65.0"
+  gem "rubocop-factory_bot"
+  gem "rubocop-performance"
+  gem "rubocop-rails", ">= 2.10"
+  gem "rubocop-rails-omakase", require: false
+  gem "rubocop-thread_safety"
 end
 
 group :development do

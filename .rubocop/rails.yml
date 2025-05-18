@@ -1,0 +1,16 @@
+---
+Rails:
+  Enabled: true
+
+Rails/DeprecatedActiveModelErrorsMethods:
+  Exclude:
+    - "**/*schema*"
+
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - development
+    - test
+
+Rails/I18nLocaleTexts:
+  Enabled: false
