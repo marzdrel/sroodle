@@ -48,7 +48,7 @@ export function DateSelector({
 
   return (
     <div className={cn("flex flex-col md:flex-row gap-6", className)}>
-      <div className="md:w-1/2">
+      <div className="md:w-auto">
         <Calendar
           mode="single"
           selected={undefined}
@@ -60,10 +60,10 @@ export function DateSelector({
           modifiersClassNames={{
             selected: "bg-primary text-primary-foreground"
           }}
-          className="rounded-md border max-w-full"
+          className="rounded-md border"
         />
       </div>
-      <div className="md:w-1/2">
+      <div className="md:flex-1">
         <div className="border rounded-md p-4 h-full">
           <h3 className="text-lg font-medium mb-3">Selected Dates</h3>
           {selectedDates.length === 0 ? (
@@ -71,7 +71,7 @@ export function DateSelector({
               No dates selected. Click on the calendar to select dates for your event.
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-[280px] overflow-y-auto">
               {selectedDates
                 .sort((a, b) => a.getTime() - b.getTime())
                 .map((date) => (
