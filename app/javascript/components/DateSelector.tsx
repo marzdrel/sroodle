@@ -10,12 +10,14 @@ interface DateSelectorProps {
   onChange?: (dates: Date[]) => void
   initialDates?: Date[]
   className?: string
+  hasError?: boolean
 }
 
-export function DateSelector({ 
-  onChange, 
-  initialDates = [], 
-  className 
+export function DateSelector({
+  onChange,
+  initialDates = [],
+  className,
+  hasError = false
 }: DateSelectorProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>(initialDates)
 
@@ -40,11 +42,17 @@ export function DateSelector({
             }
           }}
           disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-          className="rounded-md border"
+          className={cn(
+            "rounded-md border",
+            hasError && "border-destructive"
+          )}
         />
       </div>
       <div className="md:flex-1">
-        <div className="border rounded-md p-4 h-full">
+        <div className={cn(
+          "border rounded-md p-4 h-full",
+          hasError && "border-destructive"
+        )}>
           <h3 className="text-lg font-medium mb-3">Selected Dates</h3>
           {selectedDates.length === 0 ? (
             <p className="text-muted-foreground text-sm">

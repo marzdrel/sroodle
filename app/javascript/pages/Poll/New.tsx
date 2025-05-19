@@ -40,6 +40,7 @@ interface NewPollProps {
 
 export default function New({ poll = {}, errors = {} as Record<string, string> }: NewPollProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [dateErrors, setDateErrors] = useState<string | null>(errors.dates || null);
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -54,6 +55,9 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
 
   React.useEffect(() => {
     form.clearErrors();
+
+    // Update date errors state
+    setDateErrors(errors.dates || null);
 
     if (errors) {
       Object.entries(errors).forEach(([field, message]) => {
@@ -178,18 +182,25 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
               name="poll.dates"
               render={() => (
                 <FormItem className="space-y-1">
-                  <div className={`mt-8 border rounded-md p-6 bg-card/50 ${errors.dates ? 'border-destructive' : ''}`}>
+                  <div className={`mt-8 border rounded-md p-6 bg-card/50 ${dateErrors ? 'border-destructive' : ''}`}>
                     <FormLabel className="text-lg font-medium">Event Dates</FormLabel>
                     <FormDescription className="text-sm text-muted-foreground mt-1">
                       Select possible dates for your event. Attendees will vote on their preferences.
                     </FormDescription>
-                    {errors.dates && (
-                      <p className="text-sm font-medium text-destructive mt-1 mb-4">{errors.dates}</p>
+                    {dateErrors && (
+                      <p className="text-sm font-medium text-destructive mt-1 mb-4">{dateErrors}</p>
                     )}
-                    {!errors.dates && <div className="mb-4"></div>}
+                    {!dateErrors && <div className="mb-4"></div>}
                     <DateSelector
-                      onChange={setSelectedDates}
+                      onChange={(dates) => {
+                        setSelectedDates(dates);
+                        // Clear error when user selects at least 2 dates
+                        if (dates.length >= 2) {
+                          setDateErrors(null);
+                        }
+                      }}
                       initialDates={[]}
+                      hasError={!!dateErrors}
                     />
                   </div>
                   <FormMessage />
