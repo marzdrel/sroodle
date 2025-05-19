@@ -27,7 +27,7 @@ class PollsController
     attr_accessor :params
 
     def form
-      @form ||= PollForm.new(
+      @_form ||= PollForm.new(
         name: params[:name],
         email: params[:email],
         event: params[:event],
