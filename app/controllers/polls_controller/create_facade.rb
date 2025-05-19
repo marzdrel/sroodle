@@ -2,8 +2,6 @@
 
 class PollsController
   class CreateFacade
-    Result = Data.define(:success?, :data, :errors)
-
     def self.call(...)
       new(...).call
     end

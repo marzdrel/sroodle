@@ -1,4 +1,13 @@
 class PollsController < ApplicationController
+  def index
+    result = IndexFacade.call(params)
+
+    render(
+      inertia: "Poll/Index",
+      props: result.data,
+    )
+  end
+
   def new
     result = NewFacade.call(params)
 
