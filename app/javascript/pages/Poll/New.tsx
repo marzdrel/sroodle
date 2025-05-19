@@ -17,10 +17,12 @@ import {
 } from '@/components/ui/form'
 
 interface FormValues {
-  name: string;
-  email: string;
-  event: string;
-  description: string;
+  poll: {
+    name: string;
+    email: string;
+    event: string;
+    description: string;
+  };
 }
 
 interface NewPollProps {
@@ -36,10 +38,12 @@ interface NewPollProps {
 export default function New({ poll = {}, errors = {} as Record<string, string> }: NewPollProps) {
   const form = useForm<FormValues>({
     defaultValues: {
-      name: poll.name || '',
-      email: poll.email || '',
-      event: poll.event || '',
-      description: poll.description || ''
+      poll: {
+        name: poll.name || '',
+        email: poll.email || '',
+        event: poll.event || '',
+        description: poll.description || ''
+      }
     }
   })
 
@@ -48,12 +52,12 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
 
     if (errors) {
       Object.entries(errors).forEach(([field, message]) => {
-        if (field in form.getValues()) {
-          form.setError(field as keyof FormValues, {
-            type: 'server',
-            message
-          });
-        }
+        // Map field name to nested path in form
+        const formPath = `poll.${field}` as any;
+        form.setError(formPath, {
+          type: 'server',
+          message
+        });
       });
     }
   }, [errors, form]);
@@ -80,7 +84,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
           >
             <FormField
               control={form.control}
-              name="name"
+              name="poll.name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -97,7 +101,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
 
             <FormField
               control={form.control}
-              name="email"
+              name="poll.email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
@@ -114,7 +118,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
 
             <FormField
               control={form.control}
-              name="event"
+              name="poll.event"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Event</FormLabel>
@@ -131,7 +135,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
 
             <FormField
               control={form.control}
-              name="description"
+              name="poll.description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
