@@ -21,7 +21,7 @@ export default function Index({ polls = [] }: IndexProps) {
   return (
     <Layout>
       <Head title="Browse Polls" />
-      <div>
+      <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold">Browse Polls</h1>
@@ -74,7 +74,6 @@ export default function Index({ polls = [] }: IndexProps) {
             ))}
           </div>
         )}
-
       </div>
     </Layout>
   )

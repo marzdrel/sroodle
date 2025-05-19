@@ -69,18 +69,20 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
   return (
     <Layout>
       <Head title="Create New Poll" />
-      <div>
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold">Create New Poll</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Fill out the form below to create a new poll for your event.
-          </p>
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">Create New Poll</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Fill out the form below to create a new poll for your event.
+            </p>
+          </div>
         </div>
 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 mx-auto max-w-2xl"
+            className="space-y-6"
           >
             <FormField
               control={form.control}
@@ -154,7 +156,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
               )}
             />
 
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-end pt-2">
               <Button type="submit" size="lg" className="px-8">
                 Create Poll
               </Button>
