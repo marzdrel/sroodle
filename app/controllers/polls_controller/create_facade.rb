@@ -29,7 +29,16 @@ class PollsController
     end
 
     def errors
-      form.errors.to_hash.transform_values(&:to_sentence)
+      form
+        .errors
+        .to_hash
+        .transform_values(&:to_sentence)
+        .to_h do |name, desc|
+          [
+            name,
+            [User.human_attribute_name(name), desc].join(" "),
+          ]
+        end
     end
 
     def strong_params

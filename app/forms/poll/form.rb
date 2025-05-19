@@ -14,7 +14,7 @@ class Poll
     validates :name, presence: true, length: { minimum: 2, maximum: 50 }
     validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
     validates :event, presence: true, length: { minimum: 5, maximum: 100 }
-    validates :description, presence: true, length: { minimum: 10, maximum: 1000 }
+    validates :description, presence: false
 
     attr_reader :poll_id
 
