@@ -9,7 +9,7 @@ class Poll::FormTest < ActiveSupport::TestCase
       email: "john@example.com",
       event: "Team Meeting",
       description: "Weekly team meeting to discuss project progress",
-      creator_id: users(:alice).id
+      creator_id: users(:alice).id,
     }
   end
 
@@ -80,7 +80,11 @@ class Poll::FormTest < ActiveSupport::TestCase
   end
 
   test "creates a new user if the email doesn't exist" do
-    form = Poll::Form.new(@valid_attributes.merge(email: "new_user@example.com"))
+    form = Poll::Form.new(
+      @valid_attributes.merge(
+        email: "new_user@example.com",
+      ),
+    )
 
     assert_difference -> { User.count }, 1 do
       assert form.save
@@ -91,7 +95,13 @@ class Poll::FormTest < ActiveSupport::TestCase
   end
 
   test "uses existing user if the email exists" do
-    form = Poll::Form.new(@valid_attributes)
+    form = Poll::Form.new(
+      @valid_attributes.merge(
+        email: users(:alice).email,
+      ),
+    )
+
+    assert_equal User.count, 2
 
     assert_no_difference -> { User.count } do
       assert form.save
