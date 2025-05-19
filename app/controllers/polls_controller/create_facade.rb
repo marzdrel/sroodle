@@ -36,13 +36,13 @@ class PollsController
         .to_h do |name, desc|
           [
             name,
-            [User.human_attribute_name(name), desc].join(" "),
+            [name.capitalize, desc].join(" "),
           ]
         end
     end
 
     def strong_params
-      params.expect(poll: [:name, :email, :description, :event])
+      params.expect(poll: [:name, :email, :description, :event, { dates: [] }])
     end
   end
 end
