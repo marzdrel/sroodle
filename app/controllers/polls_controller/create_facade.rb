@@ -13,11 +13,11 @@ class PollsController
     end
 
     def call
-      poll.valid?
+      form.valid?
 
       Result.new(
         errors: errors,
-        success?: poll.valid?,
+        success?: form.valid?,
         data: {},
       )
     end
@@ -27,12 +27,7 @@ class PollsController
     attr_accessor :params
 
     def form
-      @_form ||= PollForm.new(
-        name: params[:name],
-        email: params[:email],
-        event: params[:event],
-        description: params[:description],
-      )
+      @_form ||= PollForm.new(strong_params)
     end
 
     def errors
@@ -43,15 +38,8 @@ class PollsController
       @_poll ||= Poll.new(poll_strong_params)
     end
 
-    def poll_strong_params
-      {
-        name: params.fetch(:event),
-        description: params.fetch(:description),
-      }
-    end
-
     def strong_params
-      # params.require(:poll).expect(:name, :email, :description)
+      params.require(:poll).expect(:name, :email, :description, :event)
     end
   end
 end
