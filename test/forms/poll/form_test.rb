@@ -9,7 +9,6 @@ class Poll::FormTest < ActiveSupport::TestCase
       email: "john@example.com",
       event: "Team Meeting",
       description: "Weekly team meeting to discuss project progress",
-      creator_id: users(:alice).id,
     }
   end
 

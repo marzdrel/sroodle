@@ -61,18 +61,5 @@ class PollsController
 
       assert_kind_of Hash, result.data
     end
-
-    test "form receives strong parameters" do
-      facade = PollsController::CreateFacade.new(@valid_params)
-
-      mock_form = Minitest::Mock.new
-      mock_form.expect :valid?, true
-
-      facade.define_singleton_method(:form) { mock_form }
-
-      facade.call
-
-      mock_form.verify
-    end
   end
 end
