@@ -22,11 +22,20 @@ export default function Index({ polls = [] }: IndexProps) {
     <Layout>
       <Head title="Browse Polls" />
       <div>
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold">Browse Polls</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            View all available polls for your events.
-          </p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">Browse Polls</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              View all available polls for your events.
+            </p>
+          </div>
+          {polls.length > 0 && (
+            <div>
+              <Link href="/polls/new">
+                <Button>Create New Poll</Button>
+              </Link>
+            </div>
+          )}
         </div>
 
         {polls.length === 0 ? (
@@ -66,13 +75,6 @@ export default function Index({ polls = [] }: IndexProps) {
           </div>
         )}
 
-        {polls.length > 0 && (
-          <div className="mt-8 flex justify-center">
-            <Link href="/polls/new">
-              <Button>Create New Poll</Button>
-            </Link>
-          </div>
-        )}
       </div>
     </Layout>
   )
