@@ -29,7 +29,7 @@ export function DateSelector({
 
   return (
     <div className={cn("flex flex-col md:flex-row gap-6", className)}>
-      <div className="md:w-auto">
+      <div className="flex justify-center items-center md:justify-start md:w-auto">
         <Calendar
           mode="multiple"
           selected={selectedDates}
