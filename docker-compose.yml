@@ -1,25 +1,20 @@
 ---
 name: sroodle
 
-x-app: &app
+x-llm: &llm
   build:
     context: .
-    dockerfile: ./.dockerdev/dev.Dockerfile
-    target: sroodle-development
-  image: sroodle-dev
+    dockerfile: ./.dockerdev/Dockerfile
+    target: sroodle-node-base
+  image: sroodle-claude
   tmpfs:
     - /tmp:mode=1777
-
-x-backend: &backend
-  <<: *app
-  stdin_open: true
-  tty: true
   volumes:
     - .:/app
-    - .dockerdev/.bashrc:/root/.bashrc:ro
+    - .dockerdev/bashrc:/root/.bashrc:ro
 
 services:
   claude:
-    <<: *backend
+    <<: *llm
     stdin_open: true
     tty: true
