@@ -9,6 +9,7 @@ class Poll::FormTest < ActiveSupport::TestCase
       email: "john@example.com",
       event: "Team Meeting",
       description: "Weekly team meeting to discuss project progress",
+      dates: ["2023-10-01", "2023-10-02"],
     }
   end
 
@@ -53,16 +54,11 @@ class Poll::FormTest < ActiveSupport::TestCase
     assert_includes form.errors[:event], "is too short (minimum is 5 characters)"
   end
 
-  test "is invalid without a description" do
+  test "is valid without a description" do
     form = Poll::Form.new(@valid_attributes.merge(description: ""))
-    assert_not form.valid?
-    assert_includes form.errors[:description], "can't be blank"
-  end
 
-  test "is invalid with a too short description" do
-    form = Poll::Form.new(@valid_attributes.merge(description: "Too short"))
-    assert_not form.valid?
-    assert_includes form.errors[:description], "is too short (minimum is 10 characters)"
+    assert form.valid?
+    assert_equal form.errors[:description], []
   end
 
   test "saves successfully with valid attributes" do

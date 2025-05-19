@@ -11,6 +11,7 @@ class PollsController
           email: "john@example.com",
           event: "Team Meeting",
           description: "Weekly team meeting to discuss project progress",
+          dates: ["2023-10-01", "2023-10-02"],
         },
       )
     end
@@ -44,7 +45,6 @@ class PollsController
           name: "",
           email: "invalid-email",
           event: "",
-          description: "too short",
         },
       )
 
@@ -53,7 +53,6 @@ class PollsController
       assert result.errors.key?(:name)
       assert result.errors.key?(:email)
       assert result.errors.key?(:event)
-      assert result.errors.key?(:description)
     end
 
     test "result data contains expected structure" do
