@@ -13,7 +13,7 @@ class PollsController
     end
 
     def call
-      form.valid?
+      form.save
 
       Result.new(
         errors: errors,

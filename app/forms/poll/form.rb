@@ -30,6 +30,7 @@ class Poll
       true
     rescue ActiveRecord::RecordInvalid => e
       errors.add(:base, e.message)
+
       false
     end
 
@@ -39,8 +40,8 @@ class Poll
       user = User.find_by(email: email)
       return user if user
 
-      random_password = SecureRandom.hex(8)
-      User.create!(email: email, password: random_password)
+      password = SecureRandom.hex(8)
+      User.create!(email:, password:)
     end
 
     def create_poll(user)
