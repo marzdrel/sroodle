@@ -42,7 +42,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Node.js dependencies
-        run: npm ci
+        run: npm ci --force
 
       - name: Scan for security vulnerabilities in JavaScript dependencies
         run: |
@@ -68,7 +68,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Node.js dependencies
-        run: npm ci
+        run: npm ci --force
 
       - name: Lint code for consistent style
         run: bin/rubocop -f github
@@ -102,7 +102,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Node.js dependencies
-        run: npm ci
+        run: npm ci --force
 
       - name: Run tests
         env:
