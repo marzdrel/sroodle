@@ -19,25 +19,6 @@ export function DateSelector({
 }: DateSelectorProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>(initialDates)
 
-  const handleSelect = (date: Date | undefined) => {
-    if (!date) return
-
-    // Check if date is already selected
-    const isSelected = selectedDates.some(
-      (selectedDate) => format(selectedDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
-    )
-
-    // Toggle date selection
-    const newSelectedDates = isSelected
-      ? selectedDates.filter(
-          (selectedDate) => format(selectedDate, 'yyyy-MM-dd') !== format(date, 'yyyy-MM-dd')
-        )
-      : [...selectedDates, date]
-
-    setSelectedDates(newSelectedDates)
-    onChange?.(newSelectedDates)
-  }
-
   const handleRemoveDate = (dateToRemove: Date) => {
     const newSelectedDates = selectedDates.filter(
       (date) => format(date, 'yyyy-MM-dd') !== format(dateToRemove, 'yyyy-MM-dd')
@@ -50,16 +31,15 @@ export function DateSelector({
     <div className={cn("flex flex-col md:flex-row gap-6", className)}>
       <div className="md:w-auto">
         <Calendar
-          mode="single"
-          selected={undefined}
-          onSelect={handleSelect}
+          mode="multiple"
+          selected={selectedDates}
+          onSelect={(value) => {
+            if (Array.isArray(value)) {
+              setSelectedDates(value);
+              onChange?.(value);
+            }
+          }}
           disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-          modifiers={{
-            selected: selectedDates
-          }}
-          modifiersClassNames={{
-            selected: "bg-primary text-primary-foreground"
-          }}
           className="rounded-md border"
         />
       </div>
