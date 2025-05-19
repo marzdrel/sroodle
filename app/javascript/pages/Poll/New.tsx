@@ -59,10 +59,14 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
       Object.entries(errors).forEach(([field, message]) => {
         // Map field name to nested path in form
         const formPath = `poll.${field}` as any;
-        form.setError(formPath, {
-          type: 'server',
-          message
-        });
+
+        // Skip displaying dates error using form error as we show it separately
+        if (field !== 'dates') {
+          form.setError(formPath, {
+            type: 'server',
+            message
+          });
+        }
       });
     }
   }, [errors, form]);
@@ -169,16 +173,29 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
               )}
             />
 
-            <div className="mt-8 border rounded-md p-6 bg-card/50">
-              <h3 className="text-lg font-medium mb-3">Event Dates</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Select possible dates for your event. Attendees will vote on their preferences.
-              </p>
-              <DateSelector
-                onChange={setSelectedDates}
-                initialDates={[]}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="poll.dates"
+              render={() => (
+                <FormItem className="space-y-1">
+                  <div className={`mt-8 border rounded-md p-6 bg-card/50 ${errors.dates ? 'border-destructive' : ''}`}>
+                    <FormLabel className="text-lg font-medium">Event Dates</FormLabel>
+                    <FormDescription className="text-sm text-muted-foreground mt-1">
+                      Select possible dates for your event. Attendees will vote on their preferences.
+                    </FormDescription>
+                    {errors.dates && (
+                      <p className="text-sm font-medium text-destructive mt-1 mb-4">{errors.dates}</p>
+                    )}
+                    {!errors.dates && <div className="mb-4"></div>}
+                    <DateSelector
+                      onChange={setSelectedDates}
+                      initialDates={[]}
+                    />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex justify-end pt-6">
               <Button type="submit" size="lg" className="px-8">
