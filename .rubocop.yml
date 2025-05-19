@@ -15,7 +15,6 @@ AllCops:
     - bin/*
     - config/**/*
     - spec/rails_helper.rb
-    - test/**/*
     - db/**/*
 
 Metrics/ClassLength:

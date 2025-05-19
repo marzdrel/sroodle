@@ -27,19 +27,15 @@ class PollsController
     attr_accessor :params
 
     def form
-      @_form ||= PollForm.new(strong_params)
+      @_form ||= Poll::Form.new(strong_params)
     end
 
     def errors
-      poll.errors.to_hash.transform_values(&:to_sentence)
-    end
-
-    def poll
-      @_poll ||= Poll.new(poll_strong_params)
+      form.errors.to_hash.transform_values(&:to_sentence)
     end
 
     def strong_params
-      params.require(:poll).expect(:name, :email, :description, :event)
+      params.expect(poll: [:name, :email, :description, :event])
     end
   end
 end

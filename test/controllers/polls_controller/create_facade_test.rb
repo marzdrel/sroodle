@@ -1,1 +1,78 @@
-# X
+# frozen_string_literal: true
+
+require "test_helper"
+
+class PollsController
+  class CreateFacadeTest < ActiveSupport::TestCase
+    setup do
+      @valid_params = ActionController::Parameters.new(
+        poll: {
+          name: "John Doe",
+          email: "john@example.com",
+          event: "Team Meeting",
+          description: "Weekly team meeting to discuss project progress",
+        },
+      )
+    end
+
+    test "returns successful result with valid parameters" do
+      result = PollsController::CreateFacade.call(@valid_params)
+
+      assert result.success?
+      assert_empty result.errors
+    end
+
+    test "returns unsuccessful result with invalid parameters" do
+      invalid_params = ActionController::Parameters.new(
+        poll: {
+          name: "",
+          email: "invalid-email",
+          event: "",
+          description: "too short",
+        },
+      )
+
+      result = PollsController::CreateFacade.call(invalid_params)
+
+      assert_not result.success?
+      assert_not_empty result.errors
+    end
+
+    test "returns appropriate error messages" do
+      invalid_params = ActionController::Parameters.new(
+        poll: {
+          name: "",
+          email: "invalid-email",
+          event: "",
+          description: "too short",
+        },
+      )
+
+      result = PollsController::CreateFacade.call(invalid_params)
+
+      assert result.errors.key?(:name)
+      assert result.errors.key?(:email)
+      assert result.errors.key?(:event)
+      assert result.errors.key?(:description)
+    end
+
+    test "result data contains expected structure" do
+      result = PollsController::CreateFacade.call(@valid_params)
+
+      assert_kind_of Hash, result.data
+    end
+
+    test "form receives strong parameters" do
+      facade = PollsController::CreateFacade.new(@valid_params)
+
+      mock_form = Minitest::Mock.new
+      mock_form.expect :valid?, true
+
+      facade.define_singleton_method(:form) { mock_form }
+
+      facade.call
+
+      mock_form.verify
+    end
+  end
+end
