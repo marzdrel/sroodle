@@ -26,6 +26,15 @@ class PollsController
 
     attr_accessor :params
 
+    def form
+      @form ||= PollForm.new(
+        name: params[:name],
+        email: params[:email],
+        event: params[:event],
+        description: params[:description],
+      )
+    end
+
     def errors
       poll.errors.to_hash.transform_values(&:to_sentence)
     end
