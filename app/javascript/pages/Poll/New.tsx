@@ -2,9 +2,11 @@ import Layout from '../Layout'
 import { useForm } from 'react-hook-form'
 import { Head, router } from '@inertiajs/react'
 import * as React from 'react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateSelector } from '@/components/DateSelector'
 
 import {
   Form,
@@ -22,6 +24,7 @@ interface FormValues {
     email: string;
     event: string;
     description: string;
+    dates?: string[];
   };
 }
 
@@ -36,6 +39,8 @@ interface NewPollProps {
 }
 
 export default function New({ poll = {}, errors = {} as Record<string, string> }: NewPollProps) {
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+
   const form = useForm<FormValues>({
     defaultValues: {
       poll: {
@@ -63,7 +68,15 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
   }, [errors, form]);
 
   function onSubmit(data: FormValues) {
-    router.post('/polls', data)
+    // Add selected dates to form data
+    const formData = {
+      ...data,
+      poll: {
+        ...data.poll,
+        dates: selectedDates.map(date => date.toISOString().split('T')[0])
+      }
+    }
+    router.post('/polls', formData)
   }
 
   return (
@@ -156,7 +169,18 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
               )}
             />
 
-            <div className="flex justify-end pt-2">
+            <div className="mt-8 border rounded-md p-6 bg-card/50">
+              <h3 className="text-lg font-medium mb-3">Event Dates</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Select possible dates for your event. Attendees will vote on their preferences.
+              </p>
+              <DateSelector
+                onChange={setSelectedDates}
+                initialDates={[]}
+              />
+            </div>
+
+            <div className="flex justify-end pt-6">
               <Button type="submit" size="lg" className="px-8">
                 Create Poll
               </Button>
