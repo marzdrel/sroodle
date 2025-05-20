@@ -4,8 +4,10 @@ one:
   name: MyString
   description: MyString
   creator: alice
+  eid: 0196ed66-baa7-7e7e-9fb6-e50ba1830790
 
 two:
   name: MyString
   description: MyString
   creator: bob
+  eid: 0196ed66-d50d-7d21-97a5-b25c1344cf30
