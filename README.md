@@ -9,6 +9,8 @@ Inertia.js, Tailwind CSS, and Claude Code. The application allows users to
 create polls for their events, making it easy to find a suitable time for
 everyone.
 
+![CleanShot 2025-05-20 at 12 56 49](https://github.com/user-attachments/assets/b8c5bbf4-9002-4a17-a20e-fa27d1ae74e7)
+
 ## Features
 
 - **Easy Poll Creation**: Create polls for your events with a simple, intuitive form
