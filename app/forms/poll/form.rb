@@ -57,6 +57,7 @@ class Poll
         name: event,
         description: description,
         creator: user,
+        eid: UUID7.generate,
       )
     end
   end
