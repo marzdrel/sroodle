@@ -9,7 +9,12 @@ class PollsController < ApplicationController
   end
 
   def show
-    render plain: "Not implemented"
+    result = ShowFacade.call(params)
+
+    render(
+      inertia: "Poll/Show",
+      props: result.data,
+    )
   end
 
   def new
