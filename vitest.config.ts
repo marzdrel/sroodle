@@ -8,6 +8,10 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.tsx'],
+    typecheck: {
+      enabled: false, // Disable typecheck during tests
+      tsconfig: './tsconfig.vitest.json',
+    },
     include: ['app/javascript/**/*.{test,spec}.{ts,tsx}'],
     coverage: {
       reporter: ['text', 'html'],

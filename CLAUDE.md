@@ -55,7 +55,8 @@ bundle exec rubocop -a  # Auto-correct issues
 bundle exec brakeman
 
 # TypeScript type checking
-npm run check
+npm run check       # Full type checking (stricter, may show errors)
+npm run check:ci    # CI-friendly type checking (less strict)
 
 # JavaScript/TypeScript linting
 npm run lint      # Check for linting issues

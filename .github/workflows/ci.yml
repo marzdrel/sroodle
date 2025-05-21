@@ -67,10 +67,20 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - run: npm ci --force
-      - run: bin/standardrb
+      - name: Install Node.js dependencies
+        run: npm ci --force
 
-  test:
+      - name: Lint Ruby code
+        run: bin/standardrb
+
+      - name: Lint JavaScript/TypeScript code
+        run: npm run lint
+        
+      - name: Type-check TypeScript
+        run: npm run check:ci
+
+  test_rails:
+    name: Ruby Tests
     runs-on: ubuntu-latest
     steps:
       - name: Install packages
@@ -94,7 +104,7 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci --force
 
-      - name: Run tests
+      - name: Run Rails tests
         env:
           RAILS_ENV: test
         run: bin/rails db:test:prepare test test:system
@@ -105,4 +115,40 @@ jobs:
         with:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
+          if-no-files-found: ignore
+
+  test_js:
+    name: JavaScript Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Cache Vitest
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules/.vitest
+          key: ${{ runner.os }}-vitest-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vitest-
+
+      - name: Install Node.js dependencies
+        run: npm ci --force
+
+      - name: Run JavaScript/TypeScript tests
+        run: npm test
+
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: js-coverage
+          path: coverage/
           if-no-files-found: ignore

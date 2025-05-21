@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": [
+    "app/javascript",
+    "app/javascript/__tests__/**/*",
+    "vitest.setup.tsx"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["vitest/globals", "node"],
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./app/javascript/*"]
+    }
+  }
+}
