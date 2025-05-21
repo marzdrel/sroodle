@@ -34,16 +34,16 @@ export default function DateSelectorDemo() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="border rounded-md p-6 bg-card">
-            <DateSelector 
-              onChange={handleDateChange} 
+            <DateSelector
+              onChange={handleDateChange}
               initialDates={[]}
             />
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button 
-              type="submit" 
-              size="lg" 
+            <Button
+              type="submit"
+              size="lg"
               className="px-8"
               disabled={selectedDates.length === 0}
             >

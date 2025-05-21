@@ -46,15 +46,15 @@ export default tseslint.config(
       'react/react-in-jsx-scope': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // TypeScript
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { 
+      '@typescript-eslint/no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
       }],
       '@typescript-eslint/no-explicit-any': 'warn',
-      
+
       // Import
       'import/order': [
         'error',
@@ -64,10 +64,14 @@ export default tseslint.config(
           'alphabetize': { order: 'asc', caseInsensitive: true }
         }
       ],
-      
+
       // General
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'warn',
+
+      // Code style and whitespace
+      'no-trailing-spaces': 'error',
+      'eol-last': ['error', 'always'],
     },
   },
   {

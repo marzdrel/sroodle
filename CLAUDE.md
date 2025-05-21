@@ -128,8 +128,8 @@ When working with this codebase, follow the established patterns for:
 2. Using shadcn/ui components for UI elements
 3. Following the Rails conventions for controllers and models
 4. Using TypeScript for type safety in the frontend code
-5. Make sure to remove all trailing spaces at the end of lines.
-6. Always add a new line at the end of all *.rb and *.tsx files.
+5. Make sure to remove all trailing spaces at the end of lines (ESLint will enforce this).
+6. Always add a new line at the end of all files (ESLint will enforce this for JavaScript/TypeScript files).
 
 ### Testing Guidelines
 

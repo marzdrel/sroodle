@@ -73,11 +73,11 @@ const mockParticipants = [
 describe('Poll Show Component', () => {
   test('renders poll details correctly', () => {
     renderWithInertia(<Show poll={mockPoll} participants={mockParticipants} />);
-    
+
     // Check if poll title and description are rendered
     expect(screen.getByText('Team Offsite')).toBeInTheDocument();
     expect(screen.getByText('Planning our annual team offsite event')).toBeInTheDocument();
-    
+
     // Check if creator info is rendered
     expect(screen.getByText(/Created by Jane Doe/)).toBeInTheDocument();
     expect(screen.getByText(/jane.doe@example.com/)).toBeInTheDocument();
@@ -85,10 +85,10 @@ describe('Poll Show Component', () => {
 
   test('renders best dates section', () => {
     renderWithInertia(<Show poll={mockPoll} participants={mockParticipants} />);
-    
+
     // Check if Best Dates section is rendered
     expect(screen.getByText('Best Dates')).toBeInTheDocument();
-    
+
     // Check if date counts are rendered correctly
     expect(screen.getByText('3 Yes')).toBeInTheDocument();
     expect(screen.getByText('2 Yes')).toBeInTheDocument();
@@ -96,14 +96,14 @@ describe('Poll Show Component', () => {
 
   test('renders participants table correctly', () => {
     renderWithInertia(<Show poll={mockPoll} participants={mockParticipants} />);
-    
+
     // Check if participants table is rendered
     expect(screen.getByText('All Responses')).toBeInTheDocument();
-    
+
     // Check if participant names are rendered
     expect(screen.getByText('Alice Smith')).toBeInTheDocument();
     expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
-    
+
     // Check if participant emails are rendered
     expect(screen.getByText('alice.smith@example.com')).toBeInTheDocument();
     expect(screen.getByText('bob.johnson@example.com')).toBeInTheDocument();
@@ -111,7 +111,7 @@ describe('Poll Show Component', () => {
 
   test('handles empty participants list', () => {
     renderWithInertia(<Show poll={mockPoll} participants={[]} />);
-    
+
     // Check if empty state message is rendered
     expect(screen.getByText('No responses yet')).toBeInTheDocument();
   });
@@ -119,12 +119,12 @@ describe('Poll Show Component', () => {
   test('has a working back button', async () => {
     const user = userEvent.setup();
     renderWithInertia(<Show poll={mockPoll} participants={mockParticipants} />);
-    
+
     const backButton = screen.getByRole('button', { name: /back to polls/i });
     expect(backButton).toBeInTheDocument();
-    
+
     await user.click(backButton);
-    
+
     // Check that the link has the correct href
     expect(backButton.closest('a')).toHaveAttribute('href', '/polls');
   });

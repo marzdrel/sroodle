@@ -32,7 +32,7 @@ const mockPolls = [
 describe('Poll Index Component', () => {
   test('renders empty state when no polls are available', () => {
     renderWithInertia(<Index polls={[]} />);
-    
+
     expect(screen.getByText('No polls available yet')).toBeInTheDocument();
     expect(screen.getByText('Be the first to create a poll for your event!')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create new poll/i })).toBeInTheDocument();
@@ -40,15 +40,15 @@ describe('Poll Index Component', () => {
 
   test('renders list of polls when available', () => {
     renderWithInertia(<Index polls={mockPolls} />);
-    
+
     // Check if poll titles are rendered
     expect(screen.getByText('Team Meeting')).toBeInTheDocument();
     expect(screen.getByText('Product Launch')).toBeInTheDocument();
-    
+
     // Check if creator emails are rendered
     expect(screen.getByText(/jane.doe@example.com/)).toBeInTheDocument();
     expect(screen.getByText(/john.smith@example.com/)).toBeInTheDocument();
-    
+
     // Check if View Poll buttons are present
     const viewButtons = screen.getAllByRole('button', { name: /view poll/i });
     expect(viewButtons).toHaveLength(2);
@@ -57,12 +57,12 @@ describe('Poll Index Component', () => {
   test('has a working create new poll button', async () => {
     const user = userEvent.setup();
     renderWithInertia(<Index polls={mockPolls} />);
-    
+
     const createButton = screen.getByRole('button', { name: /create new poll/i });
     expect(createButton).toBeInTheDocument();
-    
+
     await user.click(createButton);
-    
+
     // In an actual test, you'd verify navigation or some state change
     // Since Link is mocked, we'll just check that the link has the correct href
     expect(createButton.closest('a')).toHaveAttribute('href', '/polls/new');
