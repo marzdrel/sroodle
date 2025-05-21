@@ -32,6 +32,7 @@ everyone.
 - **React Hook Form**: Flexible form validation and handling
 - **Vite**: Next-generation frontend tooling
 - **ESLint**: JavaScript and TypeScript linter for code quality
+- **Vitest & Testing Library**: Component testing framework for React
 - **Docker**: Containerized development environment
 - **Kamal**: Deployment orchestration
 - **Claude Code**: AI-powered code generation

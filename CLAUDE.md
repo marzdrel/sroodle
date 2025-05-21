@@ -60,6 +60,11 @@ npm run check
 # JavaScript/TypeScript linting
 npm run lint      # Check for linting issues
 npm run lint:fix  # Fix linting issues automatically
+
+# Frontend Testing
+npm run test           # Run all tests once
+npm run test:watch     # Run tests in watch mode (great for development)
+npm run test:coverage  # Generate test coverage report
 ```
 
 ### Building and Deployment
@@ -83,7 +88,8 @@ This is a Rails 8 application that uses:
 5. **Tailwind CSS** for styling
 6. **shadcn/ui** for UI components
 7. **ESLint** for JavaScript/TypeScript code quality
-8. **SQLite** for the database
+8. **Vitest & Testing Library** for React component testing
+9. **SQLite** for the database
 
 ### Key Components
 
@@ -124,3 +130,17 @@ When working with this codebase, follow the established patterns for:
 4. Using TypeScript for type safety in the frontend code
 5. Make sure to remove all trailing spaces at the end of lines.
 6. Always add a new line at the end of all *.rb and *.tsx files.
+
+### Testing Guidelines
+
+1. **React Component Testing**
+   - Place tests in the `app/javascript/__tests__` directory mirroring the component structure
+   - Use the `renderWithInertia` utility for Inertia.js components
+   - Test both success and error states
+   - Follow the Testing Trophy approach: fewer unit tests, more integration tests
+   - Use Testing Library queries that reflect how users interact with the UI
+
+2. **Rails Testing**
+   - Follow Rails conventions for controller and model tests
+   - Use fixtures for test data
+   - Favor integration and system tests over unit tests for greater confidence
