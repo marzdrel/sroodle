@@ -26,13 +26,12 @@ class PollsController
     attr_accessor :params
 
     def poll
-      @_poll ||= Poll.includes(:creator).find_by!(exid: params[:id])
+      @_poll ||= Poll.includes(:creator).exid_loader(params[:id])
     end
 
     def serialize(poll)
       {
-        id: poll.id,
-        eid: poll.exid,
+        id: poll.to_param,
         name: poll.name,
         event: poll.name, # Using name as event name for now
         description: poll.description,
