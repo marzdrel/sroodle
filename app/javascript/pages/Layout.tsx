@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 
 
-export default function Layout({ children }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (

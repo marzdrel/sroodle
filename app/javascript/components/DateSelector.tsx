@@ -36,13 +36,13 @@ export function DateSelector({
         <Calendar
           mode="multiple"
           selected={selectedDates}
-          onSelect={(value) => {
+          onSelect={(value: Date | Date[] | undefined) => {
             if (Array.isArray(value)) {
               setSelectedDates(value);
               onChange?.(value);
             }
           }}
-          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+          disabled={(date: Date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
           className={cn(
             "rounded-md border",
             hasError && "border-destructive"
