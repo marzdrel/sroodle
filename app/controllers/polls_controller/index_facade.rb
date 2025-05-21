@@ -37,7 +37,12 @@ class PollsController
           email: poll.creator.email,
         },
         created_at: poll.created_at,
+        path: routes.poll_path(poll),
       }
+    end
+
+    def routes
+      Rails.application.routes.url_helpers
     end
   end
 end

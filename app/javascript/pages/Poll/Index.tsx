@@ -11,6 +11,7 @@ interface Poll {
     email: string;
   };
   created_at: string;
+  path: string;
 }
 
 interface IndexProps {
@@ -62,7 +63,7 @@ export default function Index({ polls = [] }: IndexProps) {
                       Created by {poll.creator.email}
                     </p>
                   </div>
-                  <Link href={`/polls/${poll.id}`}>
+                  <Link href={poll.path}>
                     <Button variant="outline" size="sm">View Poll</Button>
                   </Link>
                 </div>

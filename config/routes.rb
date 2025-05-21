@@ -7,5 +7,9 @@ Rails.application.routes.draw do
 
   resources :polls, only: [:new, :create, :index]
 
+  constraints id: /poll_.*/ do
+    get "/:id", to: "polls#show", as: :poll
+  end
+
   root "polls#new"
 end

@@ -8,6 +8,10 @@ class PollsController < ApplicationController
     )
   end
 
+  def show
+    render plain: "Not implemented"
+  end
+
   def new
     result = NewFacade.call(params)
 
