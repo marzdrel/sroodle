@@ -123,7 +123,6 @@ export default function Show({ poll, participants = [] }: ShowProps) {
             )}
           </div>
 
-
           {/* Responses table */}
           <div className="p-6 border rounded-lg bg-card overflow-x-auto">
             <h2 className="text-lg font-medium mb-4">All Responses</h2>
@@ -141,8 +140,8 @@ export default function Show({ poll, participants = [] }: ShowProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {participants.map((participant) => (
-                    <tr key={participant.id} className="border-b">
+                  {participants.map((participant, index) => (
+                    <tr key={participant.id} className={index < participants.length - 1 ? "border-b" : ""}>
                       <td className="py-3">
                         <div className="flex items-center space-x-2">
                           <Avatar className="h-8 w-8">
