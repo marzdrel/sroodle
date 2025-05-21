@@ -1,10 +1,10 @@
 import { usePage } from '@inertiajs/react';
 import { render, RenderOptions, screen, waitFor, fireEvent, within, act } from '@testing-library/react';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 
 // Create a custom wrapper for rendering with test props
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-  inertiaProps?: Record<string, any>;
+  inertiaProps?: Record<string, unknown>;
 }
 
 // Mock usePage to return our test props
