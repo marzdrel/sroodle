@@ -1,9 +1,11 @@
-import React from 'react'
 import { Head, Link } from '@inertiajs/react'
+import React from 'react'
+
 import Layout from '../Layout'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 interface Participant {
   id: number;

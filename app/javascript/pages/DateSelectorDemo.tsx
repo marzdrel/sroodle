@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
 import { Head } from '@inertiajs/react'
+import React, { useState } from 'react'
+
 import Layout from './Layout'
+
 import { DateSelector } from '@/components/DateSelector'
 import { Button } from '@/components/ui/button'
 
@@ -13,7 +15,7 @@ export default function DateSelectorDemo() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Selected dates:', selectedDates)
+    console.warn('Selected dates:', selectedDates)
     // Here you would typically send the data to your backend
   }
 

@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
 import { Link } from '@inertiajs/react'
-import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
+import React, { useState } from 'react'
+
+import { Button } from "@/components/ui/button"
+
 
 export default function Layout({ children }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)

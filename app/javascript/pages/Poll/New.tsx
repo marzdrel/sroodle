@@ -1,13 +1,12 @@
-import Layout from '../Layout'
-import { useForm } from 'react-hook-form'
 import { Head, router } from '@inertiajs/react'
 import * as React from 'react'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import Layout from '../Layout'
+
 import { DateSelector } from '@/components/DateSelector'
-
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -17,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 interface FormValues {
   poll: {
@@ -62,7 +62,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
     if (errors) {
       Object.entries(errors).forEach(([field, message]) => {
         // Map field name to nested path in form
-        const formPath = `poll.${field}` as any;
+        const formPath = `poll.${field}` as keyof FormValues;
 
         // Skip displaying dates error using form error as we show it separately
         if (field !== 'dates') {
