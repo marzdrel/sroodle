@@ -56,6 +56,10 @@ bundle exec brakeman
 
 # TypeScript type checking
 npm run check
+
+# JavaScript/TypeScript linting
+npm run lint      # Check for linting issues
+npm run lint:fix  # Fix linting issues automatically
 ```
 
 ### Building and Deployment
@@ -78,7 +82,8 @@ This is a Rails 8 application that uses:
 4. **Vite** for frontend bundling and HMR
 5. **Tailwind CSS** for styling
 6. **shadcn/ui** for UI components
-7. **SQLite** for the database
+7. **ESLint** for JavaScript/TypeScript code quality
+8. **SQLite** for the database
 
 ### Key Components
 
