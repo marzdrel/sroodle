@@ -30,7 +30,7 @@ class PollsController
 
     def serialize(poll)
       {
-        id: poll.id,
+        id: poll.to_param,
         name: poll.name,
         description: poll.description,
         creator: {

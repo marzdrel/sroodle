@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "bootsnap", require: false
 gem "clearance", ">= 2.10"
 gem "delight"
+gem "exid"
 gem "importmap-rails"
 gem "inertia_rails", "~> 3.8"
 gem "jbuilder"
