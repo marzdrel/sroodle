@@ -14,9 +14,9 @@ class PollsController
       Result.new(
         success?: true,
         data: {
-          polls: polls.map { serialize(it) },
+          polls: polls.map { serialize(it) }
         },
-        errors: {},
+        errors: {}
       )
     end
 
@@ -34,10 +34,10 @@ class PollsController
         name: poll.name,
         description: poll.description,
         creator: {
-          email: poll.creator.email,
+          email: poll.creator.email
         },
         created_at: poll.created_at,
-        path: routes.poll_path(poll),
+        path: routes.poll_path(poll)
       }
     end
 

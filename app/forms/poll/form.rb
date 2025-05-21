@@ -12,9 +12,9 @@ class Poll
     attribute :description, :string
     attribute :dates, default: []
 
-    validates :name, presence: true, length: { minimum: 2, maximum: 50 }
-    validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-    validates :event, presence: true, length: { minimum: 5, maximum: 100 }
+    validates :name, presence: true, length: {minimum: 2, maximum: 50}
+    validates :email, presence: true, format: {with: URI::MailTo::EMAIL_REGEXP}
+    validates :event, presence: true, length: {minimum: 5, maximum: 100}
     validates :description, presence: false
     validate :at_least_two_dates
 
@@ -57,7 +57,7 @@ class Poll
         name: event,
         description: description,
         creator: user,
-        eid: UUID7.generate,
+        eid: UUID7.generate
       )
     end
   end

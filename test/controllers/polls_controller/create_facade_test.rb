@@ -11,8 +11,8 @@ class PollsController
           email: "john@example.com",
           event: "Team Meeting",
           description: "Weekly team meeting to discuss project progress",
-          dates: ["2023-10-01", "2023-10-02"],
-        },
+          dates: ["2023-10-01", "2023-10-02"]
+        }
       )
     end
 
@@ -29,8 +29,8 @@ class PollsController
           name: "",
           email: "invalid-email",
           event: "",
-          description: "too short",
-        },
+          description: "too short"
+        }
       )
 
       result = PollsController::CreateFacade.call(invalid_params)
@@ -44,8 +44,8 @@ class PollsController
         poll: {
           name: "",
           email: "invalid-email",
-          event: "",
-        },
+          event: ""
+        }
       )
 
       result = PollsController::CreateFacade.call(invalid_params)

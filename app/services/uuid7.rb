@@ -25,7 +25,7 @@ class UUID7
     format("%08x%04x%04x%04x%04x%08x", *uuid)
   end
 
-  alias to_s to_str
+  alias_method :to_s, :to_str
 
   private
 
@@ -87,7 +87,7 @@ class UUID7
       (VERSION_7 | rand_a),
       (VARIANT_RFC4122 | rand_b1),
       rand_b2,
-      rand_b3,
+      rand_b3
     ]
   end
 end

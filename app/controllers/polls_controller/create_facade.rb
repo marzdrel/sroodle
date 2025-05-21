@@ -16,7 +16,7 @@ class PollsController
       Result.new(
         errors: errors,
         success?: form.valid?,
-        data: {},
+        data: {}
       )
     end
 
@@ -36,13 +36,13 @@ class PollsController
         .to_h do |name, desc|
           [
             name,
-            [name.capitalize, desc].join(" "),
+            [name.capitalize, desc].join(" ")
           ]
         end
     end
 
     def strong_params
-      params.expect(poll: [:name, :email, :description, :event, { dates: [] }])
+      params.expect(poll: [:name, :email, :description, :event, {dates: []}])
     end
   end
 end

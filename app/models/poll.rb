@@ -6,7 +6,7 @@ class Poll < ApplicationRecord
   validates(
     :name,
     presence: true,
-    length: { minimum: 5, maximum: 100 },
+    length: {minimum: 5, maximum: 100}
   )
 
   def to_param = exid_value

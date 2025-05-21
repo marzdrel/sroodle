@@ -15,9 +15,9 @@ class PollsController
         success?: true,
         data: {
           poll: serialize(poll),
-          participants: mock_participants, # This will be real data in the future
+          participants: mock_participants # This will be real data in the future
         },
-        errors: {},
+        errors: {}
       )
     end
 
@@ -38,10 +38,10 @@ class PollsController
         description: poll.description,
         creator: {
           email: poll.creator.email,
-          name: poll.creator.email.split('@').first, # Mock name for now
+          name: poll.creator.email.split("@").first # Mock name for now
         },
         created_at: poll.created_at,
-        dates: mock_dates, # This will be real data in the future
+        dates: mock_dates # This will be real data in the future
       }
     end
 
@@ -60,7 +60,7 @@ class PollsController
           responses: {
             yes: rand(0..5),
             maybe: rand(0..3),
-            no: rand(0..2),
+            no: rand(0..2)
           }
         }
       end
@@ -70,25 +70,25 @@ class PollsController
     # Mock participants for UI development - will be replaced with real data later
     def mock_participants
       return [] if params[:empty_participants] # Allow testing empty state
-      
+
       first_names = ["Alice", "Bob", "Charlie", "David", "Emma"]
       last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones"]
-      
+
       dates = mock_dates.map { |d| d[:date] }
-      
+
       participants = []
       3.times do |i|
         name = "#{first_names[i]} #{last_names[i]}"
-        email = "#{name.downcase.gsub(' ', '.')}@example.com"
-        
+        email = "#{name.downcase.tr(" ", ".")}@example.com"
+
         responses = dates.map do |date|
-          preferences = ['yes', 'maybe', 'no']
+          preferences = ["yes", "maybe", "no"]
           {
             date: date,
             preference: preferences.sample
           }
         end
-        
+
         participants << {
           id: i + 1,
           name: name,
@@ -96,7 +96,7 @@ class PollsController
           responses: responses
         }
       end
-      
+
       participants
     end
   end

@@ -4,7 +4,7 @@ class PollsController < ApplicationController
 
     render(
       inertia: "Poll/Index",
-      props: result.data,
+      props: result.data
     )
   end
 
@@ -13,7 +13,7 @@ class PollsController < ApplicationController
 
     render(
       inertia: "Poll/Show",
-      props: result.data,
+      props: result.data
     )
   end
 
@@ -23,8 +23,8 @@ class PollsController < ApplicationController
     render(
       inertia: "Poll/New",
       props: {
-        poll: result.data,
-      },
+        poll: result.data
+      }
     )
   end
 
@@ -38,8 +38,8 @@ class PollsController < ApplicationController
         inertia: "Poll/New",
         props: {
           poll: result.data,
-          errors: result.errors,
-        },
+          errors: result.errors
+        }
       )
     end
   end
