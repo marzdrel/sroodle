@@ -108,7 +108,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
             <FormField
               control={form.control}
               name="poll.name"
-              render={({ field }) => (
+              render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
@@ -125,7 +125,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
             <FormField
               control={form.control}
               name="poll.email"
-              render={({ field }) => (
+              render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
@@ -142,7 +142,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
             <FormField
               control={form.control}
               name="poll.event"
-              render={({ field }) => (
+              render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel>Event</FormLabel>
                   <FormControl>
@@ -159,7 +159,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
             <FormField
               control={form.control}
               name="poll.description"
-              render={({ field }) => (
+              render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
@@ -192,7 +192,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
                     )}
                     {!dateErrors && <div className="mb-4"></div>}
                     <DateSelector
-                      onChange={(dates) => {
+                      onChange={(dates: Date[]) => {
                         setSelectedDates(dates);
                         // Clear error when user selects at least 2 dates
                         if (dates.length >= 2) {
