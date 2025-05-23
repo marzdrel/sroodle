@@ -21,6 +21,7 @@ proxy:
   host: <%= ENV.fetch("SROODLE_WEB_HOSTNAME") %>
 
 registry:
+  server: <%= ENV.fetch("KAMAL_REGISTRY_SERVER") %>
   username:
     - KAMAL_REGISTRY_USERNAME
   password:
