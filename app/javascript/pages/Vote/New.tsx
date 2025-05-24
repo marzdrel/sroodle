@@ -2,6 +2,7 @@ import { Head, useForm } from '@inertiajs/react'
 import React from 'react'
 
 import Layout from '../Layout'
+import PollDescription from '@/components/PollDescription'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -31,6 +32,12 @@ interface VoteFormData {
 }
 
 export default function New({ poll, errors = [] }: NewProps) {
+  const { data, setData, post, processing } = useForm<VoteFormData>({
+    name: '',
+    email: '',
+    responses: {}
+  })
+
   // Handle case where poll might be undefined
   if (!poll) {
     return (
@@ -45,12 +52,6 @@ export default function New({ poll, errors = [] }: NewProps) {
       </Layout>
     )
   }
-
-  const { data, setData, post, processing } = useForm<VoteFormData>({
-    name: '',
-    email: '',
-    responses: {}
-  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,7 +102,7 @@ export default function New({ poll, errors = [] }: NewProps) {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">{poll.name}</h1>
-          <p className="text-muted-foreground mt-2">{poll.description}</p>
+          <PollDescription description={poll.description} />
         </div>
 
         {/* Error Messages */}
