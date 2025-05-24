@@ -2,21 +2,12 @@ class VotesController < ApplicationController
   def new
     result = NewFacade.call(params)
 
-    if result.success?
-      render(
-        inertia: "Vote/New",
-        props: {
-          poll: result.data[:poll]
-        }
-      )
-    else
-      render(
-        inertia: "Vote/New",
-        props: {
-          errors: result.errors
-        }
-      )
-    end
+    render(
+      inertia: "Vote/New",
+      props: {
+        poll: result.data
+      }
+    )
   end
 
   def create
