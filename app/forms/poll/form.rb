@@ -44,6 +44,19 @@ class Poll
 
     private
 
+    def options_attributes
+      dates.map do
+        {
+          start: Date.parse(it).beginning_of_day,
+          duration_minutes: 1440
+        }
+      end
+    rescue Date::Error
+      errors.add(:dates, "contains invalid date format")
+    end
+
+    private
+
     def find_or_create_user
       user = User.find_by(email: email)
       return user if user
@@ -57,7 +70,8 @@ class Poll
         name: event,
         description: description,
         creator: user,
-        eid: UUID7.generate
+        eid: UUID7.generate,
+        options_attributes: options_attributes,
       )
     end
   end

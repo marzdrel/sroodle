@@ -30,6 +30,8 @@ class Poll < ApplicationRecord
   has_many :options, class_name: "Poll::Option", dependent: :destroy
   has_many :votes, class_name: "Poll::Vote", dependent: :destroy
 
+  accepts_nested_attributes_for :options
+
   validates(
     :name,
     presence: true,
