@@ -28,7 +28,7 @@ class VotesController
     attr_accessor :params
 
     def form
-      @_form ||= Vote::Form.new(strong_params)
+      @_form ||= Poll::Vote::Form.new(strong_params)
     end
 
     def errors
