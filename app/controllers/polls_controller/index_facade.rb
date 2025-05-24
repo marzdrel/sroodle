@@ -37,7 +37,8 @@ class PollsController
           email: poll.creator.email
         },
         created_at: poll.created_at,
-        path: routes.poll_path(poll)
+        path: routes.poll_path(poll),
+        vote_path: routes.new_poll_vote_path(poll)
       }
     end
 

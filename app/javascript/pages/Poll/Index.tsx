@@ -14,6 +14,7 @@ interface Poll {
   };
   created_at: string;
   path: string;
+  vote_path: string;
 }
 
 interface IndexProps {
@@ -65,9 +66,14 @@ export default function Index({ polls = [] }: IndexProps) {
                       Created by {poll.creator.email}
                     </p>
                   </div>
-                  <Link href={poll.path}>
-                    <Button variant="outline" size="sm">View Poll</Button>
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link href={poll.vote_path}>
+                      <Button variant="default" size="sm">Cast Vote</Button>
+                    </Link>
+                    <Link href={poll.path}>
+                      <Button variant="outline" size="sm">View Poll</Button>
+                    </Link>
+                  </div>
                 </div>
                 <p className="mt-2 text-sm line-clamp-2">{poll.description}</p>
                 <div className="mt-3 text-xs text-muted-foreground">
