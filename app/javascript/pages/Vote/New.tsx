@@ -1,11 +1,21 @@
 import { Head, useForm } from '@inertiajs/react'
 import { CheckCircle2, HelpCircle, XCircle, Send } from 'lucide-react'
 import React from 'react'
+import { useForm as useReactHookForm } from 'react-hook-form'
 
 import Layout from '../Layout'
 
 import PollDescription from '@/components/PollDescription'
 import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
 interface PollOption {
@@ -39,6 +49,14 @@ export default function New({ poll, errors = [] }: NewProps) {
     responses: {}
   })
 
+  const form = useReactHookForm<VoteFormData>({
+    defaultValues: {
+      name: '',
+      email: '',
+      responses: {}
+    }
+  })
+
   // Handle case where poll might be undefined
   if (!poll) {
     return (
@@ -54,19 +72,21 @@ export default function New({ poll, errors = [] }: NewProps) {
     )
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = (formData: VoteFormData) => {
+    setData(formData)
     post(`/polls/${poll.id}/votes`)
   }
 
   const handleResponseChange = (optionId: number, response: string) => {
+    const newResponses = {
+      ...data.responses,
+      [optionId]: response
+    }
     setData({
       ...data,
-      responses: {
-        ...data.responses,
-        [optionId]: response
-      }
+      responses: newResponses
     })
+    form.setValue('responses', newResponses)
   }
 
   const formatDateTime = (start: string, durationMinutes: number) => {
@@ -118,39 +138,47 @@ export default function New({ poll, errors = [] }: NewProps) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Personal Information */}
-          <div className="p-6 border rounded-lg bg-card">
-            <h2 className="text-lg font-medium mb-4">Your Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2">
-                  Name *
-                </label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={data.name}
-                  onChange={(e) => setData({ ...data, name: e.target.value })}
-                  required
-                  placeholder="Enter your name"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+            {/* Personal Information */}
+            <div className="p-6 border rounded-lg bg-card">
+              <h2 className="text-lg font-medium mb-4">Your Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your name" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Enter your full name.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-2">
-                  Email *
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={data.email}
-                  onChange={(e) => setData({ ...data, email: e.target.value })}
-                  required
-                  placeholder="Enter your email"
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="your.email@example.com" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        We'll use this to send you poll updates.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
             </div>
-          </div>
 
           {/* Date Options */}
           <div className="p-6 border rounded-lg bg-card">
@@ -220,6 +248,7 @@ export default function New({ poll, errors = [] }: NewProps) {
             </Button>
           </div>
         </form>
+        </Form>
       </div>
     </Layout>
   )
