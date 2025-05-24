@@ -108,7 +108,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
             <FormField
               control={form.control}
               name="poll.name"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
@@ -125,7 +125,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
             <FormField
               control={form.control}
               name="poll.email"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
@@ -142,7 +142,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
             <FormField
               control={form.control}
               name="poll.event"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Event</FormLabel>
                   <FormControl>
@@ -159,7 +159,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string> }
             <FormField
               control={form.control}
               name="poll.description"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
