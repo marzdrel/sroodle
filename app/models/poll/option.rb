@@ -1,4 +1,5 @@
-# rubocop:disable Layout/LineLength
+# frozen_string_literal: true
+
 # == Schema Information
 # Schema version: 20250524132821
 #
@@ -21,7 +22,9 @@
 #
 #  poll_id  (poll_id => polls.id)
 #
-# rubocop:enable Layout/LineLength
-class Poll::Option < ApplicationRecord
-  belongs_to :poll
+
+class Poll
+  class Option < ApplicationRecord
+    belongs_to :poll
+  end
 end
