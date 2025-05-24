@@ -26,7 +26,7 @@ class PollsController
     attr_accessor :params
 
     def poll
-      @_poll ||= Poll.includes(:creator).exid_loader(params[:id])
+      @_poll ||= Poll.includes(:creator).exid_loader(params.fetch(:id))
     end
 
     def serialize(poll)
