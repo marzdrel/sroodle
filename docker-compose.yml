@@ -5,7 +5,7 @@ x-llm: &llm
   build:
     context: .
     dockerfile: ./.dockerdev/Dockerfile
-    target: sroodle-node-base
+    target: sroodle-dev-base
   image: sroodle-claude
   tmpfs:
     - /tmp:mode=1777
