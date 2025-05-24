@@ -1,4 +1,4 @@
-# Sroodle
+# Sroodle ![CI](https://github.com/marzdrel/sroodle/actions/workflows/ci.yml/badge.svg)
 
 ## About the Project
 
