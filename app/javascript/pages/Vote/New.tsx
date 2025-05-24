@@ -33,7 +33,7 @@ interface Poll {
 
 interface NewProps {
   poll: Poll;
-  errors?: string[];
+  errors?: Record<string, string> | string[];
 }
 
 interface VoteFormData extends Record<string, string | Record<number, string>> {
@@ -42,7 +42,7 @@ interface VoteFormData extends Record<string, string | Record<number, string>> {
   responses: Record<number, string>;
 }
 
-export default function New({ poll, errors = [] }: NewProps) {
+export default function New({ poll, errors = {} }: NewProps) {
   const { data, setData, post, processing } = useForm<VoteFormData>({
     name: '',
     email: '',
@@ -54,8 +54,30 @@ export default function New({ poll, errors = [] }: NewProps) {
       name: '',
       email: '',
       responses: {}
-    }
+    },
+    mode: 'onBlur' // Validate on blur for better UX
   })
+
+  // Helper function to get field-specific errors
+  const getFieldError = (fieldName: string): string | undefined => {
+    if (Array.isArray(errors)) {
+      return undefined // Array format doesn't have field-specific errors
+    }
+    return errors[fieldName]
+  }
+
+  // Helper function to get general errors (either from array or base field)
+  const getGeneralErrors = (): string[] => {
+    if (Array.isArray(errors)) {
+      return errors
+    }
+    // Return base errors and any non-field-specific errors
+    const generalErrors: string[] = []
+    if (errors.base) {
+      generalErrors.push(errors.base)
+    }
+    return generalErrors
+  }
 
   // Handle case where poll might be undefined
   if (!poll) {
@@ -73,6 +95,16 @@ export default function New({ poll, errors = [] }: NewProps) {
   }
 
   const handleSubmit = (formData: VoteFormData) => {
+    // Validate that all poll options have responses
+    const missingResponses = poll.options.filter(option => !formData.responses[option.id])
+    if (missingResponses.length > 0) {
+      form.setError('responses', {
+        type: 'manual',
+        message: 'Please select your availability for all proposed dates'
+      })
+      return
+    }
+
     const voteData = {
       ...formData,
       poll_id: poll.id
@@ -95,6 +127,16 @@ export default function New({ poll, errors = [] }: NewProps) {
       responses: newResponses
     })
     form.setValue('responses', newResponses)
+    
+    // Clear any existing responses error if the user has now responded to all options
+    if (form.formState.errors.responses) {
+      const allOptionsHaveResponses = poll.options.every(option => 
+        newResponses[option.id] || option.id === optionId
+      )
+      if (allOptionsHaveResponses) {
+        form.clearErrors('responses')
+      }
+    }
   }
 
   const formatDateTime = (start: string, durationMinutes: number) => {
@@ -137,10 +179,10 @@ export default function New({ poll, errors = [] }: NewProps) {
           <PollDescription description={poll.description} />
         </div>
 
-        {/* Error Messages */}
-        {errors.length > 0 && (
+        {/* General Error Messages */}
+        {getGeneralErrors().length > 0 && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            {errors.map((error, index) => (
+            {getGeneralErrors().map((error, index) => (
               <p key={index} className="text-red-800 text-sm">{error}</p>
             ))}
           </div>
@@ -155,6 +197,17 @@ export default function New({ poll, errors = [] }: NewProps) {
                 <FormField
                   control={form.control}
                   name="name"
+                  rules={{
+                    required: 'Name is required',
+                    minLength: {
+                      value: 2,
+                      message: 'Name must be at least 2 characters'
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: 'Name must be no more than 50 characters'
+                    }
+                  }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Name</FormLabel>
@@ -165,6 +218,9 @@ export default function New({ poll, errors = [] }: NewProps) {
                         Enter your full name.
                       </FormDescription>
                       <FormMessage />
+                      {getFieldError('name') && (
+                        <p className="text-sm text-red-600">{getFieldError('name')}</p>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -172,6 +228,13 @@ export default function New({ poll, errors = [] }: NewProps) {
                 <FormField
                   control={form.control}
                   name="email"
+                  rules={{
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Please enter a valid email address'
+                    }
+                  }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
@@ -182,6 +245,9 @@ export default function New({ poll, errors = [] }: NewProps) {
                         We'll use this to send you poll updates.
                       </FormDescription>
                       <FormMessage />
+                      {getFieldError('email') && (
+                        <p className="text-sm text-red-600">{getFieldError('email')}</p>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -191,6 +257,11 @@ export default function New({ poll, errors = [] }: NewProps) {
           {/* Date Options */}
           <div className="p-6 border rounded-lg bg-card">
             <h2 className="text-lg font-medium mb-4">Select Your Availability</h2>
+            {getFieldError('responses') && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{getFieldError('responses')}</p>
+              </div>
+            )}
             <div className="space-y-4">
               {poll.options.map((option) => {
                 const { date, time } = formatDateTime(option.start, option.duration_minutes)
@@ -246,6 +317,11 @@ export default function New({ poll, errors = [] }: NewProps) {
                 )
               })}
             </div>
+            {form.formState.errors.responses && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{form.formState.errors.responses.message}</p>
+              </div>
+            )}
           </div>
 
           {/* Submit Button */}

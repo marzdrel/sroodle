@@ -1,4 +1,8 @@
 class VotesController < ApplicationController
+  def index
+    redirect_to new_poll_vote_path(params.fetch(:poll_id))
+  end
+
   def new
     result = NewFacade.call(params)
 
