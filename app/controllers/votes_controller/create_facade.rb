@@ -45,16 +45,16 @@ class VotesController
     end
 
     def strong_params
-      params.expect(vote: [:name, :email, :poll_id, {responses: {}}, {votes_attributes: [:option_id, :response]}])
+      params
+        .expect(vote: [:name, :email, {responses: {}}])
+        .merge(poll_id: params.fetch(:poll_id))
     end
 
     def poll_with_votes
-      return nil unless form.poll
-
-      poll_with_includes = Poll.includes(:options, :votes).find(form.poll.id)
+      poll_with_includes = Poll.includes(:options, :votes).exid_loader(params.fetch(:poll_id))
 
       {
-        id: poll_with_includes.id,
+        id: poll_with_includes.to_param,
         name: poll_with_includes.name,
         description: poll_with_includes.description,
         options: poll_with_includes.options.map do |option|

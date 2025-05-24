@@ -28,7 +28,7 @@ class VotesController
 
     def serialize_poll_for_voting(poll)
       {
-        id: poll.id,
+        id: poll.to_param,
         name: poll.name,
         description: poll.description,
         options: poll.options.map do |option|

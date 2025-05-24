@@ -30,5 +30,11 @@ class Poll
     self.table_name = "poll_options"
 
     belongs_to :poll
+
+    has_many(
+      :votes,
+      class_name: "Poll::Vote",
+      dependent: :destroy,
+    )
   end
 end

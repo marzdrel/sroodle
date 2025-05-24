@@ -15,7 +15,7 @@ class VotesController < ApplicationController
 
     if result.success?
       render(
-        inertia: "Poll/Show",
+        inertia: "Vote/New",
         props: {
           poll: result.data[:poll],
           flash: {notice: "Vote was successfully created."}
@@ -23,7 +23,7 @@ class VotesController < ApplicationController
       )
     else
       render(
-        inertia: "Poll/Show",
+        inertia: "Vote/New",
         props: {
           poll: result.data[:poll],
           errors: result.errors,

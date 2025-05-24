@@ -73,8 +73,16 @@ export default function New({ poll, errors = [] }: NewProps) {
   }
 
   const handleSubmit = (formData: VoteFormData) => {
-    setData(formData)
-    post(`/polls/${poll.id}/votes`)
+    const voteData = {
+      ...formData,
+      poll_id: poll.id
+    }
+    setData(voteData)
+    post(`/polls/${poll.id}/votes`, {
+      data: {
+        vote: voteData
+      }
+    })
   }
 
   const handleResponseChange = (optionId: number, response: string) => {
