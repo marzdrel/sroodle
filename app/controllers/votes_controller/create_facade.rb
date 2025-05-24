@@ -46,8 +46,7 @@ class VotesController
 
     def strong_params
       params
-        .expect(vote: [:name, :email, {responses: {}}])
-        .merge(poll_id: params.fetch(:poll_id))
+        .expect(vote: [:poll_id, :name, :email, {responses: {}}])
     end
 
     def poll_with_votes

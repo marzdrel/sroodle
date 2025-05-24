@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react'
 import { CheckCircle2, HelpCircle, XCircle, Send } from 'lucide-react'
-import React from 'react'
+import * as React from 'react'
 import { useForm as useReactHookForm } from 'react-hook-form'
 
 import Layout from '../Layout'
@@ -54,30 +54,25 @@ export default function New({ poll, errors = {} }: NewProps) {
       name: '',
       email: '',
       responses: {}
-    },
-    mode: 'onBlur' // Validate on blur for better UX
+    }
   })
 
-  // Helper function to get field-specific errors
-  const getFieldError = (fieldName: string): string | undefined => {
-    if (Array.isArray(errors)) {
-      return undefined // Array format doesn't have field-specific errors
-    }
-    return errors[fieldName]
-  }
+  // Handle server errors similar to Poll/New.tsx
+  React.useEffect(() => {
+    form.clearErrors();
 
-  // Helper function to get general errors (either from array or base field)
-  const getGeneralErrors = (): string[] => {
-    if (Array.isArray(errors)) {
-      return errors
+    if (errors && !Array.isArray(errors)) {
+      Object.entries(errors).forEach(([field, message]) => {
+        // Set server errors on form fields
+        if (field !== 'base') {
+          form.setError(field as keyof VoteFormData, {
+            type: 'server',
+            message
+          });
+        }
+      });
     }
-    // Return base errors and any non-field-specific errors
-    const generalErrors: string[] = []
-    if (errors.base) {
-      generalErrors.push(errors.base)
-    }
-    return generalErrors
-  }
+  }, [errors, form]);
 
   // Handle case where poll might be undefined
   if (!poll) {
@@ -95,16 +90,6 @@ export default function New({ poll, errors = {} }: NewProps) {
   }
 
   const handleSubmit = (formData: VoteFormData) => {
-    // Validate that all poll options have responses
-    const missingResponses = poll.options.filter(option => !formData.responses[option.id])
-    if (missingResponses.length > 0) {
-      form.setError('responses', {
-        type: 'manual',
-        message: 'Please select your availability for all proposed dates'
-      })
-      return
-    }
-
     const voteData = {
       ...formData,
       poll_id: poll.id
@@ -127,16 +112,6 @@ export default function New({ poll, errors = {} }: NewProps) {
       responses: newResponses
     })
     form.setValue('responses', newResponses)
-    
-    // Clear any existing responses error if the user has now responded to all options
-    if (form.formState.errors.responses) {
-      const allOptionsHaveResponses = poll.options.every(option => 
-        newResponses[option.id] || option.id === optionId
-      )
-      if (allOptionsHaveResponses) {
-        form.clearErrors('responses')
-      }
-    }
   }
 
   const formatDateTime = (start: string, durationMinutes: number) => {
@@ -180,9 +155,14 @@ export default function New({ poll, errors = {} }: NewProps) {
         </div>
 
         {/* General Error Messages */}
-        {getGeneralErrors().length > 0 && (
+        {errors && !Array.isArray(errors) && errors.base && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            {getGeneralErrors().map((error, index) => (
+            <p className="text-red-800 text-sm">{errors.base}</p>
+          </div>
+        )}
+        {Array.isArray(errors) && errors.length > 0 && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            {errors.map((error, index) => (
               <p key={index} className="text-red-800 text-sm">{error}</p>
             ))}
           </div>
@@ -197,17 +177,6 @@ export default function New({ poll, errors = {} }: NewProps) {
                 <FormField
                   control={form.control}
                   name="name"
-                  rules={{
-                    required: 'Name is required',
-                    minLength: {
-                      value: 2,
-                      message: 'Name must be at least 2 characters'
-                    },
-                    maxLength: {
-                      value: 50,
-                      message: 'Name must be no more than 50 characters'
-                    }
-                  }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Name</FormLabel>
@@ -218,9 +187,6 @@ export default function New({ poll, errors = {} }: NewProps) {
                         Enter your full name.
                       </FormDescription>
                       <FormMessage />
-                      {getFieldError('name') && (
-                        <p className="text-sm text-red-600">{getFieldError('name')}</p>
-                      )}
                     </FormItem>
                   )}
                 />
@@ -228,13 +194,6 @@ export default function New({ poll, errors = {} }: NewProps) {
                 <FormField
                   control={form.control}
                   name="email"
-                  rules={{
-                    required: 'Email is required',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Please enter a valid email address'
-                    }
-                  }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
@@ -245,9 +204,6 @@ export default function New({ poll, errors = {} }: NewProps) {
                         We'll use this to send you poll updates.
                       </FormDescription>
                       <FormMessage />
-                      {getFieldError('email') && (
-                        <p className="text-sm text-red-600">{getFieldError('email')}</p>
-                      )}
                     </FormItem>
                   )}
                 />
@@ -255,74 +211,73 @@ export default function New({ poll, errors = {} }: NewProps) {
             </div>
 
           {/* Date Options */}
-          <div className="p-6 border rounded-lg bg-card">
-            <h2 className="text-lg font-medium mb-4">Select Your Availability</h2>
-            {getFieldError('responses') && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">{getFieldError('responses')}</p>
-              </div>
-            )}
-            <div className="space-y-4">
-              {poll.options.map((option) => {
-                const { date, time } = formatDateTime(option.start, option.duration_minutes)
-                const currentResponse = data.responses[option.id] || ''
+          <FormField
+            control={form.control}
+            name="responses"
+            render={() => (
+              <FormItem>
+                <div className="p-6 border rounded-lg bg-card">
+                  <FormLabel className="text-lg font-medium">Select Your Availability</FormLabel>
+                  <FormMessage className="mt-2" />
+                  <div className="space-y-4 mt-4">
+                    {poll.options.map((option) => {
+                      const { date, time } = formatDateTime(option.start, option.duration_minutes)
+                      const currentResponse = data.responses[option.id] || ''
 
-                return (
-                  <div key={option.id} className="p-4 border rounded-lg">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                      <div>
-                        <h3 className="font-medium">{date}</h3>
-                        <p className="text-sm text-muted-foreground">{time}</p>
-                      </div>
+                      return (
+                        <div key={option.id} className="p-4 border rounded-lg">
+                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div>
+                              <h3 className="font-medium">{date}</h3>
+                              <p className="text-sm text-muted-foreground">{time}</p>
+                            </div>
 
-                      <div className="flex gap-2">
-                        {['yes', 'maybe', 'no'].map((response) => {
-                          const getIcon = () => {
-                            switch (response) {
-                              case 'yes': return <CheckCircle2 className="w-4 h-4 text-green-600" />
-                              case 'maybe': return <HelpCircle className="w-4 h-4 text-yellow-600" />
-                              case 'no': return <XCircle className="w-4 h-4 text-red-600" />
-                              default: return null
-                            }
-                          }
+                            <div className="flex gap-2">
+                              {['yes', 'maybe', 'no'].map((response) => {
+                                const getIcon = () => {
+                                  switch (response) {
+                                    case 'yes': return <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                    case 'maybe': return <HelpCircle className="w-4 h-4 text-yellow-600" />
+                                    case 'no': return <XCircle className="w-4 h-4 text-red-600" />
+                                    default: return null
+                                  }
+                                }
 
-                          const getLabel = () => {
-                            switch (response) {
-                              case 'yes': return 'Yes'
-                              case 'maybe': return 'Maybe'
-                              case 'no': return 'No'
-                              default: return ''
-                            }
-                          }
+                                const getLabel = () => {
+                                  switch (response) {
+                                    case 'yes': return 'Yes'
+                                    case 'maybe': return 'Maybe'
+                                    case 'no': return 'No'
+                                    default: return ''
+                                  }
+                                }
 
-                          return (
-                            <button
-                              key={response}
-                              type="button"
-                              onClick={() => handleResponseChange(option.id, response)}
-                              className={`px-4 py-2 rounded-md border transition-all flex items-center gap-2 ${
-                                currentResponse === response
-                                  ? getResponseVariant(response)
-                                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                              }`}
-                            >
-                              {getIcon()}
-                              {getLabel()}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
+                                return (
+                                  <button
+                                    key={response}
+                                    type="button"
+                                    onClick={() => handleResponseChange(option.id, response)}
+                                    className={`px-4 py-2 rounded-md border transition-all flex items-center gap-2 ${
+                                      currentResponse === response
+                                        ? getResponseVariant(response)
+                                        : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                                    }`}
+                                  >
+                                    {getIcon()}
+                                    {getLabel()}
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
-                )
-              })}
-            </div>
-            {form.formState.errors.responses && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">{form.formState.errors.responses.message}</p>
-              </div>
+                </div>
+              </FormItem>
             )}
-          </div>
+          />
 
           {/* Submit Button */}
           <div className="flex justify-end">
