@@ -2,6 +2,7 @@ require "test_helper"
 
 class Poll::VoteTest < ActiveSupport::TestCase
   set_fixture_class poll_votes: Poll::Vote
+
   test "fixtures are valid" do
     assert poll_votes(:alice_morning_yes).valid?, "poll_votes(:alice_morning_yes) should be valid"
     assert poll_votes(:alice_afternoon_maybe).valid?, "poll_votes(:alice_afternoon_maybe) should be valid"
