@@ -2,8 +2,8 @@ import { Head, useForm } from '@inertiajs/react'
 import React from 'react'
 
 import Layout from '../Layout'
-import PollDescription from '@/components/PollDescription'
 
+import PollDescription from '@/components/PollDescription'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -25,10 +25,10 @@ interface NewProps {
   errors?: string[];
 }
 
-interface VoteFormData {
+interface VoteFormData extends Record<string, string | Record<number, string>> {
   name: string;
   email: string;
-  responses: Record<number, string>; // option_id -> response (yes/maybe/no)
+  responses: Record<number, string>;
 }
 
 export default function New({ poll, errors = [] }: NewProps) {
@@ -59,9 +59,12 @@ export default function New({ poll, errors = [] }: NewProps) {
   }
 
   const handleResponseChange = (optionId: number, response: string) => {
-    setData('responses', {
-      ...data.responses,
-      [optionId]: response
+    setData({
+      ...data,
+      responses: {
+        ...data.responses,
+        [optionId]: response
+      }
     })
   }
 
@@ -127,7 +130,7 @@ export default function New({ poll, errors = [] }: NewProps) {
                   id="name"
                   type="text"
                   value={data.name}
-                  onChange={(e) => setData('name', e.target.value)}
+                  onChange={(e) => setData({ ...data, name: e.target.value })}
                   required
                   placeholder="Enter your name"
                 />
@@ -140,7 +143,7 @@ export default function New({ poll, errors = [] }: NewProps) {
                   id="email"
                   type="email"
                   value={data.email}
-                  onChange={(e) => setData('email', e.target.value)}
+                  onChange={(e) => setData({ ...data, email: e.target.value })}
                   required
                   placeholder="Enter your email"
                 />
