@@ -45,8 +45,7 @@ class VotesController
     end
 
     def strong_params
-      params
-        .expect(vote: [:poll_id, :name, :email, {responses: {}}])
+      params.expect(vote: [:poll_id, :name, :email, {responses: {}}])
     end
 
     def poll_with_votes

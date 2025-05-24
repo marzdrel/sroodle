@@ -10,10 +10,11 @@ class Poll
       attribute :name, :string
       attribute :email, :string
       attribute :responses, default: {}
-      attribute :poll_id
+      attribute :poll_id, :string
 
       validates :name, presence: true, length: {minimum: 2, maximum: 50}
       validates :email, presence: true, format: {with: URI::MailTo::EMAIL_REGEXP}
+
       validate :responses_for_all_options
       validate :valid_response_values
 

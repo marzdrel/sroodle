@@ -176,7 +176,7 @@ export default function New({ poll, errors = {} }: NewProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="vote.name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Name</FormLabel>
@@ -193,7 +193,7 @@ export default function New({ poll, errors = {} }: NewProps) {
 
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="vote.email"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
@@ -213,7 +213,7 @@ export default function New({ poll, errors = {} }: NewProps) {
           {/* Date Options */}
           <FormField
             control={form.control}
-            name="responses"
+            name="vote.responses"
             render={() => (
               <FormItem>
                 <div className="p-6 border rounded-lg bg-card">
