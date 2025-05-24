@@ -1,4 +1,5 @@
 import { Head, useForm } from '@inertiajs/react'
+import { CheckCircle2, HelpCircle, XCircle, Send } from 'lucide-react'
 import React from 'react'
 
 import Layout from '../Layout'
@@ -168,22 +169,41 @@ export default function New({ poll, errors = [] }: NewProps) {
                       </div>
 
                       <div className="flex gap-2">
-                        {['yes', 'maybe', 'no'].map((response) => (
-                          <button
-                            key={response}
-                            type="button"
-                            onClick={() => handleResponseChange(option.id, response)}
-                            className={`px-4 py-2 rounded-md border transition-all ${
-                              currentResponse === response
-                                ? getResponseVariant(response)
-                                : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                            }`}
-                          >
-                            {response === 'yes' && '✓ Yes'}
-                            {response === 'maybe' && '? Maybe'}
-                            {response === 'no' && '✗ No'}
-                          </button>
-                        ))}
+                        {['yes', 'maybe', 'no'].map((response) => {
+                          const getIcon = () => {
+                            switch (response) {
+                              case 'yes': return <CheckCircle2 className="w-4 h-4 text-green-600" />
+                              case 'maybe': return <HelpCircle className="w-4 h-4 text-yellow-600" />
+                              case 'no': return <XCircle className="w-4 h-4 text-red-600" />
+                              default: return null
+                            }
+                          }
+
+                          const getLabel = () => {
+                            switch (response) {
+                              case 'yes': return 'Yes'
+                              case 'maybe': return 'Maybe'
+                              case 'no': return 'No'
+                              default: return ''
+                            }
+                          }
+
+                          return (
+                            <button
+                              key={response}
+                              type="button"
+                              onClick={() => handleResponseChange(option.id, response)}
+                              className={`px-4 py-2 rounded-md border transition-all flex items-center gap-2 ${
+                                currentResponse === response
+                                  ? getResponseVariant(response)
+                                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                              }`}
+                            >
+                              {getIcon()}
+                              {getLabel()}
+                            </button>
+                          )
+                        })}
                       </div>
                     </div>
                   </div>
@@ -194,7 +214,8 @@ export default function New({ poll, errors = [] }: NewProps) {
 
           {/* Submit Button */}
           <div className="flex justify-end">
-            <Button type="submit" disabled={processing} className="px-8">
+            <Button type="submit" disabled={processing} className="px-8 flex items-center gap-2">
+              <Send className="w-4 h-4 text-white" />
               {processing ? 'Submitting...' : 'Submit Vote'}
             </Button>
           </div>
