@@ -13,7 +13,7 @@ class PollsController
     def call
       form.save
 
-      Result.new(
+      FacadeResult.new(
         errors: errors,
         success?: form.valid?,
         data: {}
