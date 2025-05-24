@@ -39,7 +39,7 @@ if Rails.env.development?
       "force" => "false",
       "trace" => "false",
       "wrapper_open" => "rubocop:disable Layout/LineLength",
-      "wrapper_close" => "rubocop:enable Layout/LineLength",
+      "wrapper_close" => "rubocop:enable Layout/LineLength"
     )
   end
 
