@@ -17,7 +17,7 @@ class PollTest < ActiveSupport::TestCase
 
     assert_must(
       validate_length_of(:name).is_at_least(5).is_at_most(100),
-      Poll.new,
+      Poll.new
     )
   end
 
