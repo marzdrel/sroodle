@@ -10,7 +10,15 @@ FOREIGN KEY ("creator_id")
 );
 CREATE INDEX "index_polls_on_creator_id" ON "polls" ("creator_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_polls_on_eid" ON "polls" ("eid") /*application='Sroodle'*/;
+CREATE TABLE IF NOT EXISTS "poll_options" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "poll_id" integer NOT NULL, "start" datetime(6) NOT NULL, "duration_minutes" integer NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_aa85becb42"
+FOREIGN KEY ("poll_id")
+  REFERENCES "polls" ("id")
+, CONSTRAINT valid_duration_minutes CHECK (duration_minutes IN (30, 60, 90, 120, 1440)));
+CREATE INDEX "index_poll_options_on_poll_id" ON "poll_options" ("poll_id") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_options_on_start" ON "poll_options" ("start") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_options_on_poll_id_and_start" ON "poll_options" ("poll_id", "start") /*application='Sroodle'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20250524132821'),
 ('20250519211503'),
 ('20250518182338'),
 ('20250518141646');
