@@ -4,6 +4,7 @@ require_relative "../config/environment"
 
 require "rails/test_help"
 require "shoulda/matchers"
+require "shoulda/context"
 require "minitest/mock"
 
 module ActiveSupport

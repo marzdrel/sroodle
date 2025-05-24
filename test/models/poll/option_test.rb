@@ -1,7 +1,7 @@
 require "test_helper"
 
 class Poll::OptionTest < ActiveSupport::TestCase
-  context "associations" do
-    should belong_to(:poll)
+  test "belongs to poll" do
+    assert_must belong_to(:poll), Poll::Option.new
   end
 end
