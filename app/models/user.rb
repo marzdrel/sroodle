@@ -22,4 +22,8 @@
 
 class User < ApplicationRecord
   include Clearance::User
+
+  has_many :votes, class_name: "Poll::Vote", dependent: :destroy
+
+  accepts_nested_attributes_for :votes
 end
