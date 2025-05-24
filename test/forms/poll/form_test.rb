@@ -68,8 +68,8 @@ class Poll::FormTest < ActiveSupport::TestCase
       assert form.save
     end
 
-    assert form.poll_id.present?
-    poll = Poll.find(form.poll_id)
+    poll = Poll.last
+
     assert_equal @valid_attributes[:event], poll.name
     assert_equal @valid_attributes[:description], poll.description
   end

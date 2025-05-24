@@ -29,7 +29,7 @@ class Poll
 
       ActiveRecord::Base.transaction do
         user = find_or_create_user
-        poll = create_poll(user)
+        create_poll(user)
       end
 
       true
@@ -68,7 +68,7 @@ class Poll
         description: description,
         creator: user,
         eid: UUID7.generate,
-        options_attributes: options_attributes,
+        options_attributes: options_attributes
       )
     end
   end
