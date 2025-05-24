@@ -39,6 +39,7 @@ interface Poll {
   };
   created_at: string;
   dates: PollDate[];
+  vote_path: string;
 }
 
 interface ShowProps {
@@ -81,6 +82,9 @@ export default function Show({ poll, participants = [] }: ShowProps) {
               </p>
             </div>
             <div className="flex space-x-3">
+              <Link href={poll.vote_path}>
+                <Button variant="default">Cast Vote</Button>
+              </Link>
               <Button variant="outline">Share Poll</Button>
               <Link href="/polls">
                 <Button variant="ghost">Back to Polls</Button>

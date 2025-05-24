@@ -40,7 +40,8 @@ class PollsController
           name: poll.creator.email.split("@").first # Mock name for now
         },
         created_at: poll.created_at,
-        dates: mock_dates # This will be real data in the future
+        dates: mock_dates, # This will be real data in the future
+        vote_path: routes.new_poll_vote_path(poll)
       }
     end
 
