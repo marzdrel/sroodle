@@ -24,6 +24,10 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 gem "vite_rails", "~> 3.0"
 
 group :development, :test do
+  # Recent annotate vem 3.x is locked to old ActiveRecord.
+  # https://github.com/ctran/annotate_models/pull/1033
+
+  gem "annotate", github: "tnir/annotate_models", ref: "b4f12a0"
   gem "brakeman", require: false
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
   gem "foreman", require: false

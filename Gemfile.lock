@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/tnir/annotate_models.git
+  revision: b4f12a0e7a442cdf0bb13bab5854e090e2585a49
+  ref: b4f12a0
+  specs:
+    annotate (3.2.0)
+      activerecord (>= 3.2, < 9.0)
+      rake (>= 10.4, < 14.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -453,6 +462,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  annotate!
   bootsnap
   brakeman
   capybara
