@@ -12,6 +12,7 @@ x-llm: &llm
   volumes:
     - .:/app
     - .dockerdev/bashrc:/root/.bashrc:ro
+    - ~/.claude.json:/root/.claude.json
 
 services:
   ai:
