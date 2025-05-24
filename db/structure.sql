@@ -22,7 +22,7 @@ FOREIGN KEY ("poll_id")
   REFERENCES "polls" ("id")
 , CONSTRAINT "fk_rails_826ebfbbb3"
 FOREIGN KEY ("option_id")
-  REFERENCES "options" ("id")
+  REFERENCES "poll_options" ("id")
 , CONSTRAINT "fk_rails_b64de9b025"
 FOREIGN KEY ("user_id")
   REFERENCES "users" ("id")

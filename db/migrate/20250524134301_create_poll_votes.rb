@@ -2,7 +2,7 @@ class CreatePollVotes < ActiveRecord::Migration[8.0]
   def change
     create_table :poll_votes do |t|
       t.references :poll, null: false, foreign_key: true
-      t.references :option, null: false, foreign_key: true
+      t.references :option, null: false, foreign_key: { to_table: :poll_options }
       t.references :user, null: false, foreign_key: true
       t.string :response, null: false
 

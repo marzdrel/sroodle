@@ -23,7 +23,7 @@
 #
 # Foreign Keys
 #
-#  option_id  (option_id => options.id)
+#  option_id  (option_id => poll_options.id)
 #  poll_id    (poll_id => polls.id)
 #  user_id    (user_id => users.id)
 #
@@ -31,8 +31,10 @@
 
 class Poll
   class Vote < ApplicationRecord
+    self.table_name = "poll_votes"
+
     belongs_to :poll
-    belongs_to :option
+    belongs_to :option, class_name: "Poll::Option"
     belongs_to :user
   end
 end
