@@ -11,7 +11,7 @@ class PollsController
     end
 
     def call
-      Result.new(
+      FacadeResult.new(
         success?: true,
         data: {
           polls: polls.map { serialize(it) }

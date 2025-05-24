@@ -27,6 +27,8 @@ class Poll < ApplicationRecord
   include Exid::Record.new("poll", :eid)
 
   belongs_to :creator, class_name: "User"
+  has_many :options, class_name: "Poll::Option", dependent: :destroy
+  has_many :votes, class_name: "Poll::Vote", dependent: :destroy
 
   validates(
     :name,

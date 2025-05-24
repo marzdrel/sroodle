@@ -20,7 +20,11 @@ class PollsController
         description: params[:description] || ""
       }
 
-      Result.new(true, default_data, [])
+      FacadeResult.new(
+        success?: true,
+        data: default_data,
+        errors: []
+      )
     end
 
     private
