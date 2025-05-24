@@ -18,8 +18,6 @@ class Poll
     validates :description, presence: false
     validate :at_least_two_dates
 
-    attr_reader :poll_id
-
     def at_least_two_dates
       return if dates.is_a?(Array) && dates.length >= 2
 
@@ -32,7 +30,6 @@ class Poll
       ActiveRecord::Base.transaction do
         user = find_or_create_user
         poll = create_poll(user)
-        @poll_id = poll.id
       end
 
       true

@@ -42,7 +42,17 @@ class PollsController
     end
 
     def strong_params
-      params.expect(poll: [:name, :email, :description, :event, {dates: []}])
+      params.expect(
+        poll: [
+          :name,
+          :email,
+          :description,
+          :event,
+          {
+            dates: []
+          }
+        ]
+      )
     end
   end
 end
