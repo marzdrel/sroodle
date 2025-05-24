@@ -1,0 +1,47 @@
+# Read about fixtures at
+# https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+---
+_fixture:
+  model_class: Poll::Vote
+
+alice_morning_yes:
+  poll: one
+  option: morning_meeting
+  user: alice
+  response: "yes"
+
+alice_afternoon_maybe:
+  poll: one
+  option: afternoon_meeting
+  user: alice
+  response: "maybe"
+
+alice_evening_no:
+  poll: one
+  option: evening_meeting
+  user: alice
+  response: "no"
+
+bob_morning_maybe:
+  poll: one
+  option: morning_meeting
+  user: bob
+  response: "maybe"
+
+bob_afternoon_yes:
+  poll: one
+  option: afternoon_meeting
+  user: bob
+  response: "yes"
+
+bob_standup_yes:
+  poll: two
+  option: quick_standup
+  user: bob
+  response: "yes"
+
+alice_workshop_no:
+  poll: two
+  option: half_day_workshop
+  user: alice
+  response: "no"

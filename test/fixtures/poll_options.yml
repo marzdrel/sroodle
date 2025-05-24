@@ -1,0 +1,30 @@
+# Read about fixtures at
+# https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+---
+_fixture:
+  model_class: Poll::Option
+
+morning_meeting:
+  poll: one
+  start: <%= 1.week.from_now.beginning_of_day + 9.hours %>
+  duration_minutes: 60
+
+afternoon_meeting:
+  poll: one
+  start: <%= 1.week.from_now.beginning_of_day + 14.hours %>
+  duration_minutes: 90
+
+evening_meeting:
+  poll: one
+  start: <%= 1.week.from_now.beginning_of_day + 18.hours %>
+  duration_minutes: 30
+
+quick_standup:
+  poll: two
+  start: <%= 2.weeks.from_now.beginning_of_day + 10.hours %>
+  duration_minutes: 30
+
+half_day_workshop:
+  poll: two
+  start: <%= 2.weeks.from_now.beginning_of_day + 9.hours %>
+  duration_minutes: 1440
