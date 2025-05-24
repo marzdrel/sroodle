@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
 # == Schema Information
-# Schema version: 20250524132821
+# Schema version: 20250524190423
 #
 # Table name: poll_options
 #
@@ -16,12 +17,13 @@
 #
 #  index_poll_options_on_poll_id            (poll_id)
 #  index_poll_options_on_poll_id_and_start  (poll_id,start) UNIQUE
-#  index_poll_options_on_start              (start) UNIQUE
+#  index_poll_options_on_start              (start)
 #
 # Foreign Keys
 #
 #  poll_id  (poll_id => polls.id)
 #
+# rubocop:enable Layout/LineLength
 
 class Poll
   class Option < ApplicationRecord
