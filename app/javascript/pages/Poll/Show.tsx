@@ -91,7 +91,9 @@ export default function Show({ poll, participants = [] }: ShowProps) {
           {/* Description */}
           <div className="mt-6 p-4 bg-muted/50 rounded-lg">
             <h2 className="text-lg font-medium mb-2">Description</h2>
-            <p>{poll.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {poll.description || <em>No description provided</em>}
+            </p>
           </div>
         </div>
 
