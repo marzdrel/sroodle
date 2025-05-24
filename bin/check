@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "Running Rails tests..."
+echo "--------------------------------------------"
+bin/rails test
+
+echo ""
+echo "Running system tests..."
+echo "--------------------------------------------"
+bin/rails test:system
+
+echo ""
+echo "Running Ruby linting (StandardRB)..."
+echo "--------------------------------------------"
+bin/standardrb
+
+echo ""
+echo "Running security check (Brakeman)..."
+echo "--------------------------------------------"
+bin/brakeman --no-pager
+
+echo ""
+echo "Running TypeScript type checking..."
+echo "--------------------------------------------"
+npm run check:ci
+
+echo ""
+echo "Running JavaScript/TypeScript linting..."
+echo "--------------------------------------------"
+npm run lint
+
+echo ""
+echo "Running frontend tests..."
+echo "--------------------------------------------"
+npm run test
