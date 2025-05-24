@@ -17,7 +17,22 @@ FOREIGN KEY ("poll_id")
 CREATE INDEX "index_poll_options_on_poll_id" ON "poll_options" ("poll_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_poll_options_on_start" ON "poll_options" ("start") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_poll_options_on_poll_id_and_start" ON "poll_options" ("poll_id", "start") /*application='Sroodle'*/;
+CREATE TABLE IF NOT EXISTS "poll_votes" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "poll_id" integer NOT NULL, "option_id" integer NOT NULL, "user_id" integer NOT NULL, "response" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_a6e6974b7e"
+FOREIGN KEY ("poll_id")
+  REFERENCES "polls" ("id")
+, CONSTRAINT "fk_rails_826ebfbbb3"
+FOREIGN KEY ("option_id")
+  REFERENCES "options" ("id")
+, CONSTRAINT "fk_rails_b64de9b025"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT valid_response CHECK (response IN ('yes', 'no', 'maybe')));
+CREATE INDEX "index_poll_votes_on_poll_id" ON "poll_votes" ("poll_id") /*application='Sroodle'*/;
+CREATE INDEX "index_poll_votes_on_option_id" ON "poll_votes" ("option_id") /*application='Sroodle'*/;
+CREATE INDEX "index_poll_votes_on_user_id" ON "poll_votes" ("user_id") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_votes_on_poll_option_user" ON "poll_votes" ("poll_id", "option_id", "user_id") /*application='Sroodle'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20250524134301'),
 ('20250524132821'),
 ('20250519211503'),
 ('20250518182338'),
