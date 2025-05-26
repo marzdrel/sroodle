@@ -16,9 +16,9 @@ class VotesControllerTest < ActionDispatch::IntegrationTest
 
   test "should handle vote creation failure" do
     assert_no_difference("Poll::Vote.count") do
-      post poll_votes_path(@poll), params: {poll_option_id: nil}
+      post poll_votes_path(@poll), params: {}
     end
 
-    assert_response :success
+    assert_response :bad_request
   end
 end
