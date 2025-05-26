@@ -34,7 +34,7 @@ class Poll
     has_many(
       :votes,
       class_name: "Poll::Vote",
-      dependent: :destroy,
+      dependent: :destroy
     )
   end
 end
