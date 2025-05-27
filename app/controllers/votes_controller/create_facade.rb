@@ -18,7 +18,7 @@ class VotesController
         success?: form.valid?,
         data: {
           votes: form.votes,
-          poll: poll_with_votes
+          poll: serialized_poll
         }
       )
     end
@@ -50,14 +50,16 @@ class VotesController
         .merge(poll_id: params.fetch(:poll_id))
     end
 
-    def poll_with_votes
-      poll_with_includes = Poll.includes(:options, :votes).exid_loader(params.fetch(:poll_id))
+    def poll
+      @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:id))
+    end
 
+    def serialized_poll
       {
-        id: poll_with_includes.to_param,
-        name: poll_with_includes.name,
-        description: poll_with_includes.description,
-        options: poll_with_includes.options.map do |option|
+        id: poll.to_param,
+        name: poll.name,
+        description: poll.description,
+        options: poll.options.map do |option|
           {
             id: option.to_param,
             start: option.start,

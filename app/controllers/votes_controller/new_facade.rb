@@ -13,7 +13,7 @@ class VotesController
     def call
       FacadeResult.new(
         success?: poll.present?,
-        data: serialize_poll_for_voting(poll),
+        data: serialized_poll,
         errors: []
       )
     end
@@ -23,10 +23,10 @@ class VotesController
     attr_accessor :params
 
     def poll
-      @_poll ||= Poll.includes(:options).exid_loader(params.fetch(:id))
+      @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:id))
     end
 
-    def serialize_poll_for_voting(poll)
+    def serialized_poll
       {
         id: poll.to_param,
         name: poll.name,
