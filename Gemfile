@@ -31,6 +31,7 @@ group :development, :test do
   gem "brakeman", require: false
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
   gem "foreman", require: false
+  gem "pry", require: false
   gem "rubocop", ">= 1.65.0"
   gem "rubocop-capybara"
   gem "rubocop-factory_bot"
