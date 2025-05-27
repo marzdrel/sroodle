@@ -25,7 +25,7 @@ class Poll
       end
 
       def responses_for_all_options
-        poll_option_ids = poll.options.pluck(:id).map(&:to_s)
+        poll_option_ids = poll.options.map(&:exid_value)
         response_option_ids = responses.keys.map(&:to_s)
 
         missing_responses = poll_option_ids - response_option_ids
@@ -59,8 +59,8 @@ class Poll
       private
 
       def votes_attributes
-        responses.map do |option_id, response|
-          option = poll.options.find_by(id: option_id)
+        responses.map do |option_eid, response|
+          option = poll.options.find_by(eid: option_eid)
           next unless option
 
           {

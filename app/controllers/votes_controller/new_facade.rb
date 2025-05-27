@@ -33,7 +33,7 @@ class VotesController
         description: poll.description,
         options: poll.options.map do |option|
           {
-            id: option.id,
+            id: option.exid_value,
             start: option.start,
             duration_minutes: option.duration_minutes
           }

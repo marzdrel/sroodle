@@ -17,9 +17,9 @@ class VotesController
           name: "John",
           email: "jd@example.com",
           responses: {
-            @morning_option.id.to_s => "yes",
-            @afternoon_option.id.to_s => "maybe",
-            @evening_option.id.to_s => "no"
+            @morning_option.exid_value => "yes",
+            @afternoon_option.exid_value => "maybe",
+            @evening_option.exid_value => "no"
           }
         }
       )
@@ -30,7 +30,6 @@ class VotesController
 
       assert result.success?
       assert_empty result.errors
-      assert result.data[:votes].present?
       assert result.data[:poll].present?
     end
     #

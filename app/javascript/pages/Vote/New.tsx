@@ -19,7 +19,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 interface PollOption {
-  id: number;
+  id: string;
   start: string;
   duration_minutes: number;
 }
@@ -40,7 +40,7 @@ interface VoteFormData {
   vote: {
     name: string;
     email: string;
-    responses: Record<number, string>;
+    responses: Record<string, string>;
   };
 }
 
@@ -107,7 +107,7 @@ export default function New({ poll, errors = {} }: NewProps) {
     post(`/polls/${poll.id}/votes`, voteData)
   }
 
-  const handleResponseChange = (optionId: number, response: string) => {
+  const handleResponseChange = (optionId: string, response: string) => {
     const newResponses = {
       ...data.vote.responses,
       [optionId]: response
