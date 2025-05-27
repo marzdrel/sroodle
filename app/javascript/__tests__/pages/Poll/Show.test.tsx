@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import Show from '@/pages/Poll/Show';
 import { renderWithInertia } from '@/test-utils/testing-library-utils';

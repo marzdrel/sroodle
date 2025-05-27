@@ -1,6 +1,5 @@
 import { format } from "date-fns"
 import { X } from "lucide-react"
-import * as React from "react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"

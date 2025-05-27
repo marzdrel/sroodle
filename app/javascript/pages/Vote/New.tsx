@@ -25,7 +25,7 @@ interface PollOption {
 }
 
 interface Poll {
-  id: number;
+  id: string;
   name: string;
   description: string;
   options: PollOption[];
@@ -40,12 +40,13 @@ interface NewProps {
   };
 }
 
-interface VoteFormData {
+interface VoteFormData extends Record<string, any> {
   vote: {
     name: string;
     email: string;
     responses: Record<string, string>;
   };
+  poll_id?: string;
 }
 
 export default function New({ poll, errors = {}, flash }: NewProps) {
@@ -74,11 +75,11 @@ export default function New({ poll, errors = {}, flash }: NewProps) {
     if (errors && !Array.isArray(errors)) {
       Object.entries(errors).forEach(([field, message]) => {
         // Map field name to nested path in form
-        const formPath = `vote.${field}` as keyof VoteFormData;
+        const formPath = `vote.${field}`;
 
         // Set server errors on form fields
         if (field !== 'base') {
-          form.setError(formPath, {
+          form.setError(formPath as any, {
             type: 'server',
             message
           });
@@ -108,7 +109,7 @@ export default function New({ poll, errors = {}, flash }: NewProps) {
       poll_id: poll.id
     }
     setData(voteData)
-    post(`/polls/${poll.id}/votes`, voteData)
+    post(`/polls/${poll.id}/votes`)
   }
 
   const handleResponseChange = (optionId: string, response: string) => {
@@ -208,7 +209,7 @@ export default function New({ poll, errors = {}, flash }: NewProps) {
                         <Input
                           placeholder="Your name"
                           {...field}
-                          onChange={(e) => {
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             field.onChange(e)
                             setData({
                               ...data,
@@ -239,7 +240,7 @@ export default function New({ poll, errors = {}, flash }: NewProps) {
                           type="email"
                           placeholder="your.email@example.com"
                           {...field}
-                          onChange={(e) => {
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             field.onChange(e)
                             setData({
                               ...data,

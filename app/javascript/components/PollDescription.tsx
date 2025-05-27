@@ -1,5 +1,3 @@
-import React from 'react'
-
 interface PollDescriptionProps {
   description?: string | null;
 }
