@@ -8,23 +8,28 @@ morning_meeting:
   poll: one
   start: <%= 1.week.from_now.beginning_of_day + 9.hours %>
   duration_minutes: 60
+  eid: 019711fd-39b5-71ac-a1d0-45f42fa812ae
 
 afternoon_meeting:
   poll: one
   start: <%= 1.week.from_now.beginning_of_day + 14.hours %>
   duration_minutes: 90
+  eid: 019711fd-39b5-71ac-a1d0-45f42fa812af
 
 evening_meeting:
   poll: one
   start: <%= 1.week.from_now.beginning_of_day + 18.hours %>
   duration_minutes: 30
+  eid: 019711fd-39b5-71ac-a1d0-45f42fa812b0
 
 quick_standup:
   poll: two
   start: <%= 2.weeks.from_now.beginning_of_day + 10.hours %>
   duration_minutes: 30
+  eid: 019711fd-39b5-71ac-a1d0-45f42fa812b1
 
 half_day_workshop:
   poll: two
   start: <%= 2.weeks.from_now.beginning_of_day + 9.hours %>
   duration_minutes: 1440
+  eid: 019711fd-39b5-71ac-a1d0-45f42fa812b2

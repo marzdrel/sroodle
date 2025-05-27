@@ -10,12 +10,6 @@ FOREIGN KEY ("creator_id")
 );
 CREATE INDEX "index_polls_on_creator_id" ON "polls" ("creator_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_polls_on_eid" ON "polls" ("eid") /*application='Sroodle'*/;
-CREATE TABLE IF NOT EXISTS "poll_options" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "poll_id" integer NOT NULL, "start" datetime(6) NOT NULL, "duration_minutes" integer NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_aa85becb42"
-FOREIGN KEY ("poll_id")
-  REFERENCES "polls" ("id")
-, CONSTRAINT valid_duration_minutes CHECK (duration_minutes IN (30, 60, 90, 120, 1440)));
-CREATE INDEX "index_poll_options_on_poll_id" ON "poll_options" ("poll_id") /*application='Sroodle'*/;
-CREATE UNIQUE INDEX "index_poll_options_on_poll_id_and_start" ON "poll_options" ("poll_id", "start") /*application='Sroodle'*/;
 CREATE TABLE IF NOT EXISTS "poll_votes" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "poll_id" integer NOT NULL, "option_id" integer NOT NULL, "user_id" integer NOT NULL, "response" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_a6e6974b7e"
 FOREIGN KEY ("poll_id")
   REFERENCES "polls" ("id")
@@ -30,8 +24,16 @@ CREATE INDEX "index_poll_votes_on_poll_id" ON "poll_votes" ("poll_id") /*applica
 CREATE INDEX "index_poll_votes_on_option_id" ON "poll_votes" ("option_id") /*application='Sroodle'*/;
 CREATE INDEX "index_poll_votes_on_user_id" ON "poll_votes" ("user_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_poll_votes_on_poll_option_user" ON "poll_votes" ("poll_id", "option_id", "user_id") /*application='Sroodle'*/;
+CREATE TABLE IF NOT EXISTS "poll_options" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "poll_id" integer NOT NULL, "start" datetime(6) NOT NULL, "duration_minutes" integer NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "eid"  NOT NULL, CONSTRAINT "fk_rails_aa85becb42"
+FOREIGN KEY ("poll_id")
+  REFERENCES "polls" ("id")
+, CONSTRAINT valid_duration_minutes CHECK (duration_minutes IN (30, 60, 90, 120, 1440)));
+CREATE INDEX "index_poll_options_on_poll_id" ON "poll_options" ("poll_id") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_options_on_poll_id_and_start" ON "poll_options" ("poll_id", "start") /*application='Sroodle'*/;
 CREATE INDEX "index_poll_options_on_start" ON "poll_options" ("start") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_options_on_eid" ON "poll_options" ("eid") /*application='Sroodle'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20250527134023'),
 ('20250524190423'),
 ('20250524134301'),
 ('20250524132821'),

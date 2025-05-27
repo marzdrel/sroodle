@@ -45,7 +45,8 @@ class Poll
       dates.map do
         {
           start: Date.parse(it).beginning_of_day,
-          duration_minutes: 1440
+          duration_minutes: 1440,
+          eid: UUID7.generate
         }
       end
     rescue Date::Error
