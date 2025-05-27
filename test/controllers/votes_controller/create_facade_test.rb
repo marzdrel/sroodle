@@ -32,84 +32,105 @@ class VotesController
       assert_empty result.errors
       assert result.data[:poll].present?
     end
-    #
-    # test "returns unsuccessful result with invalid poll_id" do
-    #   invalid_params = ActionController::Parameters.new(
-    #     poll_id: 99999,
-    #     poll_option_id: @poll_option.id
-    #   )
-    #
-    #   result = VotesController::CreateFacade.call(invalid_params)
-    #
-    #   assert_not result.success?
-    #   assert_nil result.data[:vote]
-    # end
-    #
-    # test "returns unsuccessful result with invalid poll_option_id" do
-    #   invalid_params = ActionController::Parameters.new(
-    #     poll_id: @poll.id,
-    #     poll_option_id: 99999
-    #   )
-    #
-    #   result = VotesController::CreateFacade.call(invalid_params)
-    #
-    #   assert_not result.success?
-    #   assert_nil result.data[:vote]
-    # end
-    #
-    # test "returns unsuccessful result with missing poll_option_id" do
-    #   invalid_params = ActionController::Parameters.new(
-    #     poll_id: @poll.id,
-    #     poll_option_id: nil
-    #   )
-    #
-    #   result = VotesController::CreateFacade.call(invalid_params)
-    #
-    #   assert_not result.success?
-    #   assert_nil result.data[:vote]
-    # end
-    #
-    # test "creates vote with correct associations" do
-    #   result = VotesController::CreateFacade.call(@valid_params)
-    #
-    #   vote = result.data[:vote]
-    #   assert_equal @poll, vote.poll
-    #   assert_equal @poll_option, vote.poll_option
-    #   assert_not_nil vote.user
-    # end
-    #
-    # test "result data contains vote" do
-    #   result = VotesController::CreateFacade.call(@valid_params)
-    #
-    #   assert result.data.key?(:vote)
-    #   assert_kind_of Poll::Vote, result.data[:vote]
-    # end
-    #
-    # test "increments vote count" do
-    #   assert_difference("Poll::Vote.count", 1) do
-    #     VotesController::CreateFacade.call(@valid_params)
-    #   end
-    # end
-    #
-    # test "handles poll option not belonging to poll" do
-    #   other_poll = Poll.create!(
-    #     name: "Other Poll",
-    #     email: "other@example.com",
-    #     name: "Other Event",
-    #     description: "Other description",
-    #     dates: ["2023-10-01"]
-    #   )
-    #   other_option = other_poll.options.create!(name: "Other Option")
-    #
-    #   invalid_params = ActionController::Parameters.new(
-    #     poll_id: @poll.id,
-    #     poll_option_id: other_option.id
-    #   )
-    #
-    #   result = VotesController::CreateFacade.call(invalid_params)
-    #
-    #   assert_not result.success?
-    #   assert_nil result.data[:vote]
-    # end
+
+    test "returns unsuccessful result with invalid poll_id" do
+      invalid_params = ActionController::Parameters.new(
+        poll_id: "invalid_poll_id",
+        vote: {
+          name: "John",
+          email: "jd@example.com",
+          responses: {
+            @morning_option.exid_value => "yes"
+          }
+        }
+      )
+
+      assert_raises(Exid::Error) do
+        VotesController::CreateFacade.call(invalid_params)
+      end
+    end
+
+    test "returns unsuccessful result with invalid option responses" do
+      invalid_params = ActionController::Parameters.new(
+        poll_id: @poll.exid_value,
+        vote: {
+          name: "John",
+          email: "jd@example.com",
+          responses: {
+            "invalid_option_id" => "yes"
+          }
+        }
+      )
+
+      result = VotesController::CreateFacade.call(invalid_params)
+
+      assert_not result.success?
+      assert result.errors.present?
+    end
+
+    test "returns unsuccessful result with missing responses" do
+      invalid_params = ActionController::Parameters.new(
+        poll_id: @poll.exid_value,
+        vote: {
+          name: "John",
+          email: "jd@example.com",
+          responses: {}
+        }
+      )
+
+      result = VotesController::CreateFacade.call(invalid_params)
+
+      assert_not result.success?
+      assert result.errors.present?
+    end
+
+    test "creates votes with correct associations" do
+      result = VotesController::CreateFacade.call(@valid_params)
+
+      assert result.success?
+      assert result.data[:votes].present?
+      assert_equal 3, result.data[:votes].count
+
+      result.data[:votes].each do |vote|
+        assert_equal @poll.id, vote.poll_id
+        assert_not_nil vote.user
+      end
+    end
+
+    test "result data contains votes and poll" do
+      result = VotesController::CreateFacade.call(@valid_params)
+
+      assert result.data.key?(:votes)
+      assert result.data.key?(:poll)
+      assert_kind_of Array, result.data[:votes]
+      assert_kind_of Hash, result.data[:poll]
+    end
+
+    test "increments vote count" do
+      initial_count = Poll::Vote.count
+
+      result = VotesController::CreateFacade.call(@valid_params)
+
+      assert result.success?
+      assert_equal initial_count + 3, Poll::Vote.count
+    end
+
+    test "returns unsuccessful result with invalid response values" do
+      invalid_params = ActionController::Parameters.new(
+        poll_id: @poll.exid_value,
+        vote: {
+          name: "John",
+          email: "jd@example.com",
+          responses: {
+            @morning_option.exid_value => "invalid_response"
+          }
+        }
+      )
+
+      result = VotesController::CreateFacade.call(invalid_params)
+
+      assert_not result.success?
+      assert result.errors.present?
+    end
   end
 end

@@ -59,17 +59,17 @@ class Poll
       private
 
       def votes_attributes
+        return [] unless poll.present?
+        
         responses.map do |option_eid, response|
-          option = poll.options.find_by(eid: option_eid)
-          next unless option
-
           {
-            option_id: option.id,
+            option: poll.options.exid_loader(option_eid),
             response: response
           }
+        rescue ActiveRecord::RecordNotFound
+          errors.add(:responses, "contains invalid option IDs")
+          nil
         end.compact
-      rescue ActiveRecord::RecordNotFound
-        errors.add(:responses, "contains invalid option IDs")
       end
 
       def find_or_create_user
