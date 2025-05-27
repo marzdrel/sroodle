@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "Running Ruby linting fixes (StandardRB)..."
+echo "--------------------------------------------"
+bin/standardrb --fix
+
+echo ""
+echo "Running JavaScript/TypeScript linting fixes..."
+echo "--------------------------------------------"
+npm run lint:fix
