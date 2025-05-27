@@ -40,5 +40,7 @@ class Poll
       class_name: "Poll::Vote",
       dependent: :destroy
     )
+
+    def to_param = exid_value
   end
 end

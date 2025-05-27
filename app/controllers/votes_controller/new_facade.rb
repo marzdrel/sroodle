@@ -13,8 +13,8 @@ class VotesController
     def call
       FacadeResult.new(
         success?: poll.present?,
-        data: poll ? serialize_poll_for_voting(poll) : {},
-        errors: poll.present? ? [] : ["Poll not found"]
+        data: serialize_poll_for_voting(poll),
+        errors: []
       )
     end
 
@@ -33,7 +33,7 @@ class VotesController
         description: poll.description,
         options: poll.options.map do |option|
           {
-            id: option.exid_value,
+            id: option.to_param,
             start: option.start,
             duration_minutes: option.duration_minutes
           }
