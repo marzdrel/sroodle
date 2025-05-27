@@ -51,7 +51,7 @@ class VotesController
     end
 
     def poll
-      @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:id))
+      @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:poll_id))
     end
 
     def serialized_poll
