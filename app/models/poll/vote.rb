@@ -33,6 +33,8 @@
 
 class Poll
   class Vote < ApplicationRecord
+    include Exid::Record.new("vote", :eid)
+
     self.table_name = "poll_votes"
 
     belongs_to :poll
