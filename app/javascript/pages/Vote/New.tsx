@@ -34,6 +34,10 @@ interface Poll {
 interface NewProps {
   poll: Poll;
   errors?: Record<string, string> | string[];
+  flash?: {
+    notice?: string;
+    alert?: string;
+  };
 }
 
 interface VoteFormData {
@@ -44,7 +48,7 @@ interface VoteFormData {
   };
 }
 
-export default function New({ poll, errors = {} }: NewProps) {
+export default function New({ poll, errors = {}, flash }: NewProps) {
   const { data, setData, post, processing } = useForm<VoteFormData>({
     vote: {
       name: '',
@@ -156,6 +160,18 @@ export default function New({ poll, errors = {} }: NewProps) {
     <Layout>
       <Head title={`Vote on ${poll.name}`} />
       <div className="max-w-4xl mx-auto">
+        {/* Flash Messages */}
+        {flash?.notice && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-800 text-sm">{flash.notice}</p>
+          </div>
+        )}
+        {flash?.alert && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 text-sm">{flash.alert}</p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">{poll.name}</h1>
