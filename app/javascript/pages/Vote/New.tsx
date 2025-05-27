@@ -36,24 +36,30 @@ interface NewProps {
   errors?: Record<string, string> | string[];
 }
 
-interface VoteFormData extends Record<string, string | Record<number, string>> {
-  name: string;
-  email: string;
-  responses: Record<number, string>;
+interface VoteFormData {
+  vote: {
+    name: string;
+    email: string;
+    responses: Record<number, string>;
+  };
 }
 
 export default function New({ poll, errors = {} }: NewProps) {
   const { data, setData, post, processing } = useForm<VoteFormData>({
-    name: '',
-    email: '',
-    responses: {}
+    vote: {
+      name: '',
+      email: '',
+      responses: {}
+    }
   })
 
   const form = useReactHookForm<VoteFormData>({
     defaultValues: {
-      name: '',
-      email: '',
-      responses: {}
+      vote: {
+        name: '',
+        email: '',
+        responses: {}
+      }
     }
   })
 
@@ -63,9 +69,12 @@ export default function New({ poll, errors = {} }: NewProps) {
 
     if (errors && !Array.isArray(errors)) {
       Object.entries(errors).forEach(([field, message]) => {
+        // Map field name to nested path in form
+        const formPath = `vote.${field}` as keyof VoteFormData;
+
         // Set server errors on form fields
         if (field !== 'base') {
-          form.setError(field as keyof VoteFormData, {
+          form.setError(formPath, {
             type: 'server',
             message
           });
@@ -95,23 +104,22 @@ export default function New({ poll, errors = {} }: NewProps) {
       poll_id: poll.id
     }
     setData(voteData)
-    post(`/polls/${poll.id}/votes`, {
-      data: {
-        vote: voteData
-      }
-    })
+    post(`/polls/${poll.id}/votes`, voteData)
   }
 
   const handleResponseChange = (optionId: number, response: string) => {
     const newResponses = {
-      ...data.responses,
+      ...data.vote.responses,
       [optionId]: response
     }
     setData({
       ...data,
-      responses: newResponses
+      vote: {
+        ...data.vote,
+        responses: newResponses
+      }
     })
-    form.setValue('responses', newResponses)
+    form.setValue('vote.responses', newResponses)
   }
 
   const formatDateTime = (start: string, durationMinutes: number) => {
@@ -222,7 +230,7 @@ export default function New({ poll, errors = {} }: NewProps) {
                   <div className="space-y-4 mt-4">
                     {poll.options.map((option) => {
                       const { date, time } = formatDateTime(option.start, option.duration_minutes)
-                      const currentResponse = data.responses[option.id] || ''
+                      const currentResponse = data.vote.responses[option.id] || ''
 
                       return (
                         <div key={option.id} className="p-4 border rounded-lg">

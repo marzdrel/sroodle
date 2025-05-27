@@ -13,9 +13,8 @@ class VotesController
         vote: {
           name: "John",
           email: "jd@example.com",
-          responses: {
-          },
-        },
+          responses: {}
+        }
       )
     end
 
