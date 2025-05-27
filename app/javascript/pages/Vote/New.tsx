@@ -189,7 +189,20 @@ export default function New({ poll, errors = {} }: NewProps) {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Your name" {...field} />
+                        <Input
+                          placeholder="Your name"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e)
+                            setData({
+                              ...data,
+                              vote: {
+                                ...data.vote,
+                                name: e.target.value
+                              }
+                            })
+                          }}
+                        />
                       </FormControl>
                       <FormDescription>
                         Enter your full name.
@@ -206,7 +219,21 @@ export default function New({ poll, errors = {} }: NewProps) {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="your.email@example.com" {...field} />
+                        <Input
+                          type="email"
+                          placeholder="your.email@example.com"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e)
+                            setData({
+                              ...data,
+                              vote: {
+                                ...data.vote,
+                                email: e.target.value
+                              }
+                            })
+                          }}
+                        />
                       </FormControl>
                       <FormDescription>
                         We'll use this to send you poll updates.

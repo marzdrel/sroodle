@@ -59,10 +59,9 @@ class VotesController
         description: poll_with_includes.description,
         options: poll_with_includes.options.map do |option|
           {
-            id: option.id,
+            id: option.to_param,
             start: option.start,
-            duration_minutes: option.duration_minutes,
-            votes_count: option.votes.count
+            duration_minutes: option.duration_minutes
           }
         end
       }

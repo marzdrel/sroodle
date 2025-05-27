@@ -60,7 +60,7 @@ class Poll
 
       def votes_attributes
         return [] unless poll.present?
-        
+
         responses.map do |option_eid, response|
           {
             option: poll.options.exid_loader(option_eid),
