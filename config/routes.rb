@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", :as => :rails_health_check
 
   resources :polls, only: [:new, :create, :index], constraints: {id: /poll_.*/} do
-    resources :votes, only: [:create, :index]
+    resources :votes, only: [:create, :index, :edit, :update]
   end
 
   constraints id: /poll_.*/ do

@@ -14,6 +14,18 @@ class VotesController < ApplicationController
     )
   end
 
+  def edit
+    result = EditFacade.call(params)
+
+    render(
+      inertia: "Vote/Edit",
+      props: {
+        poll: result.data[:poll],
+        vote: result.data[:vote]
+      }
+    )
+  end
+
   def create
     result = CreateFacade.call(params)
 
@@ -32,6 +44,31 @@ class VotesController < ApplicationController
           poll: result.data[:poll],
           errors: result.errors,
           flash: {alert: "Unable to create vote."}
+        }
+      )
+    end
+  end
+
+  def update
+    result = UpdateFacade.call(params)
+
+    if result.success?
+      render(
+        inertia: "Vote/Edit",
+        props: {
+          poll: result.data[:poll],
+          vote: result.data[:vote],
+          flash: {notice: "Vote was successfully updated."}
+        }
+      )
+    else
+      render(
+        inertia: "Vote/Edit",
+        props: {
+          poll: result.data[:poll],
+          vote: result.data[:vote],
+          errors: result.errors,
+          flash: {alert: "Unable to update vote."}
         }
       )
     end
