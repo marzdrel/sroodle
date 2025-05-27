@@ -7,13 +7,20 @@ class VotesController
     setup do
       @poll = polls(:one)
       @user = users(:alice)
+      @morning_option = poll_options(:morning_meeting)
+      @afternoon_option = poll_options(:afternoon_meeting)
+      @evening_option = poll_options(:evening_meeting)
 
       @valid_params = ActionController::Parameters.new(
         poll_id: @poll.exid_value,
         vote: {
           name: "John",
           email: "jd@example.com",
-          responses: {}
+          responses: {
+            @morning_option.id.to_s => "yes",
+            @afternoon_option.id.to_s => "maybe",
+            @evening_option.id.to_s => "no"
+          }
         }
       )
     end
@@ -23,7 +30,8 @@ class VotesController
 
       assert result.success?
       assert_empty result.errors
-      assert result.data[:vote].persisted?
+      assert result.data[:votes].present?
+      assert result.data[:poll].present?
     end
     #
     # test "returns unsuccessful result with invalid poll_id" do
