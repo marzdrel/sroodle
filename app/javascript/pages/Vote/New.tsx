@@ -26,6 +26,7 @@ interface NewProps {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface VoteFormData extends Record<string, any> {
   vote: {
     name: string;
@@ -36,7 +37,13 @@ interface VoteFormData extends Record<string, any> {
 }
 
 export default function New({ poll, errors = {}, flash }: NewProps) {
-  const { post, processing } = useForm()
+  const inertiaForm = useForm<VoteFormData>({
+    vote: {
+      name: '',
+      email: '',
+      responses: {}
+    }
+  })
 
   // Handle case where poll might be undefined
   if (!poll) {
@@ -54,7 +61,8 @@ export default function New({ poll, errors = {}, flash }: NewProps) {
   }
 
   const handleSubmit = (formData: VoteFormData) => {
-    post(`/polls/${poll.id}/votes`, formData)
+    inertiaForm.data = formData
+    inertiaForm.post(`/polls/${poll.id}/votes`)
   }
 
   return (
@@ -66,7 +74,7 @@ export default function New({ poll, errors = {}, flash }: NewProps) {
         flash={flash}
         mode="new"
         onSubmit={handleSubmit}
-        processing={processing}
+        processing={inertiaForm.processing}
       />
     </Layout>
   )

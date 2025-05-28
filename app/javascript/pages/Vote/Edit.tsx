@@ -34,6 +34,7 @@ interface EditProps {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface VoteFormData extends Record<string, any> {
   vote: {
     name: string;
@@ -44,7 +45,13 @@ interface VoteFormData extends Record<string, any> {
 }
 
 export default function Edit({ poll, vote, errors = {}, flash }: EditProps) {
-  const { put, processing } = useForm()
+  const inertiaForm = useForm<VoteFormData>({
+    vote: {
+      name: vote?.name || '',
+      email: vote?.email || '',
+      responses: vote?.responses || {}
+    }
+  })
 
   // Handle case where poll or vote might be undefined
   if (!poll || !vote) {
@@ -62,7 +69,8 @@ export default function Edit({ poll, vote, errors = {}, flash }: EditProps) {
   }
 
   const handleSubmit = (formData: VoteFormData) => {
-    put(`/polls/${poll.id}/votes/${vote.id}`, formData)
+    inertiaForm.data = formData
+    inertiaForm.put(`/polls/${poll.id}/votes/${vote.id}`)
   }
 
   return (
@@ -75,7 +83,7 @@ export default function Edit({ poll, vote, errors = {}, flash }: EditProps) {
         flash={flash}
         mode="edit"
         onSubmit={handleSubmit}
-        processing={processing}
+        processing={inertiaForm.processing}
       />
     </Layout>
   )

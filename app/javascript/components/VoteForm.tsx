@@ -1,4 +1,3 @@
-import { useForm } from '@inertiajs/react'
 import { CheckCircle2, HelpCircle, XCircle, Send, Edit } from 'lucide-react'
 import * as React from 'react'
 import { useForm as useReactHookForm } from 'react-hook-form'
@@ -36,6 +35,7 @@ interface Vote {
   responses: Record<string, string>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface VoteFormData extends Record<string, any> {
   vote: {
     name: string;
@@ -67,7 +67,7 @@ export default function VoteForm({
   onSubmit,
   processing
 }: VoteFormProps) {
-  const { data, setData } = useForm<VoteFormData>({
+  const [data, setData] = React.useState<VoteFormData>({
     vote: {
       name: vote?.name || '',
       email: vote?.email || '',
@@ -94,6 +94,7 @@ export default function VoteForm({
         const formPath = `vote.${field}`;
 
         if (field !== 'base') {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           form.setError(formPath as any, {
             type: 'server',
             message
@@ -118,12 +119,12 @@ export default function VoteForm({
     }
   }, [vote, setData, form]);
 
-  const handleSubmit = (formData: VoteFormData) => {
+  const handleSubmit = (_formData: VoteFormData) => {
+    // Use the current data state which has been kept in sync
     const voteData = {
-      ...formData,
+      ...data,
       poll_id: poll.id
     }
-    setData(voteData)
     onSubmit(voteData)
   }
 
