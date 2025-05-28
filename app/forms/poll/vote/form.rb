@@ -29,17 +29,17 @@ class Poll
         response_option_ids = responses.keys.map(&:to_s)
 
         missing_responses = poll_option_ids - response_option_ids
-        if missing_responses.any?
-          errors.add(:responses, "must include a response for all proposed dates")
-        end
+        return unless missing_responses.any?
+
+        errors.add(:responses, "must include a response for all proposed dates")
       end
 
       def valid_response_values
         invalid_responses = responses.values.reject { |value| %w[yes maybe no].include?(value) }
 
-        if invalid_responses.any?
-          errors.add(:responses, "must be 'yes', 'maybe', or 'no'")
-        end
+        return unless invalid_responses.any?
+
+        errors.add(:responses, "must be 'yes', 'maybe', or 'no'")
       end
 
       def save
@@ -47,7 +47,7 @@ class Poll
 
         ActiveRecord::Base.transaction do
           user = find_or_create_user
-          @votes = user.votes.create!(votes_attributes.map { |attrs| attrs.merge(poll: poll) })
+          @votes = user.votes.create!(votes_attributes)
         end
 
         true
@@ -59,17 +59,14 @@ class Poll
       private
 
       def votes_attributes
-        return [] unless poll.present?
-
         responses.map do |option_eid, response|
           {
             option: poll.options.exid_loader(option_eid),
-            response: response
+            response: response,
+            eid: UUID7.generate,
+            poll: poll
           }
-        rescue ActiveRecord::RecordNotFound
-          errors.add(:responses, "contains invalid option IDs")
-          nil
-        end.compact
+        end
       end
 
       def find_or_create_user

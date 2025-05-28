@@ -9,39 +9,46 @@ alice_morning_yes:
   option: morning_meeting
   user: alice
   response: "yes"
+  eid: 01971643-1dbb-7adc-a861-c7e2e48f6607
 
 alice_afternoon_maybe:
   poll: one
   option: afternoon_meeting
   user: alice
   response: "maybe"
+  eid: 01971643-31fe-7693-a142-031518872d06
 
 alice_evening_no:
   poll: one
   option: evening_meeting
   user: alice
   response: "no"
+  eid: 01971643-4057-71f0-848b-552dd44d29eb
 
 bob_morning_maybe:
   poll: one
   option: morning_meeting
   user: bob
   response: "maybe"
+  eid: 01971645-4a1f-7174-9e6d-b01837c1b978
 
 bob_afternoon_yes:
   poll: one
   option: afternoon_meeting
   user: bob
   response: "yes"
+  eid: 01971645-39ff-71e6-ab63-12361c5be2c1
 
 bob_standup_yes:
   poll: two
   option: quick_standup
   user: bob
   response: "yes"
+  eid: 01971645-29b8-7316-9e50-79efdf1f0981
 
 alice_workshop_no:
   poll: two
   option: half_day_workshop
   user: alice
   response: "no"
+  eid: 01971645-1aa9-797d-95dc-eb0366c4be49
