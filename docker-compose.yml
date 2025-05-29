@@ -73,7 +73,6 @@ services:
   # Tailwind CSS watcher
   css:
     <<: *backend
-    environment:
     command: bin/rails tailwindcss:watch
 
   # Vite development server
