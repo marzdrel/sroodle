@@ -1,6 +1,26 @@
 ---
 name: sroodle
 
+x-app: &app
+  build:
+    context: .
+    dockerfile: ./.dockerdev/Dockerfile
+    target: sroodle-dev-base
+  image: sroodle-dev
+  volumes:
+    - .:/app
+    - .dockerdev/bashrc:/root/.bashrc:ro
+    - bundle_cache:/usr/local/bundle
+    - node_modules_cache:/app/node_modules
+  environment:
+    - RAILS_ENV=development
+    - DATABASE_URL=sqlite3:storage/development.sqlite3
+    - QUEUE_DATABASE_URL=sqlite3:storage/development_queue.sqlite3
+    - CACHE_DATABASE_URL=sqlite3:storage/development_cache.sqlite3
+    - CABLE_DATABASE_URL=sqlite3:storage/development_cable.sqlite3
+  tmpfs:
+    - /tmp:mode=1777
+
 x-llm: &llm
   build:
     context: .
@@ -13,11 +33,41 @@ x-llm: &llm
     - .:/app
     - .dockerdev/bashrc:/root/.bashrc:ro
     - ~/.claude.json:/root/.claude.json
+    - ~/.claude:/root/.claude
 
 services:
+  # Rails web server with database setup
+  web:
+    <<: *app
+    command: >
+      sh -c "
+        echo 'Database already exists, running migrations...'
+        bin/rails db:migrate
+        bin/rails server -b 0.0.0.0 -p 3000
+      "
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+
+  # Tailwind CSS watcher
+  css:
+    <<: *app
+    command: bin/rails tailwindcss:watch
+
+  # Vite development server
+  vite:
+    <<: *app
+    command: bin/vite dev
+    ports:
+      - "3036:3036"
+
   ai:
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
     <<: *llm
     stdin_open: true
     tty: true
+    command: /bin/bash
+
+volumes:
+  bundle_cache:
+  node_modules_cache:
