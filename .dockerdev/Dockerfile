@@ -1,21 +1,24 @@
 ARG RUBY_VERSION=3.4.4
-FROM node:23-bookworm AS node-source
-FROM ruby:$RUBY_VERSION-bookworm AS sroodle-dev-base
+FROM node:23-alpine AS node-source
+FROM ruby:$RUBY_VERSION-alpine AS sroodle-dev-base
 
 # Install Node.js, Git and other essential packages for development
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
     npm \
     git \
-    fd-find \
-    silversearcher-ag \
-    build-essential \
+    fd \
+    bash \
+    the_silver_searcher \
+    build-base \
     curl \
-    libjemalloc2 \
-    libvips \
-    libyaml-dev \
-    pkg-config \
-    sqlite3 \
-    && rm -rf /var/lib/apt/lists/*
+    jemalloc \
+    vips \
+    yaml-dev \
+    pkgconfig \
+    sqlite \
+    sqlite-dev \
+    postgresql-dev \
+    tzdata
 
 COPY --from=node-source /usr/local/bin/node /usr/local/bin/
 COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
@@ -24,7 +27,6 @@ WORKDIR /app
 
 # Install global npm packages for Claude Code
 RUN npm install -g @anthropic-ai/claude-code
-# RUN npm install -g @openai/codex
 
 # Set development environment
 ENV RAILS_ENV="development" \
@@ -37,6 +39,9 @@ RUN bundle install
 # Install Node.js dependencies
 COPY package.json package-lock.json ./
 RUN npm install --force
+
+# Install Tailwind CSS CLI
+RUN npm install tailwindcss @tailwindcss/cli
 
 # Copy application code
 COPY . .

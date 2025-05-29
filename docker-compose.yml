@@ -14,6 +14,7 @@ x-app: &app
     - node_modules_cache:/app/node_modules
   environment:
     - RAILS_ENV=development
+    - TAILWINDCSS_INSTALL_DIR=node_modules/.bin
     - DATABASE_URL=sqlite3:storage/development.sqlite3
     - QUEUE_DATABASE_URL=sqlite3:storage/development_queue.sqlite3
     - CACHE_DATABASE_URL=sqlite3:storage/development_cache.sqlite3
@@ -47,8 +48,6 @@ services:
     command: >
       bash -c "
         echo 'Running bundler...';
-        mkdir -p /home/daktela-ftp/certs;
-        cp /app/.dockerdev/ftp-ssl/* /home/daktela-ftp/certs;
         bundle --version;
         bash -c '[[ -v COMPOSE_DISABLE_BUNDLER ]] || bundle install';
       "
@@ -74,6 +73,7 @@ services:
   # Tailwind CSS watcher
   css:
     <<: *backend
+    environment:
     command: bin/rails tailwindcss:watch
 
   # Vite development server

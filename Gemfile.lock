@@ -503,7 +503,6 @@ DEPENDENCIES
   standardrb
   stimulus-rails
   tailwindcss-rails (~> 4.2)
-  tailwindcss-ruby (~> 4.1)
   test-unit
   thruster
   turbo-rails
