@@ -40,6 +40,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-thread_safety"
   gem "standardrb"
+  gem "spring", require: false
 end
 
 group :development do
