@@ -35,10 +35,31 @@ x-llm: &llm
     - ~/.claude.json:/root/.claude.json
     - ~/.claude:/root/.claude
 
+x-backend: &backend
+  <<: *app
+  depends_on:
+    bundler:
+      condition: service_completed_successfully
+
 services:
+  bundler:
+    <<: *app
+    command: >
+      bash -c "
+        echo 'Running bundler...';
+        mkdir -p /home/daktela-ftp/certs;
+        cp /app/.dockerdev/ftp-ssl/* /home/daktela-ftp/certs;
+        bundle --version;
+        bash -c '[[ -v COMPOSE_DISABLE_BUNDLER ]] || bundle install';
+      "
+    volumes:
+      - .:/app
+      - bundle_cache:/usr/local/bundle
+
+
   # Rails web server with database setup
   web:
-    <<: *app
+    <<: *backend
     command: >
       sh -c "
         echo 'Database already exists, running migrations...'
@@ -52,12 +73,12 @@ services:
 
   # Tailwind CSS watcher
   css:
-    <<: *app
+    <<: *backend
     command: bin/rails tailwindcss:watch
 
   # Vite development server
   vite:
-    <<: *app
+    <<: *backend
     command: bin/vite dev
     ports:
       - "3036:3036"
