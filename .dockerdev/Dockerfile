@@ -41,7 +41,7 @@ COPY package.json package-lock.json ./
 RUN npm install --force
 
 # Install Tailwind CSS CLI
-RUN npm install tailwindcss @tailwindcss/cli
+RUN npm install --force tailwindcss @tailwindcss/cli
 
 # Copy application code
 COPY . .
