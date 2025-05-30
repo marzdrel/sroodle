@@ -73,6 +73,8 @@ services:
   # Tailwind CSS watcher
   css:
     <<: *backend
+    stdin_open: true
+    tty: true
     command: bin/rails tailwindcss:watch
 
   # Vite development server
