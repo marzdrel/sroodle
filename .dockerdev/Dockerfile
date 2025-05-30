@@ -1,24 +1,25 @@
 ARG RUBY_VERSION=3.4.4
-FROM node:23-alpine AS node-source
-FROM ruby:$RUBY_VERSION-alpine AS sroodle-dev-base
+FROM node:23-bookworm AS node-source
+FROM ruby:$RUBY_VERSION-bookworm AS sroodle-dev-base
 
-# Install Node.js, Git and other essential packages for development
-RUN apk add --no-cache \
+# Update package lists and install essential packages for development
+RUN apt-get update --allow-releaseinfo-change && apt-get install -y \
     npm \
     git \
-    fd \
+    fd-find \
     bash \
-    the_silver_searcher \
-    build-base \
+    silversearcher-ag \
+    build-essential \
     curl \
-    jemalloc \
-    vips \
-    yaml-dev \
-    pkgconfig \
-    sqlite \
-    sqlite-dev \
-    postgresql-dev \
-    tzdata
+    libjemalloc2 \
+    libvips42 \
+    libyaml-dev \
+    pkg-config \
+    sqlite3 \
+    libsqlite3-dev \
+    libpq-dev \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=node-source /usr/local/bin/node /usr/local/bin/
 COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
