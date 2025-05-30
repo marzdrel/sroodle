@@ -67,14 +67,6 @@ export default function VoteForm({
   onSubmit,
   processing
 }: VoteFormProps) {
-  const [data, setData] = React.useState<VoteFormData>({
-    vote: {
-      name: vote?.name || '',
-      email: vote?.email || '',
-      responses: vote?.responses || {}
-    }
-  })
-
   const form = useReactHookForm<VoteFormData>({
     defaultValues: {
       vote: {
@@ -84,6 +76,9 @@ export default function VoteForm({
       }
     }
   })
+
+  // Watch all form values to get current state
+  const watchedData = form.watch()
 
   // Handle server errors
   React.useEffect(() => {
@@ -114,32 +109,27 @@ export default function VoteForm({
           responses: vote.responses
         }
       };
-      setData(newData);
       form.reset(newData);
     }
-  }, [vote, setData, form]);
+  }, [vote, form]);
 
-  const handleSubmit = (_formData: VoteFormData) => {
-    // Use the current data state which has been kept in sync
+  const handleSubmit = (formData: VoteFormData) => {
+    // Use the form data from React Hook Form directly
     const voteData = {
-      ...data,
+      ...formData,
       poll_id: poll.id
     }
+    console.log('VoteForm handleSubmit - formData:', formData) // Debug log
+    console.log('VoteForm handleSubmit - voteData:', voteData) // Debug log
     onSubmit(voteData)
   }
 
   const handleResponseChange = (optionId: string, response: string) => {
+    const currentResponses = form.getValues('vote.responses') || {}
     const newResponses = {
-      ...data.vote.responses,
+      ...currentResponses,
       [optionId]: response
     }
-    setData({
-      ...data,
-      vote: {
-        ...data.vote,
-        responses: newResponses
-      }
-    })
     form.setValue('vote.responses', newResponses)
   }
 
@@ -225,13 +215,6 @@ export default function VoteForm({
                         {...field}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           field.onChange(e)
-                          setData({
-                            ...data,
-                            vote: {
-                              ...data.vote,
-                              name: e.target.value
-                            }
-                          })
                         }}
                       />
                     </FormControl>
@@ -256,13 +239,6 @@ export default function VoteForm({
                         {...field}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           field.onChange(e)
-                          setData({
-                            ...data,
-                            vote: {
-                              ...data.vote,
-                              email: e.target.value
-                            }
-                          })
                         }}
                       />
                     </FormControl>
@@ -288,7 +264,7 @@ export default function VoteForm({
                 <div className="space-y-4 mt-4">
                   {poll.options.map((option) => {
                     const { date, time } = formatDateTime(option.start, option.duration_minutes)
-                    const currentResponse = data.vote.responses[option.id] || ''
+                    const currentResponse = watchedData.vote?.responses?.[option.id] || ''
 
                     return (
                       <div key={option.id} className="p-4 border rounded-lg">
