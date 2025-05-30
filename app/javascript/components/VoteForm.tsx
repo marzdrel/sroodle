@@ -114,13 +114,10 @@ export default function VoteForm({
   }, [vote, form]);
 
   const handleSubmit = (formData: VoteFormData) => {
-    // Use the form data from React Hook Form directly
     const voteData = {
       ...formData,
       poll_id: poll.id
     }
-    console.log('VoteForm handleSubmit - formData:', formData) // Debug log
-    console.log('VoteForm handleSubmit - voteData:', voteData) // Debug log
     onSubmit(voteData)
   }
 

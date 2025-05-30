@@ -61,24 +61,7 @@ export default function New({ poll, errors = {}, flash }: NewProps) {
   }
 
   const handleSubmit = (formData: VoteFormData) => {
-    console.log('Vote/New handleSubmit - received formData:', formData)
-    console.log('Vote/New handleSubmit - formData stringified:', JSON.stringify(formData, null, 2))
-
-    // Use router.post directly to ensure data is sent properly
-    router.post(`/polls/${poll.id}/votes`, formData, {
-      onStart: () => {
-        console.log('Request starting...')
-      },
-      onSuccess: (page) => {
-        console.log('Success:', page)
-      },
-      onError: (errors) => {
-        console.log('Errors:', errors)
-      },
-      onFinish: () => {
-        console.log('Request finished')
-      }
-    })
+    router.post(`/polls/${poll.id}/votes`, formData)
   }
 
   return (
