@@ -51,8 +51,7 @@ class Poll
         return false unless valid?
 
         ActiveRecord::Base.transaction do
-          user = find_or_create_user
-          self.votes = user.votes.create!(votes_attributes)
+          self.votes = current_user.votes.create!(votes_attributes)
         end
 
         true
@@ -74,13 +73,13 @@ class Poll
         end
       end
 
-      def find_or_create_user
-        user = User.find_by(email: email)
-        return user if user
-
-        password = SecureRandom.hex(8)
-        User.create!(email: email, password: password, status: "pending")
-      end
+      # def find_or_create_user
+      #   user = User.find_by(email: email)
+      #   return user if user
+      #
+      #   password = SecureRandom.hex(8)
+      #   User.create!(email: email, password: password, status: "pending")
+      # end
     end
   end
 end

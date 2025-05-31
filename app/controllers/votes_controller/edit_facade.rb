@@ -28,7 +28,7 @@ class VotesController
     attr_accessor :params, :current_user
 
     def poll
-      @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:poll_id))
+      @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:id))
     end
 
     def user_votes
