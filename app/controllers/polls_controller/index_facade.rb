@@ -6,13 +6,15 @@ class PollsController
       new(...).call
     end
 
-    def initialize(params)
+    def initialize(params, current_user)
       self.params = params
+      self.current_user = current_user
     end
 
     def call
       FacadeResult.new(
         success?: true,
+        current_user: current_user,
         data: {
           polls: polls.map { serialize(it) }
         },
@@ -22,7 +24,7 @@ class PollsController
 
     private
 
-    attr_accessor :params
+    attr_accessor :params, :current_user
 
     def polls
       @_polls ||= Poll.includes(:creator).order(created_at: :desc)

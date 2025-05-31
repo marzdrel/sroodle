@@ -1,6 +1,6 @@
 class PollsController < ApplicationController
   def index
-    result = IndexFacade.call(params)
+    result = IndexFacade.call(params, current_user)
 
     render(
       inertia: "Poll/Index",

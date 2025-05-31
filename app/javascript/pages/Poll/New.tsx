@@ -37,9 +37,10 @@ interface NewPollProps {
   };
   errors?: Record<string, string>;
   new_poll_path?: string;
+  logged_in?: boolean;
 }
 
-export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path }: NewPollProps) {
+export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, logged_in = false }: NewPollProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [dateErrors, setDateErrors] = useState<string | null>(errors.dates || null);
 
@@ -130,7 +131,12 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="your.email@example.com" {...field} />
+                    <Input
+                      type="email"
+                      placeholder="your.email@example.com"
+                      {...field}
+                      readOnly={logged_in}
+                    />
                   </FormControl>
                   <FormDescription>
                     We'll use this to send you poll updates.

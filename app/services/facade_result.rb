@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 FacadeResult =
-  Data.define(:success?, :data, :errors) do
+  Data.define(:success?, :data, :errors, :current_user) do
     def props
       data.merge(
         new_poll_path: routes.new_poll_path,
-        errors: errors
+        errors: errors,
+        logged_in: current_user.present?
       )
     end
 

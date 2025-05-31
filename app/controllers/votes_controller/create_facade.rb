@@ -17,6 +17,7 @@ class VotesController
       FacadeResult.new(
         errors: errors,
         success?: form.valid?,
+        current_user: current_user,
         data: {
           votes: form.votes,
           poll: serialized_poll

@@ -23,8 +23,10 @@ class PollsController
 
       FacadeResult.new(
         success?: true,
+        current_user: current_user,
         data: {
-          poll: default_data
+          poll: default_data,
+          logged_in: current_user.present?
         },
         errors: []
       )

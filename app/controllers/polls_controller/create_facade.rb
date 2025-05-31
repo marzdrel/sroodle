@@ -17,6 +17,7 @@ class PollsController
       FacadeResult.new(
         errors: errors,
         success?: form.valid?,
+        current_user: current_user,
         data: {}
       )
     end
