@@ -115,14 +115,25 @@ export default function Index({ polls = [], new_poll_path }: IndexProps) {
                 key={poll.id}
                 className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-medium">{poll.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Created by {poll.creator.email} on {new Date(poll.created_at).toISOString().split('T')[0]}
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-lg font-medium flex-1">{poll.name}</h3>
+                    <div className="flex gap-2 sm:hidden">
+                      {new Date(poll.end_voting_at) > new Date() ? (
+                        <Link href={poll.vote_path}>
+                          <Button variant="default" size="sm">Cast Vote</Button>
+                        </Link>
+                      ) : (
+                        <Button variant="default" size="sm" disabled>
+                          Voting Closed
+                        </Button>
+                      )}
+                      <Link href={poll.path}>
+                        <Button variant="outline" size="sm">View Poll</Button>
+                      </Link>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="hidden sm:flex gap-2">
                     {new Date(poll.end_voting_at) > new Date() ? (
                       <Link href={poll.vote_path}>
                         <Button variant="default" size="sm">Cast Vote</Button>
@@ -137,6 +148,9 @@ export default function Index({ polls = [], new_poll_path }: IndexProps) {
                     </Link>
                   </div>
                 </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Created by {poll.creator.email} on {new Date(poll.created_at).toISOString().split('T')[0]}
+                </p>
                 <p className="mt-2 text-sm line-clamp-2">{poll.description}</p>
                 <div className="mt-3">
                   <DeadlineDisplay endVotingAt={poll.end_voting_at} />

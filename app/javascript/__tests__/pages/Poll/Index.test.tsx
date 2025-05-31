@@ -52,9 +52,9 @@ describe('Poll Index Component', () => {
     expect(screen.getByText(/jane.doe@example.com/)).toBeInTheDocument();
     expect(screen.getByText(/john.smith@example.com/)).toBeInTheDocument();
 
-    // Check if View Poll buttons are present
+    // Check if View Poll buttons are present (2 polls × 2 responsive versions = 4 buttons)
     const viewButtons = screen.getAllByRole('button', { name: /view poll/i });
-    expect(viewButtons).toHaveLength(2);
+    expect(viewButtons).toHaveLength(4);
   });
 
   test('has a working create new poll button', async () => {
