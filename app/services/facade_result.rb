@@ -3,11 +3,18 @@
 FacadeResult =
   Data.define(:success?, :data, :errors, :current_user) do
     def props
-      data.merge(
-        new_poll_path: routes.new_poll_path,
-        errors: errors,
-        logged_in: current_user.present?
-      )
+      output =
+        data.merge(
+          new_poll_path: routes.new_poll_path,
+          errors: errors,
+          logged_in: current_user.present?
+        )
+
+      if Rails.env.development?
+        output.merge(debug: output.inspect)
+      else
+        output
+      end
     end
 
     def routes

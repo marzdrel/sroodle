@@ -55,15 +55,9 @@ class VotesController
     end
 
     def serialized_votes
-      responses = user_votes.includes(:option).each_with_object({}) do |vote, hash|
-        hash[vote.option.to_param] = vote.response
+      user_votes.to_h do |vote|
+        [vote.option.to_param, vote.response]
       end
-
-      {
-        name: "Test",
-        email: user.email,
-        responses: responses
-      }
     end
   end
 end

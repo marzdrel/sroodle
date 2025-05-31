@@ -2,19 +2,23 @@ import { Link } from '@inertiajs/react'
 import { Menu, X } from "lucide-react"
 import React, { useState } from 'react'
 
+import DevelopmentUI from "@/components/DevelopmentUI"
 import { Button } from "@/components/ui/button"
 
 
 interface LayoutProps {
   children: React.ReactNode;
   new_poll_path?: string;
+  debug?: string;
 }
 
-export default function Layout({ children, new_poll_path = "/" }: LayoutProps) {
+export default function Layout({ children, new_poll_path, debug }: LayoutProps) {
+  console.warn("Layout props:", { children, new_poll_path, debug });
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <DevelopmentUI debug={debug} />
       {/* Navbar */}
       <header className="border-b bg-card text-card-foreground sticky top-0 z-10 w-full">
         <div className="max-w-full px-4 sm:px-6 lg:px-12">
