@@ -10,7 +10,7 @@ class Poll
     attribute :email, :string
     attribute :event, :string
     attribute :description, :string
-    attribute :end_voting_at, :datetime
+    attribute :end_voting_at, :string
     attribute :dates, default: []
 
     validates :name, presence: true, length: {minimum: 2, maximum: 50}
@@ -77,13 +77,7 @@ class Poll
     end
 
     def end_voting_date
-      if end_voting_at.is_a?(String)
-        Time.zone.parse(end_voting_at).end_of_day
-      else
-        end_voting_at.end_of_day
-      end
-    rescue ArgumentError
-      end_voting_at
+      Time.zone.parse(end_voting_at).end_of_day
     end
   end
 end
