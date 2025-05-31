@@ -26,7 +26,7 @@ class VotesController < ApplicationController
 
     render(
       inertia: "Vote/Edit",
-      props: result.props
+      props: result.props.merge(flash: flash.to_hash)
     )
   end
 
