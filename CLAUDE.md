@@ -15,21 +15,6 @@ npm install
 bin/rails db:setup
 ```
 
-### Development
-
-```bash
-# Start development servers
-bin/dev           # Uses Foreman to start all development processes
-
-# Or start each process individually:
-bin/rails server  # Start Rails server
-bin/rails tailwindcss:watch  # Watch and compile Tailwind CSS
-bin/vite dev      # Start Vite development server
-
-# Using Docker
-docker-compose up # Start the development environment in Docker
-```
-
 ### Testing
 
 ```bash
@@ -48,8 +33,8 @@ bin/rails test:system
 
 ```bash
 # Ruby linting
-bundle exec rubocop
-bundle exec rubocop -a  # Auto-correct issues
+bundle exec standardrb
+bundle exec standardrb --fix
 
 # Security check
 bundle exec brakeman
@@ -73,9 +58,6 @@ npm run test:coverage  # Generate test coverage report
 ```bash
 # Assets precompilation
 bin/rails assets:precompile
-
-# Deployment (using Kamal)
-bundle exec kamal deploy
 ```
 
 ## Architecture Overview
