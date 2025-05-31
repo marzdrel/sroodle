@@ -101,9 +101,12 @@ export default function VoteForm({
     }
   }, [errors, form]);
 
-  // Sync form data with initial values when vote changes
+  // Track if form has been initialized to prevent overwriting user changes
+  const formInitialized = React.useRef(false);
+
+  // Initialize form data with initial values only once
   React.useEffect(() => {
-    if (vote) {
+    if (vote && mode === 'edit' && !formInitialized.current) {
       const newData = {
         vote: {
           name: vote.name,
@@ -112,8 +115,9 @@ export default function VoteForm({
         }
       };
       form.reset(newData);
+      formInitialized.current = true;
     }
-  }, [vote, form]);
+  }, [vote, mode, form]);
 
   const handleSubmit = (formData: VoteFormData) => {
     const voteData = {
@@ -123,13 +127,15 @@ export default function VoteForm({
     onSubmit(voteData)
   }
 
-  const handleResponseChange = (optionId: string, response: string) => {
+  const handleResponseChange = (optionId: string, response: string, onChange: (value: Record<string, string>) => void) => {
     const currentResponses = form.getValues('vote.responses') || {}
     const newResponses = {
       ...currentResponses,
       [optionId]: response
     }
+    // Update both React Hook Form and our custom handler
     form.setValue('vote.responses', newResponses)
+    onChange(newResponses)
   }
 
   const formatDateTime = (start: string, durationMinutes: number) => {
@@ -256,7 +262,7 @@ export default function VoteForm({
         <FormField
           control={form.control}
           name="vote.responses"
-          render={() => (
+          render={({ field }) => (
             <FormItem>
               <div className="p-6 border rounded-lg bg-card">
                 <FormLabel className="text-lg font-medium">Select Your Availability</FormLabel>
@@ -298,7 +304,7 @@ export default function VoteForm({
                                 <button
                                   key={response}
                                   type="button"
-                                  onClick={() => handleResponseChange(option.id, response)}
+                                  onClick={() => handleResponseChange(option.id, response, field.onChange)}
                                   className={`px-4 py-2 rounded-md border transition-all flex items-center gap-2 ${
                                     currentResponse === response
                                       ? getResponseVariant(response)

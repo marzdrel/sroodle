@@ -34,8 +34,10 @@ class VotesController < ApplicationController
     result = CreateFacade.call(params, current_user)
 
     if result.success?
-      vote_id = result.data[:votes].first.to_param
-      redirect_to vote_path(vote_id), notice: "Vote was successfully created."
+      redirect_to(
+        edit_poll_vote_path,
+        notice: "Vote was successfully created."
+      )
     else
       render(
         inertia: "Vote/New",
@@ -53,12 +55,9 @@ class VotesController < ApplicationController
     result = UpdateFacade.call(params, current_user)
 
     if result.success?
-      render(
-        inertia: "Vote/Edit",
-        props: result.props.merge(
-          votes: result.data[:vote],
-          flash: {notice: "Vote was successfully updated."}
-        )
+      redirect_to(
+        edit_poll_vote_path,
+        notice: "Vote was successfully updated."
       )
     else
       render(
