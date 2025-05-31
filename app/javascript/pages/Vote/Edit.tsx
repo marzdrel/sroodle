@@ -71,9 +71,8 @@ export default function Edit({ poll, votes, errors = {}, flash, new_poll_path, l
   }
 
   const handleSubmit = (formData: VoteFormData) => {
-    inertiaForm.patch(`/${poll.id}/votes`, {
-      data: formData
-    })
+    inertiaForm.setData(formData)
+    inertiaForm.patch(`/${poll.id}/votes`)
   }
 
   return (
