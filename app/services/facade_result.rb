@@ -10,7 +10,7 @@ FacadeResult =
           logged_in: current_user.present?
         )
 
-      if Rails.env.development?
+      if false && Rails.env.development?
         output.merge(debug: output.inspect)
       else
         output
