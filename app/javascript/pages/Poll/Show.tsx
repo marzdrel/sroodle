@@ -44,9 +44,10 @@ interface Poll {
 interface ShowProps {
   poll: Poll;
   participants?: Participant[];
+  new_poll_path?: string;
 }
 
-export default function Show({ poll, participants = [] }: ShowProps) {
+export default function Show({ poll, participants = [], new_poll_path }: ShowProps) {
   // Convert date strings to Date objects for the calendar
   const pollDates = poll.dates.map(d => new Date(d.date));
 
@@ -65,7 +66,7 @@ export default function Show({ poll, participants = [] }: ShowProps) {
   };
 
   return (
-    <Layout>
+    <Layout new_poll_path={new_poll_path}>
       <Head title={`${poll.event} - Poll`} />
       <div className="max-w-7xl mx-auto">
         {/* Header */}

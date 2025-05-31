@@ -9,7 +9,8 @@ class VotesController < ApplicationController
     render(
       inertia: "Vote/New",
       props: {
-        poll: result.data
+        poll: result.data,
+        new_poll_path: new_poll_path
       }
     )
   end
@@ -21,7 +22,8 @@ class VotesController < ApplicationController
       inertia: "Vote/Edit",
       props: {
         poll: result.data[:poll],
-        vote: result.data[:vote]
+        vote: result.data[:vote],
+        new_poll_path: new_poll_path
       }
     )
   end
@@ -30,20 +32,16 @@ class VotesController < ApplicationController
     result = CreateFacade.call(params)
 
     if result.success?
-      render(
-        inertia: "Vote/New",
-        props: {
-          poll: result.data[:poll],
-          flash: {notice: "Vote was successfully created."}
-        }
-      )
+      vote_id = result.data[:votes].first.to_param
+      redirect_to vote_path(vote_id), notice: "Vote was successfully created."
     else
       render(
         inertia: "Vote/New",
         props: {
           poll: result.data[:poll],
           errors: result.errors,
-          flash: {alert: "Unable to create vote."}
+          flash: {alert: "Unable to create vote."},
+          new_poll_path: new_poll_path
         }
       )
     end
@@ -58,7 +56,8 @@ class VotesController < ApplicationController
         props: {
           poll: result.data[:poll],
           vote: result.data[:vote],
-          flash: {notice: "Vote was successfully updated."}
+          flash: {notice: "Vote was successfully updated."},
+          new_poll_path: new_poll_path
         }
       )
     else
@@ -68,7 +67,8 @@ class VotesController < ApplicationController
           poll: result.data[:poll],
           vote: result.data[:vote],
           errors: result.errors,
-          flash: {alert: "Unable to update vote."}
+          flash: {alert: "Unable to update vote."},
+          new_poll_path: new_poll_path
         }
       )
     end

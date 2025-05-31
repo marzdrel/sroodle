@@ -5,7 +5,12 @@ import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface LayoutProps {
+  children: React.ReactNode;
+  new_poll_path?: string;
+}
+
+export default function Layout({ children, new_poll_path = "/" }: LayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
@@ -39,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <Link
-                href="/polls/new"
+                href={new_poll_path}
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
                 Create Poll
@@ -91,7 +96,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="md:hidden border-t">
             <div className="space-y-1 px-4 py-4">
               <Link
-                href="/polls/new"
+                href={new_poll_path}
                 className="block py-2 text-base font-medium transition-colors hover:text-primary"
                 onClick={() => setIsMenuOpen(false)}
               >

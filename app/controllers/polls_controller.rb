@@ -4,7 +4,7 @@ class PollsController < ApplicationController
 
     render(
       inertia: "Poll/Index",
-      props: result.data
+      props: result.data.merge(new_poll_path: new_poll_path)
     )
   end
 
@@ -13,7 +13,7 @@ class PollsController < ApplicationController
 
     render(
       inertia: "Poll/Show",
-      props: result.data
+      props: result.data.merge(new_poll_path: new_poll_path)
     )
   end
 
@@ -23,7 +23,8 @@ class PollsController < ApplicationController
     render(
       inertia: "Poll/New",
       props: {
-        poll: result.data
+        poll: result.data,
+        new_poll_path: new_poll_path
       }
     )
   end
@@ -38,7 +39,8 @@ class PollsController < ApplicationController
         inertia: "Poll/New",
         props: {
           poll: result.data,
-          errors: result.errors
+          errors: result.errors,
+          new_poll_path: new_poll_path
         }
       )
     end

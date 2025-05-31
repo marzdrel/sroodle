@@ -24,6 +24,7 @@ interface NewProps {
     notice?: string;
     alert?: string;
   };
+  new_poll_path?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,7 +37,7 @@ interface VoteFormData extends Record<string, any> {
   poll_id?: string;
 }
 
-export default function New({ poll, errors = {}, flash }: NewProps) {
+export default function New({ poll, errors = {}, flash, new_poll_path }: NewProps) {
   const inertiaForm = useForm<VoteFormData>({
     vote: {
       name: '',
@@ -65,7 +66,7 @@ export default function New({ poll, errors = {}, flash }: NewProps) {
   }
 
   return (
-    <Layout>
+    <Layout new_poll_path={new_poll_path}>
       <Head title={`Vote on ${poll.name}`} />
       <VoteForm
         poll={poll}

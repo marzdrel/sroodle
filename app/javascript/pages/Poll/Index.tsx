@@ -18,11 +18,12 @@ interface Poll {
 
 interface IndexProps {
   polls: Poll[];
+  new_poll_path?: string;
 }
 
-export default function Index({ polls = [] }: IndexProps) {
+export default function Index({ polls = [], new_poll_path }: IndexProps) {
   return (
-    <Layout>
+    <Layout new_poll_path={new_poll_path}>
       <Head title="Browse Polls" />
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
