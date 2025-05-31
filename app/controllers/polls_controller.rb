@@ -18,7 +18,7 @@ class PollsController < ApplicationController
   end
 
   def new
-    result = NewFacade.call(params)
+    result = NewFacade.call(params, current_user)
 
     render(
       inertia: "Poll/New",

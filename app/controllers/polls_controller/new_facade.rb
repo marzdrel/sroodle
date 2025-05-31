@@ -6,8 +6,9 @@ class PollsController
       new(...).call
     end
 
-    def initialize(params)
+    def initialize(params, current_user)
       self.params = params
+      self.current_user = current_user
     end
 
     def call
@@ -31,7 +32,7 @@ class PollsController
 
     private
 
-    attr_accessor :params
+    attr_accessor :params, :current_user
 
     def current_user_name
       # In a real app with authentication, you might return the user's name
@@ -42,7 +43,7 @@ class PollsController
     def current_user_email
       # In a real app with authentication, you might return the user's email
       # For now, using a placeholder
-      "organizer@example.com"
+      current_user&.email || "organizer@example.com"
     end
   end
 end

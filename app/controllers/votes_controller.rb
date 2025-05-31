@@ -4,7 +4,7 @@ class VotesController < ApplicationController
   end
 
   def new
-    result = NewFacade.call(params)
+    result = NewFacade.call(params, current_user)
 
     render(
       inertia: "Vote/New",
