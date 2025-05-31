@@ -35,7 +35,7 @@ class VotesController < ApplicationController
 
     if result.success?
       redirect_to(
-        edit_poll_vote_path,
+        edit_poll_vote_path(params.fetch(:poll_id)),
         notice: "Vote was successfully created."
       )
     else
