@@ -71,9 +71,19 @@ class Poll
         description: description,
         creator: user,
         eid: UUID7.generate,
-        end_voting_at: end_voting_at,
+        end_voting_at: end_voting_date,
         options_attributes: options_attributes
       )
+    end
+
+    def end_voting_date
+      if end_voting_at.is_a?(String)
+        Time.zone.parse(end_voting_at).end_of_day
+      else
+        end_voting_at.end_of_day
+      end
+    rescue ArgumentError
+      end_voting_at
     end
   end
 end

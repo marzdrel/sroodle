@@ -9,7 +9,7 @@ class Poll::FormTest < ActiveSupport::TestCase
       email: "john@example.com",
       event: "Team Meeting",
       description: "Weekly team meeting to discuss project progress",
-      end_voting_at: 1.week.from_now,
+      end_voting_at: "2023-10-15",
       dates: ["2023-10-01", "2023-10-02"]
     }
   end
@@ -66,6 +66,19 @@ class Poll::FormTest < ActiveSupport::TestCase
     form = Poll::Form.new(@valid_attributes.merge(end_voting_at: nil))
     assert_not form.valid?
     assert_includes form.errors[:end_voting_at], "can't be blank"
+  end
+
+  test "converts date string to end of day for end_voting_at" do
+    form = Poll::Form.new(@valid_attributes.merge(end_voting_at: "2023-10-15"))
+
+    assert form.save
+
+    poll = Poll.last
+    expected_date = Date.parse("2023-10-15")
+    assert_equal expected_date, poll.end_voting_at.to_date
+    assert_equal 23, poll.end_voting_at.hour
+    assert_equal 59, poll.end_voting_at.min
+    assert_equal 59, poll.end_voting_at.sec
   end
 
   test "saves successfully with valid attributes" do

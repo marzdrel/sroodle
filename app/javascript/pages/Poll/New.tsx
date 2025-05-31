@@ -1,4 +1,6 @@
 import { Head, router } from '@inertiajs/react'
+import { format } from 'date-fns'
+import { Calendar as CalendarIcon } from 'lucide-react'
 import * as React from 'react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -7,6 +9,7 @@ import Layout from '../Layout'
 
 import { DateSelector } from '@/components/DateSelector'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Form,
   FormControl,
@@ -17,6 +20,12 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
 
 interface FormValues {
   poll: {
@@ -191,16 +200,48 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
               control={form.control}
               name="poll.end_voting_at"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Voting Deadline</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="datetime-local"
-                      {...field}
-                    />
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[280px] justify-start text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? (
+                            format(new Date(field.value), "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-3 bg-white border border-gray-200 shadow-xl z-[100] pointer-events-auto"
+                      align="start"
+                      side="bottom"
+                      sideOffset={5}
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? new Date(field.value) : undefined}
+                        onSelect={(date) => {
+                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
+                        }}
+                        disabled={(date) =>
+                          date < new Date(new Date().setHours(0, 0, 0, 0))
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormDescription>
-                    Set when voting should close for this poll.
+                    Select the date when voting should close (voting will end at 11:59 PM on this date).
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
