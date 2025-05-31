@@ -9,7 +9,7 @@ class PollsController < ApplicationController
   end
 
   def show
-    result = ShowFacade.call(params)
+    result = ShowFacade.call(params, current_user)
 
     render(
       inertia: "Poll/Show",

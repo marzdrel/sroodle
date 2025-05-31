@@ -6,13 +6,15 @@ class PollsController
       new(...).call
     end
 
-    def initialize(params)
+    def initialize(params, current_user)
       self.params = params
+      self.current_user = current_user
     end
 
     def call
       FacadeResult.new(
         success?: true,
+        current_user: current_user,
         data: {
           poll: serialize(poll),
           participants: mock_participants # This will be real data in the future
@@ -23,7 +25,7 @@ class PollsController
 
     private
 
-    attr_accessor :params
+    attr_accessor :params, :current_user
 
     def poll
       @_poll ||= Poll.includes(:creator).exid_loader(params.fetch(:id))
