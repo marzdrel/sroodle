@@ -12,8 +12,21 @@ class VotesController
       )
     end
 
-    test "returns successful result with valid poll id" do
+    test "returns unsuccessful result when user has already voted" do
       result = VotesController::NewFacade.call(@valid_params, @user)
+
+      assert_not result.success?
+      assert_empty result.errors
+    end
+
+    test "returns successful result when user has not voted" do
+      # Create a new user who hasn't voted on this poll
+      new_user = User.create!(
+        email: "test@example.com",
+        password: "password",
+        status: "active"
+      )
+      result = VotesController::NewFacade.call(@valid_params, new_user)
 
       assert result.success?
       assert_empty result.errors
@@ -38,7 +51,13 @@ class VotesController
     end
 
     test "result data contains expected poll structure" do
-      result = VotesController::NewFacade.call(@valid_params, @user)
+      # Use a user who hasn't voted to test successful data structure
+      new_user = User.create!(
+        email: "test2@example.com",
+        password: "password",
+        status: "active"
+      )
+      result = VotesController::NewFacade.call(@valid_params, new_user)
 
       assert_kind_of Hash, result.data
       assert result.data.key?(:poll)
@@ -53,7 +72,13 @@ class VotesController
     end
 
     test "includes poll options in result data" do
-      result = VotesController::NewFacade.call(@valid_params, @user)
+      # Use a user who hasn't voted to test successful data structure
+      new_user = User.create!(
+        email: "test3@example.com",
+        password: "password",
+        status: "active"
+      )
+      result = VotesController::NewFacade.call(@valid_params, new_user)
 
       poll_data = result.data[:poll]
       options = poll_data[:options]
@@ -83,7 +108,13 @@ class VotesController
     end
 
     test "poll options have correct structure" do
-      result = VotesController::NewFacade.call(@valid_params, @user)
+      # Use a user who hasn't voted to test successful data structure
+      new_user = User.create!(
+        email: "test4@example.com",
+        password: "password",
+        status: "active"
+      )
+      result = VotesController::NewFacade.call(@valid_params, new_user)
 
       poll_data = result.data[:poll]
       options = poll_data[:options]

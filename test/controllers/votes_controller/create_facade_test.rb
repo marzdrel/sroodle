@@ -6,7 +6,12 @@ class VotesController
   class CreateFacadeTest < ActiveSupport::TestCase
     setup do
       @poll = polls(:one)
-      @user = users(:alice)
+      # Create a new user who hasn't voted yet to avoid unique constraint violations
+      @user = User.create!(
+        email: "newuser@example.com",
+        password: "password",
+        status: "active"
+      )
       @morning_option = poll_options(:morning_meeting)
       @afternoon_option = poll_options(:afternoon_meeting)
       @evening_option = poll_options(:evening_meeting)
