@@ -6,10 +6,19 @@ class VotesController < ApplicationController
   def new
     result = NewFacade.call(params, current_user)
 
-    render(
-      inertia: "Vote/New",
-      props: result.props
-    )
+    sign_in(User.first) unless current_user
+
+    # If the the current user already voted on this poll, redirect to edit
+    # instead.
+
+    if result.success?
+      render(
+        inertia: "Vote/New",
+        props: result.props
+      )
+    else
+      redirect_to edit_poll_vote_path
+    end
   end
 
   def edit

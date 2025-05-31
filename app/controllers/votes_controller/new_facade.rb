@@ -13,7 +13,7 @@ class VotesController
 
     def call
       FacadeResult.new(
-        success?: poll.present?,
+        success?: user_has_not_voted?,
         current_user: current_user,
         data: {
           poll: serialized_poll
@@ -25,6 +25,12 @@ class VotesController
     private
 
     attr_accessor :params, :current_user
+
+    def user_has_not_voted?
+      return true unless current_user
+
+      poll.votes.joins(:user).where(users: {id: current_user.id}).empty?
+    end
 
     def poll
       @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:id))

@@ -13,11 +13,11 @@ class VotesController
 
     def call
       FacadeResult.new(
-        success?: poll.present? && user_votes.present?,
+        success?: user_votes.present?,
         current_user: current_user,
         data: {
           poll: serialized_poll,
-          vote: serialized_vote
+          votes: serialized_votes
         },
         errors: []
       )
@@ -54,16 +54,13 @@ class VotesController
       }
     end
 
-    def serialized_vote
-      return {} unless user && user_votes.present?
-
+    def serialized_votes
       responses = user_votes.includes(:option).each_with_object({}) do |vote, hash|
         hash[vote.option.to_param] = vote.response
       end
 
       {
-        id: user.id.to_s,
-        name: user.email.split("@").first.humanize, # Fallback name from email
+        name: "Test",
         email: user.email,
         responses: responses
       }
