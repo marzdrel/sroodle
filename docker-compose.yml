@@ -12,6 +12,8 @@ x-app: &app
     - .dockerdev/bashrc:/root/.bashrc:ro
     - bundle_cache:/usr/local/bundle
     - node_modules_cache:/app/node_modules
+    - ~/.claude.json:/root/.claude.json
+    - ~/.claude:/root/.claude
   environment:
     - RAILS_ENV=development
     - TAILWINDCSS_INSTALL_DIR=node_modules/.bin
@@ -21,20 +23,6 @@ x-app: &app
     - CABLE_DATABASE_URL=sqlite3:storage/development_cable.sqlite3
   tmpfs:
     - /tmp:mode=1777
-
-x-llm: &llm
-  build:
-    context: .
-    dockerfile: ./.dockerdev/Dockerfile
-    target: sroodle-dev-base
-  image: sroodle-claude
-  tmpfs:
-    - /tmp:mode=1777
-  volumes:
-    - .:/app
-    - .dockerdev/bashrc:/root/.bashrc:ro
-    - ~/.claude.json:/root/.claude.json
-    - ~/.claude:/root/.claude
 
 x-backend: &backend
   <<: *app
@@ -85,7 +73,7 @@ services:
       - "3036:3036"
 
   ai:
-    <<: *llm
+    <<: *app
     stdin_open: true
     tty: true
     command: /bin/bash
