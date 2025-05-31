@@ -8,10 +8,7 @@ class VotesController < ApplicationController
 
     render(
       inertia: "Vote/New",
-      props: {
-        poll: result.data,
-        new_poll_path: new_poll_path
-      }
+      props: result.props
     )
   end
 

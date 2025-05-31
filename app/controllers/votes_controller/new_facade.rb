@@ -13,7 +13,9 @@ class VotesController
     def call
       FacadeResult.new(
         success?: poll.present?,
-        data: serialized_poll,
+        data: {
+          poll: serialized_poll
+        },
         errors: []
       )
     end

@@ -22,7 +22,9 @@ class PollsController
 
       FacadeResult.new(
         success?: true,
-        data: default_data,
+        data: {
+          poll: default_data
+        },
         errors: []
       )
     end
