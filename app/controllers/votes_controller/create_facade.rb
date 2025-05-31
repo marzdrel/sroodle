@@ -6,8 +6,9 @@ class VotesController
       new(...).call
     end
 
-    def initialize(params)
+    def initialize(params, current_user)
       self.params = params
+      self.current_user = current_user
     end
 
     def call
@@ -25,10 +26,10 @@ class VotesController
 
     private
 
-    attr_accessor :params
+    attr_accessor :params, :current_user
 
     def form
-      @_form ||= Poll::Vote::Form.new(strong_params)
+      @_form ||= Poll::Vote::Form.new(strong_params, current_user:)
     end
 
     def errors

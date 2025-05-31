@@ -5,6 +5,7 @@ require "test_helper"
 class PollsController
   class CreateFacadeTest < ActiveSupport::TestCase
     setup do
+      @user = users(:alice)
       @valid_params = ActionController::Parameters.new(
         poll: {
           name: "John Doe",
@@ -17,7 +18,7 @@ class PollsController
     end
 
     test "returns successful result with valid parameters" do
-      result = PollsController::CreateFacade.call(@valid_params)
+      result = PollsController::CreateFacade.call(@valid_params, @user)
 
       assert result.success?
       assert_empty result.errors
@@ -33,7 +34,7 @@ class PollsController
         }
       )
 
-      result = PollsController::CreateFacade.call(invalid_params)
+      result = PollsController::CreateFacade.call(invalid_params, @user)
 
       assert_not result.success?
       assert_not_empty result.errors
@@ -48,7 +49,7 @@ class PollsController
         }
       )
 
-      result = PollsController::CreateFacade.call(invalid_params)
+      result = PollsController::CreateFacade.call(invalid_params, @user)
 
       assert result.errors.key?(:name)
       assert result.errors.key?(:email)
@@ -56,7 +57,7 @@ class PollsController
     end
 
     test "result data contains expected structure" do
-      result = PollsController::CreateFacade.call(@valid_params)
+      result = PollsController::CreateFacade.call(@valid_params, @user)
 
       assert_kind_of Hash, result.data
     end

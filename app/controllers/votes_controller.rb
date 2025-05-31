@@ -26,7 +26,7 @@ class VotesController < ApplicationController
   end
 
   def create
-    result = CreateFacade.call(params)
+    result = CreateFacade.call(params, current_user)
 
     if result.success?
       vote_id = result.data[:votes].first.to_param

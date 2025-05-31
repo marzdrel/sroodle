@@ -24,6 +24,15 @@
 class User < ApplicationRecord
   include Clearance::User
 
+  enum(
+    :status,
+    {
+      pending: "pending",
+      active: "active",
+      blocked: "blocked"
+    }
+  )
+
   has_many :votes, class_name: "Poll::Vote", dependent: :destroy
 
   accepts_nested_attributes_for :votes

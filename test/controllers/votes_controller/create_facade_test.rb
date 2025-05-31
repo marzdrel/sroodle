@@ -26,7 +26,7 @@ class VotesController
     end
 
     test "returns successful result with valid parameters" do
-      result = VotesController::CreateFacade.call(@valid_params)
+      result = VotesController::CreateFacade.call(@valid_params, @user)
 
       assert result.success?
       assert_empty result.errors
@@ -46,7 +46,7 @@ class VotesController
       )
 
       assert_raises(Exid::Error) do
-        VotesController::CreateFacade.call(invalid_params)
+        VotesController::CreateFacade.call(invalid_params, @user)
       end
     end
 
@@ -62,7 +62,7 @@ class VotesController
         }
       )
 
-      result = VotesController::CreateFacade.call(invalid_params)
+      result = VotesController::CreateFacade.call(invalid_params, @user)
 
       assert_not result.success?
       assert result.errors.present?
@@ -78,14 +78,14 @@ class VotesController
         }
       )
 
-      result = VotesController::CreateFacade.call(invalid_params)
+      result = VotesController::CreateFacade.call(invalid_params, @user)
 
       assert_not result.success?
       assert result.errors.present?
     end
 
     test "creates votes with correct associations" do
-      result = VotesController::CreateFacade.call(@valid_params)
+      result = VotesController::CreateFacade.call(@valid_params, @user)
 
       assert result.success?
       assert result.data[:votes].present?
@@ -98,7 +98,7 @@ class VotesController
     end
 
     test "result data contains votes and poll" do
-      result = VotesController::CreateFacade.call(@valid_params)
+      result = VotesController::CreateFacade.call(@valid_params, @user)
 
       assert result.data.key?(:votes)
       assert result.data.key?(:poll)
@@ -109,7 +109,7 @@ class VotesController
     test "increments vote count" do
       initial_count = Poll::Vote.count
 
-      result = VotesController::CreateFacade.call(@valid_params)
+      result = VotesController::CreateFacade.call(@valid_params, @user)
 
       assert result.success?
       assert_equal initial_count + 3, Poll::Vote.count
@@ -127,7 +127,7 @@ class VotesController
         }
       )
 
-      result = VotesController::CreateFacade.call(invalid_params)
+      result = VotesController::CreateFacade.call(invalid_params, @user)
 
       assert_not result.success?
       assert result.errors.present?

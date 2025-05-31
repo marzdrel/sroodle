@@ -60,7 +60,7 @@ class Poll
       return user if user
 
       password = SecureRandom.hex(8)
-      User.create!(email:, password:)
+      User.create!(email:, password:, status: "pending")
     end
 
     def create_poll(user)

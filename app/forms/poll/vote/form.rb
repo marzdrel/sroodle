@@ -7,6 +7,11 @@ class Poll
       include ActiveModel::Attributes
       include ActiveModel::Validations
 
+      def initialize(attributes, current_user:)
+        super(attributes)
+        @current_user = current_user
+      end
+
       attribute :name, :string
       attribute :email, :string
       attribute :responses, default: {}
@@ -18,7 +23,7 @@ class Poll
       validate :responses_for_all_options
       validate :valid_response_values
 
-      attr_reader :votes
+      attr_accessor :current_user, :votes
 
       def poll
         @_poll ||= Poll.exid_loader(poll_id)
@@ -47,7 +52,7 @@ class Poll
 
         ActiveRecord::Base.transaction do
           user = find_or_create_user
-          @votes = user.votes.create!(votes_attributes)
+          self.votes = user.votes.create!(votes_attributes)
         end
 
         true
@@ -74,7 +79,7 @@ class Poll
         return user if user
 
         password = SecureRandom.hex(8)
-        User.create!(email: email, password: password)
+        User.create!(email: email, password: password, status: "pending")
       end
     end
   end
