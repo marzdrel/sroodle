@@ -10,12 +10,14 @@ class Poll
     attribute :email, :string
     attribute :event, :string
     attribute :description, :string
+    attribute :end_voting_at, :datetime
     attribute :dates, default: []
 
     validates :name, presence: true, length: {minimum: 2, maximum: 50}
     validates :email, presence: true, format: {with: URI::MailTo::EMAIL_REGEXP}
     validates :event, presence: true, length: {minimum: 5, maximum: 100}
     validates :description, presence: false
+    validates :end_voting_at, presence: true
     validate :at_least_two_dates
 
     def at_least_two_dates
@@ -69,6 +71,7 @@ class Poll
         description: description,
         creator: user,
         eid: UUID7.generate,
+        end_voting_at: end_voting_at,
         options_attributes: options_attributes
       )
     end

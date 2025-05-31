@@ -1,16 +1,17 @@
 # rubocop:disable Layout/LineLength
 # == Schema Information
-# Schema version: 20250519211503
+# Schema version: 20250531170940
 #
 # Table name: polls
 #
-#  id          :integer          not null, primary key
-#  name        :string           not null
-#  description :string
-#  creator_id  :integer          not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  eid         :uuid             not null
+#  id            :integer          not null, primary key
+#  name          :string           not null
+#  description   :string
+#  creator_id    :integer          not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  eid           :                 not null
+#  end_voting_at :datetime         not null
 #
 # Indexes
 #
@@ -37,6 +38,8 @@ class Poll < ApplicationRecord
     presence: true,
     length: {minimum: 5, maximum: 100}
   )
+
+  validates :end_voting_at, presence: true
 
   def to_param = exid_value
 end

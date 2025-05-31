@@ -50,6 +50,7 @@ class PollsController
           :email,
           :description,
           :event,
+          :end_voting_at,
           {
             dates: []
           }

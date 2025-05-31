@@ -9,6 +9,7 @@ class Poll::FormTest < ActiveSupport::TestCase
       email: "john@example.com",
       event: "Team Meeting",
       description: "Weekly team meeting to discuss project progress",
+      end_voting_at: 1.week.from_now,
       dates: ["2023-10-01", "2023-10-02"]
     }
   end
@@ -59,6 +60,12 @@ class Poll::FormTest < ActiveSupport::TestCase
 
     assert form.valid?
     assert_equal form.errors[:description], []
+  end
+
+  test "is invalid without an end_voting_at" do
+    form = Poll::Form.new(@valid_attributes.merge(end_voting_at: nil))
+    assert_not form.valid?
+    assert_includes form.errors[:end_voting_at], "can't be blank"
   end
 
   test "saves successfully with valid attributes" do

@@ -24,6 +24,7 @@ interface FormValues {
     email: string;
     event: string;
     description: string;
+    end_voting_at: string;
     dates?: string[];
   };
 }
@@ -34,6 +35,7 @@ interface NewPollProps {
     email?: string;
     event?: string;
     description?: string;
+    end_voting_at?: string;
   };
   errors?: Record<string, string>;
   new_poll_path?: string;
@@ -50,7 +52,8 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
         name: poll.name || '',
         email: poll.email || '',
         event: poll.event || '',
-        description: poll.description || ''
+        description: poll.description || '',
+        end_voting_at: poll.end_voting_at || ''
       }
     }
   })
@@ -178,6 +181,26 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
                   </FormControl>
                   <FormDescription>
                     Provide details about your event.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="poll.end_voting_at"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Voting Deadline</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Set when voting should close for this poll.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
