@@ -56,6 +56,7 @@ interface VoteFormProps {
   mode: 'new' | 'edit';
   onSubmit: (data: VoteFormData) => void;
   processing: boolean;
+  logged_in?: boolean;
 }
 
 export default function VoteForm({
@@ -65,7 +66,8 @@ export default function VoteForm({
   flash,
   mode,
   onSubmit,
-  processing
+  processing,
+  logged_in = false
 }: VoteFormProps) {
   const form = useReactHookForm<VoteFormData>({
     defaultValues: {
@@ -237,6 +239,7 @@ export default function VoteForm({
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           field.onChange(e)
                         }}
+                        readOnly={logged_in}
                       />
                     </FormControl>
                     <FormDescription>

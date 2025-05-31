@@ -33,6 +33,7 @@ interface EditProps {
     alert?: string;
   };
   new_poll_path?: string;
+  logged_in?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +46,7 @@ interface VoteFormData extends Record<string, any> {
   poll_id?: string;
 }
 
-export default function Edit({ poll, vote, errors = {}, flash, new_poll_path }: EditProps) {
+export default function Edit({ poll, vote, errors = {}, flash, new_poll_path, logged_in = false }: EditProps) {
   const inertiaForm = useForm<VoteFormData>({
     vote: {
       name: vote?.name || '',
@@ -85,6 +86,7 @@ export default function Edit({ poll, vote, errors = {}, flash, new_poll_path }: 
         mode="edit"
         onSubmit={handleSubmit}
         processing={inertiaForm.processing}
+        logged_in={logged_in}
       />
     </Layout>
   )

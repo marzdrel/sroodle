@@ -6,13 +6,15 @@ class VotesController
       new(...).call
     end
 
-    def initialize(params)
+    def initialize(params, current_user)
       self.params = params
+      self.current_user = current_user
     end
 
     def call
       FacadeResult.new(
         success?: poll.present? && user_votes.present?,
+        current_user: current_user,
         data: {
           poll: serialized_poll,
           vote: serialized_vote
@@ -23,22 +25,18 @@ class VotesController
 
     private
 
-    attr_accessor :params
+    attr_accessor :params, :current_user
 
     def poll
       @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:poll_id))
     end
 
     def user_votes
-      @_user_votes ||= poll.votes.joins(:user).where(users: {id: user_id})
-    end
-
-    def user_id
-      params.fetch(:id)
+      @_user_votes ||= poll.votes.joins(:user).where(users: {id: current_user.id})
     end
 
     def user
-      @_user ||= User.find_by(id: user_id)
+      current_user
     end
 
     def serialized_poll

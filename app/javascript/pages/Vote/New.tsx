@@ -25,6 +25,7 @@ interface NewProps {
     alert?: string;
   };
   new_poll_path?: string;
+  logged_in?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,7 +38,7 @@ interface VoteFormData extends Record<string, any> {
   poll_id?: string;
 }
 
-export default function New({ poll, errors = {}, flash, new_poll_path }: NewProps) {
+export default function New({ poll, errors = {}, flash, new_poll_path, logged_in = false }: NewProps) {
   const inertiaForm = useForm<VoteFormData>({
     vote: {
       name: '',
@@ -75,6 +76,7 @@ export default function New({ poll, errors = {}, flash, new_poll_path }: NewProp
         mode="new"
         onSubmit={handleSubmit}
         processing={inertiaForm.processing}
+        logged_in={logged_in}
       />
     </Layout>
   )

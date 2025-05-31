@@ -13,15 +13,11 @@ class VotesController < ApplicationController
   end
 
   def edit
-    result = EditFacade.call(params)
+    result = EditFacade.call(params, current_user)
 
     render(
       inertia: "Vote/Edit",
-      props: {
-        poll: result.data[:poll],
-        vote: result.data[:vote],
-        new_poll_path: new_poll_path
-      }
+      props: result.props
     )
   end
 
