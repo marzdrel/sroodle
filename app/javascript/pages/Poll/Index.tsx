@@ -71,7 +71,7 @@ function DeadlineDisplay({ endVotingAt }: { endVotingAt: string }) {
         {timeText}
       </Badge>
       <span className="text-xs text-muted-foreground">
-        Ends {deadline.toLocaleDateString()} at {deadline.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        Ends {deadline.toISOString().split('T')[0]} at {deadline.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </span>
     </div>
   )
@@ -119,7 +119,7 @@ export default function Index({ polls = [], new_poll_path }: IndexProps) {
                   <div>
                     <h3 className="text-lg font-medium">{poll.name}</h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Created by {poll.creator.email}
+                      Created by {poll.creator.email} on {new Date(poll.created_at).toISOString().split('T')[0]}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -138,11 +138,8 @@ export default function Index({ polls = [], new_poll_path }: IndexProps) {
                   </div>
                 </div>
                 <p className="mt-2 text-sm line-clamp-2">{poll.description}</p>
-                <div className="mt-3 flex flex-col gap-2">
+                <div className="mt-3">
                   <DeadlineDisplay endVotingAt={poll.end_voting_at} />
-                  <div className="text-xs text-muted-foreground">
-                    Created on {new Date(poll.created_at).toLocaleDateString()}
-                  </div>
                 </div>
               </div>
             ))}
