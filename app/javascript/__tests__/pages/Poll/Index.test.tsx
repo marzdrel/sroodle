@@ -14,7 +14,9 @@ const mockPolls = [
       email: 'jane.doe@example.com'
     },
     created_at: '2025-05-15T10:00:00Z',
-    path: '/polls/poll_123456'
+    end_voting_at: '2025-05-20T18:00:00Z',
+    path: '/polls/poll_123456',
+    vote_path: '/polls/poll_123456/votes'
   },
   {
     id: 2,
@@ -24,7 +26,9 @@ const mockPolls = [
       email: 'john.smith@example.com'
     },
     created_at: '2025-05-16T14:30:00Z',
-    path: '/polls/poll_789012'
+    end_voting_at: '2025-05-25T17:00:00Z',
+    path: '/polls/poll_789012',
+    vote_path: '/polls/poll_789012/votes'
   }
 ];
 

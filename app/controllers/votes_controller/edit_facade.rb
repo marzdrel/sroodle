@@ -55,9 +55,15 @@ class VotesController
     end
 
     def serialized_votes
-      user_votes.to_h do |vote|
+      responses = user_votes.to_h do |vote|
         [vote.option.to_param, vote.response]
       end
+
+      {
+        name: user.email,
+        email: user.email,
+        responses: responses
+      }
     end
   end
 end
