@@ -1,6 +1,6 @@
 # rubocop:disable Layout/LineLength
 # == Schema Information
-# Schema version: 20250519211503
+# Schema version: 20250531133418
 #
 # Table name: users
 #
@@ -11,6 +11,7 @@
 #  encrypted_password :string(128)      not null
 #  confirmation_token :string(128)
 #  remember_token     :string(128)      not null
+#  status             :string           not null
 #
 # Indexes
 #

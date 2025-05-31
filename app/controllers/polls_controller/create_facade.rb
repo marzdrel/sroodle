@@ -6,8 +6,9 @@ class PollsController
       new(...).call
     end
 
-    def initialize(params)
+    def initialize(params, current_user)
       self.params = params
+      self.current_user = current_user
     end
 
     def call
@@ -22,7 +23,7 @@ class PollsController
 
     private
 
-    attr_accessor :params
+    attr_accessor :params, :current_user
 
     def form
       @_form ||= Poll::Form.new(strong_params)

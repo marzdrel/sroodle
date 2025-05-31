@@ -27,7 +27,7 @@ class PollsController < ApplicationController
   end
 
   def create
-    result = CreateFacade.call(params)
+    result = CreateFacade.call(params, current_user)
 
     if result.success?
       redirect_to polls_path, notice: "Poll was successfully created."
