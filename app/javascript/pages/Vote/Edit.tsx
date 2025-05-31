@@ -18,7 +18,6 @@ interface Poll {
 }
 
 interface Vote {
-  id: string;
   name: string;
   email: string;
   responses: Record<string, string>;
@@ -26,7 +25,7 @@ interface Vote {
 
 interface EditProps {
   poll: Poll;
-  vote: Vote;
+  votes: Vote;
   errors?: Record<string, string> | string[];
   flash?: {
     notice?: string;
@@ -46,17 +45,17 @@ interface VoteFormData extends Record<string, any> {
   poll_id?: string;
 }
 
-export default function Edit({ poll, vote, errors = {}, flash, new_poll_path, logged_in = false }: EditProps) {
+export default function Edit({ poll, votes, errors = {}, flash, new_poll_path, logged_in = false }: EditProps) {
   const inertiaForm = useForm<VoteFormData>({
     vote: {
-      name: vote?.name || '',
-      email: vote?.email || '',
-      responses: vote?.responses || {}
+      name: votes?.name || '',
+      email: votes?.email || '',
+      responses: votes?.responses || {}
     }
   })
 
   // Handle case where poll or vote might be undefined
-  if (!poll || !vote) {
+  if (!poll || !votes) {
     return (
       <Layout new_poll_path={new_poll_path}>
         <Head title="Edit Vote - Not Found" />
@@ -72,7 +71,7 @@ export default function Edit({ poll, vote, errors = {}, flash, new_poll_path, lo
 
   const handleSubmit = (formData: VoteFormData) => {
     inertiaForm.data = formData
-    inertiaForm.put(`/polls/${poll.id}/votes/${vote.id}`)
+    inertiaForm.patch(`/${poll.id}/votes`)
   }
 
   return (
@@ -80,7 +79,7 @@ export default function Edit({ poll, vote, errors = {}, flash, new_poll_path, lo
       <Head title={`Edit Vote - ${poll.name}`} />
       <VoteForm
         poll={poll}
-        vote={vote}
+        vote={votes}
         errors={errors}
         flash={flash}
         mode="edit"

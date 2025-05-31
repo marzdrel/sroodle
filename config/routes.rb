@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   constraints id: /poll_.*/ do
     get "/:id/vote", to: "votes#new", as: :new_poll_vote
     get "/:id/votes/edit", to: "votes#edit", as: :edit_poll_vote
+    patch "/:id/votes", to: "votes#update", as: :update_poll_votes
     get "/:id", to: "polls#show", as: :poll
   end
 

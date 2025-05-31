@@ -50,28 +50,23 @@ class VotesController < ApplicationController
   end
 
   def update
-    result = UpdateFacade.call(params)
+    result = UpdateFacade.call(params, current_user)
 
     if result.success?
       render(
         inertia: "Vote/Edit",
-        props: {
-          poll: result.data[:poll],
-          vote: result.data[:vote],
-          flash: {notice: "Vote was successfully updated."},
-          new_poll_path: new_poll_path
-        }
+        props: result.props.merge(
+          votes: result.data[:vote],
+          flash: {notice: "Vote was successfully updated."}
+        )
       )
     else
       render(
         inertia: "Vote/Edit",
-        props: {
-          poll: result.data[:poll],
-          vote: result.data[:vote],
-          errors: result.errors,
-          flash: {alert: "Unable to update vote."},
-          new_poll_path: new_poll_path
-        }
+        props: result.props.merge(
+          votes: result.data[:vote],
+          flash: {alert: "Unable to update vote."}
+        )
       )
     end
   end
