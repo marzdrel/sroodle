@@ -48,14 +48,13 @@ interface NewPollProps {
   };
   errors?: Record<string, string>;
   new_poll_path?: string;
-  logged_in?: boolean;
   debug?: string;
   user?: {
     email?: string;
   };
 }
 
-export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, logged_in = false, debug, user }: NewPollProps) {
+export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, debug, user }: NewPollProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [dateErrors, setDateErrors] = useState<string | null>(errors.dates || null);
 
@@ -63,7 +62,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
     defaultValues: {
       poll: {
         name: poll.name || '',
-        email: poll.email || '',
+        email: poll.email || user?.email || '',
         event: poll.event || '',
         description: poll.description || '',
         end_voting_at: poll.end_voting_at || ''
@@ -151,11 +150,14 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
                       type="email"
                       placeholder="your.email@example.com"
                       {...field}
-                      readOnly={logged_in}
+                      disabled={!!user?.email}
                     />
                   </FormControl>
                   <FormDescription>
-                    We'll use this to send you poll updates.
+                    {user?.email
+                      ? "Using your account email for poll updates."
+                      : "We'll use this to send you poll updates."
+                    }
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
