@@ -11,6 +11,7 @@ require "rails/test_help"
 require "shoulda/matchers"
 require "shoulda/context"
 require "minitest/mock"
+require "clearance/test_unit"
 
 module ActiveSupport
   class TestCase

@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react'
+import { Link, router } from '@inertiajs/react'
 import { Menu, X } from "lucide-react"
 import React, { useState } from 'react'
 
@@ -18,6 +18,10 @@ interface LayoutProps {
 export default function Layout({ children, new_poll_path, debug, user }: LayoutProps) {
   console.warn("Layout props:", { children, new_poll_path, debug, user });
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const handleLogout = () => {
+    router.delete('/logout')
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -94,7 +98,7 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
                 </span>
               )}
               {user?.email ? (
-                <Button size="sm">
+                <Button size="sm" onClick={handleLogout}>
                   Logout
                 </Button>
               ) : (
@@ -133,7 +137,7 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
               </Link>
               <div className="pt-4 flex flex-col space-y-2">
                 {user?.email ? (
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={handleLogout}>
                     Logout
                   </Button>
                 ) : (

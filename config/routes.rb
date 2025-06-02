@@ -7,6 +7,9 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", :as => :rails_health_check
 
+  # User routes
+  delete "/logout", to: "users#logout", as: :logout
+
   resources :polls, only: [:create, :index], constraints: {id: /poll_.*/} do
     resources :votes, only: [:create, :index]
   end
