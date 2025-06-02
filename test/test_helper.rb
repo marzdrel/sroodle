@@ -2,6 +2,11 @@ ENV["RAILS_ENV"] ||= "test"
 
 require_relative "../config/environment"
 
+# Prevent database truncation if the environment is other than test
+unless Rails.env.test?
+  abort("The Rails environment is running in non-test mode!")
+end
+
 require "rails/test_help"
 require "shoulda/matchers"
 require "shoulda/context"
