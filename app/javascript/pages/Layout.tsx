@@ -93,12 +93,15 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
                   {user.email}
                 </span>
               )}
-              <Button variant="outline" size="sm" className="mr-1">
-                Sign Up
-              </Button>
-              <Button size="sm">
-                Login
-              </Button>
+              {user?.email ? (
+                <Button size="sm">
+                  Logout
+                </Button>
+              ) : (
+                <Button size="sm">
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -129,12 +132,15 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
                 About
               </Link>
               <div className="pt-4 flex flex-col space-y-2">
-                <Button variant="outline" className="w-full">
-                  Sign Up
-                </Button>
-                <Button className="w-full">
-                  Login
-                </Button>
+                {user?.email ? (
+                  <Button className="w-full">
+                    Logout
+                  </Button>
+                ) : (
+                  <Button className="w-full">
+                    Login
+                  </Button>
+                )}
               </div>
             </div>
           </div>
