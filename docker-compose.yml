@@ -75,9 +75,14 @@ services:
 
   ai:
     <<: *app
+    environment:
+      - RAILS_ENV=test
+      - DISABLE_SPRING=YES
+      - RAILS_ENV=development
+      - TAILWINDCSS_INSTALL_DIR=node_modules/.bin
+    command: /bin/bash
     stdin_open: true
     tty: true
-    command: /bin/bash
 
 volumes:
   bundle_cache:

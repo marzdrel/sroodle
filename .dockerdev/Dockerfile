@@ -30,8 +30,7 @@ WORKDIR /app
 RUN npm install -g @anthropic-ai/claude-code
 
 # Set development environment
-ENV RAILS_ENV="development" \
-    BUNDLE_PATH="/usr/local/bundle"
+ENV BUNDLE_PATH="/usr/local/bundle"
 
 # Install Ruby dependencies
 COPY Gemfile Gemfile.lock ./
