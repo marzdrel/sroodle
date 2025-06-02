@@ -2,6 +2,10 @@
 
 class User
   class PropsSerializer
+    def self.call(...)
+      new(...).call
+    end
+
     def initialize(user)
       self.user = user
     end
