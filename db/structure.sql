@@ -31,7 +31,11 @@ FOREIGN KEY ("poll_id")
 CREATE INDEX "index_poll_options_on_poll_id" ON "poll_options" ("poll_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_poll_options_on_poll_id_and_start" ON "poll_options" ("poll_id", "start") /*application='Sroodle'*/;
 CREATE INDEX "index_poll_options_on_start" ON "poll_options" ("start") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_polls_on_eid" ON "polls" ("eid") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_options_on_eid" ON "poll_options" ("eid") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_votes_on_eid" ON "poll_votes" ("eid") /*application='Sroodle'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20250602135050'),
 ('20250602134455'),
 ('20250602132543'),
 ('20250531170940'),

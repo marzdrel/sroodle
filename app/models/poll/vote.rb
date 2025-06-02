@@ -2,7 +2,7 @@
 
 # rubocop:disable Layout/LineLength
 # == Schema Information
-# Schema version: 20250602134455
+# Schema version: 20250602135050
 #
 # Table name: poll_votes
 #
@@ -17,6 +17,7 @@
 #
 # Indexes
 #
+#  index_poll_votes_on_eid               (eid) UNIQUE
 #  index_poll_votes_on_option_id         (option_id)
 #  index_poll_votes_on_poll_id           (poll_id)
 #  index_poll_votes_on_poll_option_user  (poll_id,option_id,user_id) UNIQUE
