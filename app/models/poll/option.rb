@@ -2,7 +2,7 @@
 
 # rubocop:disable Layout/LineLength
 # == Schema Information
-# Schema version: 20250527134023
+# Schema version: 20250602134455
 #
 # Table name: poll_options
 #
@@ -12,11 +12,10 @@
 #  duration_minutes :integer          not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  eid              :                 not null
+#  eid              :text
 #
 # Indexes
 #
-#  index_poll_options_on_eid                (eid) UNIQUE
 #  index_poll_options_on_poll_id            (poll_id)
 #  index_poll_options_on_poll_id_and_start  (poll_id,start) UNIQUE
 #  index_poll_options_on_start              (start)

@@ -1,6 +1,6 @@
 # rubocop:disable Layout/LineLength
 # == Schema Information
-# Schema version: 20250531170940
+# Schema version: 20250602134455
 #
 # Table name: polls
 #
@@ -10,13 +10,12 @@
 #  creator_id    :integer          not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  eid           :                 not null
 #  end_voting_at :datetime         not null
+#  eid           :text
 #
 # Indexes
 #
 #  index_polls_on_creator_id  (creator_id)
-#  index_polls_on_eid         (eid) UNIQUE
 #
 # Foreign Keys
 #
