@@ -34,6 +34,9 @@ interface EditProps {
   new_poll_path?: string;
   logged_in?: boolean;
   debug?: string;
+  user?: {
+    email?: string;
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +49,7 @@ interface VoteFormData extends Record<string, any> {
   poll_id?: string;
 }
 
-export default function Edit({ poll, votes, errors = {}, flash, new_poll_path, logged_in = false, debug }: EditProps) {
+export default function Edit({ poll, votes, errors = {}, flash, new_poll_path, logged_in = false, debug, user }: EditProps) {
   const inertiaForm = useForm<VoteFormData>({
     vote: {
       name: votes?.name || '',
@@ -58,7 +61,7 @@ export default function Edit({ poll, votes, errors = {}, flash, new_poll_path, l
   // Handle case where poll or vote might be undefined
   if (!poll || !votes) {
     return (
-      <Layout new_poll_path={new_poll_path} debug={debug}>
+      <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
         <Head title="Edit Vote - Not Found" />
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-10">
@@ -76,7 +79,7 @@ export default function Edit({ poll, votes, errors = {}, flash, new_poll_path, l
   }
 
   return (
-    <Layout new_poll_path={new_poll_path} debug={debug}>
+    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
       <Head title={`Edit Vote - ${poll.name}`} />
       <VoteForm
         poll={poll}

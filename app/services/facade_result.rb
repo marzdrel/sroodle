@@ -8,10 +8,10 @@ FacadeResult =
           new_poll_path: routes.new_poll_path,
           errors: errors,
           logged_in: current_user.present?,
-          user: User::PropsSerializer.call(current_user)
+          user: user
         )
 
-      if false && Rails.env.development?
+      if Rails.env.development?
         output.merge(debug: output.inspect)
       else
         output
@@ -20,5 +20,13 @@ FacadeResult =
 
     def routes
       Rails.application.routes.url_helpers
+    end
+
+    def user
+      if current_user
+        User::PropsSerializer.call(current_user)
+      else
+        {}
+      end
     end
   end

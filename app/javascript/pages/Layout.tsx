@@ -10,10 +10,13 @@ interface LayoutProps {
   children: React.ReactNode;
   new_poll_path?: string;
   debug?: string;
+  user?: {
+    email?: string;
+  };
 }
 
-export default function Layout({ children, new_poll_path, debug }: LayoutProps) {
-  console.warn("Layout props:", { children, new_poll_path, debug });
+export default function Layout({ children, new_poll_path, debug, user }: LayoutProps) {
+  console.warn("Layout props:", { children, new_poll_path, debug, user });
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
@@ -83,8 +86,13 @@ export default function Layout({ children, new_poll_path, debug }: LayoutProps) 
               </button>
             </div>
 
-            {/* Auth Buttons */}
+            {/* User Email & Auth Buttons */}
             <div className="hidden md:flex items-center space-x-3">
+              {user?.email && (
+                <span className="text-sm text-muted-foreground mr-2">
+                  {user.email}
+                </span>
+              )}
               <Button variant="outline" size="sm" className="mr-1">
                 Sign Up
               </Button>

@@ -26,6 +26,10 @@ interface NewProps {
   };
   new_poll_path?: string;
   logged_in?: boolean;
+  debug?: string;
+  user?: {
+    email?: string;
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,7 +42,7 @@ interface VoteFormData extends Record<string, any> {
   poll_id?: string;
 }
 
-export default function New({ poll, errors = {}, flash, new_poll_path, logged_in = false }: NewProps) {
+export default function New({ poll, errors = {}, flash, new_poll_path, logged_in = false, debug, user }: NewProps) {
   const inertiaForm = useForm<VoteFormData>({
     vote: {
       name: '',
@@ -50,7 +54,7 @@ export default function New({ poll, errors = {}, flash, new_poll_path, logged_in
   // Handle case where poll might be undefined
   if (!poll) {
     return (
-      <Layout>
+      <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
         <Head title="Vote - Poll Not Found" />
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-10">
@@ -67,7 +71,7 @@ export default function New({ poll, errors = {}, flash, new_poll_path, logged_in
   }
 
   return (
-    <Layout new_poll_path={new_poll_path}>
+    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
       <Head title={`Vote on ${poll.name}`} />
       <VoteForm
         poll={poll}

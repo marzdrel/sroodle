@@ -22,6 +22,10 @@ interface Poll {
 interface IndexProps {
   polls: Poll[];
   new_poll_path?: string;
+  debug?: string;
+  user?: {
+    email?: string;
+  };
 }
 
 function DeadlineDisplay({ endVotingAt }: { endVotingAt: string }) {
@@ -77,9 +81,9 @@ function DeadlineDisplay({ endVotingAt }: { endVotingAt: string }) {
   )
 }
 
-export default function Index({ polls = [], new_poll_path }: IndexProps) {
+export default function Index({ polls = [], new_poll_path, debug, user }: IndexProps) {
   return (
-    <Layout new_poll_path={new_poll_path}>
+    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
       <Head title="Browse Polls" />
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">

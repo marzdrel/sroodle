@@ -49,9 +49,13 @@ interface NewPollProps {
   errors?: Record<string, string>;
   new_poll_path?: string;
   logged_in?: boolean;
+  debug?: string;
+  user?: {
+    email?: string;
+  };
 }
 
-export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, logged_in = false }: NewPollProps) {
+export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, logged_in = false, debug, user }: NewPollProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [dateErrors, setDateErrors] = useState<string | null>(errors.dates || null);
 
@@ -102,7 +106,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
   }
 
   return (
-    <Layout new_poll_path={new_poll_path}>
+    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
       <Head title="Create New Poll" />
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
