@@ -4,6 +4,7 @@ alice:
   encrypted_password: $2a$12$KIX5v1Qz4Z5xk8J6Y3g7eO
   remember_token: abc123
   status: active
+  eid: 018ed3c8-6411-7b5e-9c3f-123456789abc
   <%# name: Alice %>
 
 bob:
@@ -11,4 +12,5 @@ bob:
   encrypted_password: $2a$12$KIX5v1Qz4Z5xk8J6Y3g7eO
   remember_token: def456
   status: active
+  eid: 018ed3c8-6411-7b5e-9c3f-987654321def
   <%# name: Bob %>

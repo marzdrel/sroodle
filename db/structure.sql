@@ -23,17 +23,19 @@ CREATE INDEX "index_poll_votes_on_option_id" ON "poll_votes" ("option_id") /*app
 CREATE INDEX "index_poll_votes_on_user_id" ON "poll_votes" ("user_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_poll_votes_on_poll_option_user" ON "poll_votes" ("poll_id", "option_id", "user_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_poll_votes_on_eid" ON "poll_votes" ("eid") /*application='Sroodle'*/;
-CREATE TABLE IF NOT EXISTS "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "email" varchar NOT NULL, "encrypted_password" varchar(128) NOT NULL, "confirmation_token" varchar(128), "remember_token" varchar(128) NOT NULL, "status" varchar NOT NULL, CONSTRAINT check_status_values CHECK (status IN ('pending', 'active', 'blocked')));
-CREATE INDEX "index_users_on_email" ON "users" ("email") /*application='Sroodle'*/;
-CREATE UNIQUE INDEX "index_users_on_confirmation_token" ON "users" ("confirmation_token") /*application='Sroodle'*/;
-CREATE UNIQUE INDEX "index_users_on_remember_token" ON "users" ("remember_token") /*application='Sroodle'*/;
 CREATE TABLE IF NOT EXISTS "polls" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "description" varchar, "creator_id" integer NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "eid"  NOT NULL, "end_voting_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_8697722fce"
 FOREIGN KEY ("creator_id")
   REFERENCES "users" ("id")
 );
 CREATE INDEX "index_polls_on_creator_id" ON "polls" ("creator_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_polls_on_eid" ON "polls" ("eid") /*application='Sroodle'*/;
+CREATE TABLE IF NOT EXISTS "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "email" varchar NOT NULL, "encrypted_password" varchar(128) NOT NULL, "confirmation_token" varchar(128), "remember_token" varchar(128) NOT NULL, "status" varchar NOT NULL, "eid" text NOT NULL, CONSTRAINT check_status_values CHECK (status IN ('pending', 'active', 'blocked')));
+CREATE INDEX "index_users_on_email" ON "users" ("email") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_users_on_confirmation_token" ON "users" ("confirmation_token") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_users_on_remember_token" ON "users" ("remember_token") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_users_on_eid" ON "users" ("eid") /*application='Sroodle'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20250602132543'),
 ('20250531170940'),
 ('20250531133418'),
 ('20250527170501'),

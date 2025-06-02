@@ -15,6 +15,7 @@ x-app: &app
     - ~/.claude.json:/root/.claude.json
     - ~/.claude:/root/.claude
   environment:
+    - DISABLE_SPRING=YES
     - RAILS_ENV=development
     - TAILWINDCSS_INSTALL_DIR=node_modules/.bin
     - DATABASE_URL=sqlite3:storage/development.sqlite3

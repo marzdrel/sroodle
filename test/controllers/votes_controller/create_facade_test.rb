@@ -10,7 +10,8 @@ class VotesController
       @user = User.create!(
         email: "newuser@example.com",
         password: "password",
-        status: "active"
+        status: "active",
+        eid: "018ed3c8-6411-7b5e-9c3f-555555555555"
       )
       @morning_option = poll_options(:morning_meeting)
       @afternoon_option = poll_options(:afternoon_meeting)

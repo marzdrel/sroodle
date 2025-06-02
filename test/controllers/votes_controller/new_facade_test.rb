@@ -24,7 +24,8 @@ class VotesController
       new_user = User.create!(
         email: "test@example.com",
         password: "password",
-        status: "active"
+        status: "active",
+        eid: "018ed3c8-6411-7b5e-9c3f-111111111111"
       )
       result = VotesController::NewFacade.call(@valid_params, new_user)
 
@@ -55,7 +56,8 @@ class VotesController
       new_user = User.create!(
         email: "test2@example.com",
         password: "password",
-        status: "active"
+        status: "active",
+        eid: "018ed3c8-6411-7b5e-9c3f-222222222222"
       )
       result = VotesController::NewFacade.call(@valid_params, new_user)
 
@@ -76,7 +78,8 @@ class VotesController
       new_user = User.create!(
         email: "test3@example.com",
         password: "password",
-        status: "active"
+        status: "active",
+        eid: "018ed3c8-6411-7b5e-9c3f-333333333333"
       )
       result = VotesController::NewFacade.call(@valid_params, new_user)
 
@@ -112,7 +115,8 @@ class VotesController
       new_user = User.create!(
         email: "test4@example.com",
         password: "password",
-        status: "active"
+        status: "active",
+        eid: "018ed3c8-6411-7b5e-9c3f-444444444444"
       )
       result = VotesController::NewFacade.call(@valid_params, new_user)
 
