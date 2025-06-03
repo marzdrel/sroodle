@@ -1,4 +1,8 @@
 class UsersController < ApplicationController
+  def login
+    render inertia: "Auth/Login", props: {}
+  end
+
   def logout
     sign_out
 

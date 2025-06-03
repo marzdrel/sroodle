@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", :as => :rails_health_check
 
   # User routes
+  get "/login", to: "users#login", as: :login
+  post "/sign_in", to: "clearance/sessions#create", as: :sign_in
   delete "/logout", to: "users#logout", as: :logout
 
   resources :polls, only: [:create, :index], constraints: {id: /poll_.*/} do
