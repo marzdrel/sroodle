@@ -40,7 +40,7 @@ export default function Login() {
                 required
                 value={data.email}
                 onChange={(e) => setData('email', e.target.value)}
-                className={errors.email ? 'border-destructive' : ''}
+                className={`mt-2 ${errors.email ? 'border-destructive' : ''}`}
                 placeholder="you@example.com"
               />
               {errors.email && (
@@ -58,7 +58,7 @@ export default function Login() {
                 required
                 value={data.password}
                 onChange={(e) => setData('password', e.target.value)}
-                className={errors.password ? 'border-destructive' : ''}
+                className={`mt-2 ${errors.password ? 'border-destructive' : ''}`}
                 placeholder="••••••••"
               />
               {errors.password && (
