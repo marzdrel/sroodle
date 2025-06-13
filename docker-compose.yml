@@ -9,11 +9,11 @@ x-app: &app
   image: sroodle-dev
   volumes:
     - .:/app
-    - .dockerdev/bashrc:/root/.bashrc:ro
+    - .dockerdev/bashrc:/home/app/.bashrc:ro
     - bundle_cache:/usr/local/bundle
     - node_modules_cache:/app/node_modules
-    - ~/.claude.json:/root/.claude.json
-    - ~/.claude:/root/.claude
+    - ~/.claude.json:/home/app/.claude.json
+    - ~/.claude:/home/app/.claude
   environment:
     - DISABLE_SPRING=YES
     - RAILS_ENV=development
@@ -50,6 +50,8 @@ services:
     <<: *backend
     command: >
       sh -c "
+        echo 'Cleaning up stale PID file...'
+        rm -f tmp/pids/server.pid
         echo 'Database already exists, running migrations...'
         bin/rails db:migrate
         bin/rails server -b 0.0.0.0 -p 3000
