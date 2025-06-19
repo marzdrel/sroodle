@@ -5,7 +5,7 @@ gem "clearance", ">= 2.10"
 gem "delight"
 gem "exid"
 gem "importmap-rails"
-gem "inertia_rails", "~> 3.8"
+gem "inertia_rails", "~> 3.9"
 gem "jbuilder"
 gem "kamal", require: false
 gem "propshaft"
