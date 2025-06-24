@@ -19,6 +19,7 @@ RUN apt-get update --allow-releaseinfo-change && apt-get install -y \
     libsqlite3-dev \
     libpq-dev \
     tzdata \
+    sudo \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=node-source /usr/local/bin/node /usr/local/bin/
@@ -28,12 +29,14 @@ COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN groupadd --system --gid 1000 app && \
     useradd app --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     mkdir -p /usr/local/bundle && \
-    chown -R app:app /usr/local/bundle
+    chown -R app:app /usr/local/bundle && \
+    echo "app ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 WORKDIR /app
 
 # Install global npm packages for Claude Code
 RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g @sourcegraph/amp
 
 # Set development environment
 ENV BUNDLE_PATH="/usr/local/bundle"
