@@ -102,9 +102,11 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
                   Logout
                 </Button>
               ) : (
-                <Button size="sm">
-                  Login
-                </Button>
+                <Link href="/login">
+                  <Button size="sm">
+                    Login
+                  </Button>
+                </Link>
               )}
             </div>
           </div>
@@ -141,9 +143,11 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
                     Logout
                   </Button>
                 ) : (
-                  <Button className="w-full">
-                    Login
-                  </Button>
+                  <Link href="/login" className="w-full">
+                    <Button className="w-full">
+                      Login
+                    </Button>
+                  </Link>
                 )}
               </div>
             </div>
