@@ -39,7 +39,7 @@ group :development, :test do
   gem "rubocop-rails", ">= 2.10"
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-thread_safety"
-  gem "standardrb"
+  gem "standard", ">= 1.35.1"
   gem "spring", require: false
 end
 
