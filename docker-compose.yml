@@ -75,25 +75,6 @@ services:
     ports:
       - "3036:3036"
 
-  ai:
-    <<: *app
-    environment:
-      - RAILS_ENV=test
-      - DISABLE_SPRING=YES
-      - RAILS_ENV=development
-      - TAILWINDCSS_INSTALL_DIR=node_modules/.bin
-    volumes:
-      - .:/app
-      - .dockerdev/bashrc:/home/app/.bashrc:ro
-      - bundle_cache:/usr/local/bundle
-      - node_modules_cache:/app/node_modules
-      - ~/.claude.json:/home/app/.claude.json
-      - ~/.claude:/home/app/.claude
-      - ~/.config/amp:/home/app/.config/amp
-    command: /bin/bash
-    stdin_open: true
-    tty: true
-
 volumes:
   bundle_cache:
   node_modules_cache:
