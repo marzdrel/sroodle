@@ -105,6 +105,7 @@ migrations:
   enabled: true
   backoffLimit: 2
   activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 3600
   resources:
     limits:
       cpu: 500m

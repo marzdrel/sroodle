@@ -178,7 +178,7 @@ deploy_with_helm() {
     print_success "Helm deployment completed"
 }
 
-# Wait for deployment and run database setup
+# Wait for deployment to be ready (migrations handled by helm hook)
 setup_database() {
     if [ "$SKIP_DB_SETUP" = true ]; then
         print_status "Skipping database setup as requested"
@@ -187,45 +187,32 @@ setup_database() {
 
     print_status "Waiting for deployment to be ready..."
 
-    if ! kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sroodle \
+    if ! kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sroodle,app.kubernetes.io/component!=migration \
         --namespace=${NAMESPACE} --timeout=300s; then
         print_error "Deployment failed to become ready"
         kubectl get pods -l app.kubernetes.io/name=sroodle --namespace=${NAMESPACE}
         exit 1
     fi
 
-    # Wait for deployment rollout to complete
-    print_status "Waiting for deployment rollout to complete..."
-    if ! kubectl rollout status deployment/sroodle -n ${NAMESPACE} --timeout=300s; then
-        print_error "Deployment rollout failed"
-        exit 1
-    fi
+    print_success "Pods are ready"
 
-    # Get a specific pod name instead of using deployment
-    local pod_name=$(kubectl get pods -l app.kubernetes.io/name=sroodle -n ${NAMESPACE} -o jsonpath='{.items[0].metadata.name}')
+    print_status "Checking migration job status..."
 
-    if [ -z "$pod_name" ]; then
-        print_error "No running pods found"
-        exit 1
-    fi
+    # Check if migration job completed successfully
+    local migration_job=$(kubectl get jobs -l app.kubernetes.io/component=migration -n ${NAMESPACE} -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
 
-    print_status "Using pod: $pod_name"
-    print_status "Running database setup..."
-
-    # Check if database already exists
-    if kubectl exec -n ${NAMESPACE} $pod_name -- test -f storage/production.sqlite3 2>/dev/null; then
-        print_warning "Database already exists. Running migrations instead of setup..."
-        if ! kubectl exec -n ${NAMESPACE} $pod_name -- bin/rails db:migrate; then
-            print_warning "Migration failed, but continuing..."
+    if [ -n "$migration_job" ]; then
+        local job_status=$(kubectl get job $migration_job -n ${NAMESPACE} -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null || echo "")
+        if [ "$job_status" = "True" ]; then
+            print_success "Database migrations completed by helm hook"
+        else
+            print_warning "Migration job may still be running or failed. Check logs with: kubectl logs job/$migration_job -n ${NAMESPACE}"
         fi
     else
-        print_status "Creating new database..."
-        if ! kubectl exec -n ${NAMESPACE} $pod_name -- bin/rails db:setup; then
-            print_warning "Database setup failed, but continuing..."
-        fi
+        print_warning "No migration job found. Database setup may need manual intervention."
     fi
 
-    print_success "Database setup completed"
+    print_success "Database setup verification completed"
 }
 
 # Display access information
