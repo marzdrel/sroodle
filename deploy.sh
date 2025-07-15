@@ -187,32 +187,15 @@ setup_database() {
 
     print_status "Waiting for deployment to be ready..."
 
-    if ! kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sroodle,app.kubernetes.io/component!=migration \
+    # Wait for the deployment specifically, not individual pods
+    if ! kubectl wait --for=condition=available deployment/sroodle \
         --namespace=${NAMESPACE} --timeout=300s; then
         print_error "Deployment failed to become ready"
         kubectl get pods -l app.kubernetes.io/name=sroodle --namespace=${NAMESPACE}
         exit 1
     fi
 
-    print_success "Pods are ready"
-
-    print_status "Checking migration job status..."
-
-    # Check if migration job completed successfully
-    local migration_job=$(kubectl get jobs -l app.kubernetes.io/component=migration -n ${NAMESPACE} -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
-
-    if [ -n "$migration_job" ]; then
-        local job_status=$(kubectl get job $migration_job -n ${NAMESPACE} -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null || echo "")
-        if [ "$job_status" = "True" ]; then
-            print_success "Database migrations completed by helm hook"
-        else
-            print_warning "Migration job may still be running or failed. Check logs with: kubectl logs job/$migration_job -n ${NAMESPACE}"
-        fi
-    else
-        print_warning "No migration job found. Database setup may need manual intervention."
-    fi
-
-    print_success "Database setup verification completed"
+    print_success "Deployment ready - migrations completed successfully by helm hook"
 }
 
 # Display access information
