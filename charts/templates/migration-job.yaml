@@ -1,33 +1,24 @@
-apiVersion: apps/v1
-kind: Deployment
+{{- if .Values.migrations.enabled }}
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: {{ include "sroodle.fullname" . }}
+  name: {{ include "sroodle.fullname" . }}-migration
   labels:
     {{- include "sroodle.labels" . | nindent 4 }}
-  {{- if .Values.migrations.enabled }}
+    app.kubernetes.io/component: migration
   annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-weight": "2"
-  {{- end }}
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
-  selector:
-    matchLabels:
-      {{- include "sroodle.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      name: {{ include "sroodle.fullname" . }}-migration
       labels:
         {{- include "sroodle.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        app.kubernetes.io/component: migration
     spec:
+      restartPolicy: Never
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -36,15 +27,24 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: migration
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Running database migrations..."
+              bin/rails db:migrate
+              echo "Running cache migrations..."
+              bin/rails db:migrate:cache
+              echo "Running queue migrations..."
+              bin/rails db:migrate:queue
+              echo "Running cable migrations..."
+              bin/rails db:migrate:cable
+              echo "All migrations completed successfully"
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
@@ -53,28 +53,18 @@ spec:
             {{- with .Values.secretEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.migrations.resources | nindent 12 }}
           volumeMounts:
             {{- if .Values.persistence.enabled }}
             - name: storage
               mountPath: {{ .Values.persistence.mountPath }}
-            {{- end }}
-            {{- with .Values.volumeMounts }}
-            {{- toYaml . | nindent 12 }}
             {{- end }}
       volumes:
         {{- if .Values.persistence.enabled }}
         - name: storage
           persistentVolumeClaim:
             claimName: {{ include "sroodle.fullname" . }}-storage
-        {{- end }}
-        {{- with .Values.volumes }}
-        {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -88,3 +78,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  backoffLimit: {{ .Values.migrations.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.migrations.activeDeadlineSeconds }}
+  ttlSecondsAfterFinished: {{ .Values.migrations.ttlSecondsAfterFinished | default 3600 }}
+{{- end }}
