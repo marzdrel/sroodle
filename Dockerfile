@@ -64,8 +64,8 @@ RUN groupadd --system --gid 1000 app && \
     chown -R app:app db log storage tmp
 USER 1000:1000
 
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+# Enable jemalloc for reduced memory usage and latency
+ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 # Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
