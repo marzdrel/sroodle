@@ -52,8 +52,6 @@ show_usage() {
     echo
     echo "Actions:"
     echo "  deploy        Deploy the application (default)"
-    echo "  cleanup       Clean up existing resources"
-    echo "  redeploy      Cleanup and then deploy"
     echo
     echo "Options:"
     echo "  --registry REGISTRY     Container registry (default: APP_REGISTRY env var)"
@@ -68,24 +66,10 @@ show_usage() {
     echo
     echo "Examples:"
     echo "  $0 deploy                    # Deploy with defaults"
-    echo "  $0 cleanup                   # Clean up existing resources"
-    echo "  $0 redeploy                  # Clean up and deploy"
     echo "  $0 deploy --skip-build       # Deploy without building image"
     echo "  $0 deploy --tag v1.0.0       # Deploy with specific tag"
 }
 
-# Cleanup function
-cleanup_resources() {
-    print_status "Cleaning up existing resources..."
-
-    # Remove the existing secret that wasn't created by Helm
-    kubectl delete secret sroodle-secrets -n ${NAMESPACE} --ignore-not-found=true
-
-    # Remove the Helm release if it exists
-    helm uninstall ${RELEASE_NAME} -n ${NAMESPACE} --ignore-not-found=true
-
-    print_success "Cleanup completed"
-}
 
 # Check prerequisites
 check_prerequisites() {
@@ -150,11 +134,12 @@ build_and_push_image() {
     fi
 }
 
-# Create namespace only
+# Create namespace and service account
 create_namespace() {
     print_status "Creating namespace if it doesn't exist..."
 
     kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
+
 
     print_success "Namespace created/updated"
 }
@@ -249,28 +234,11 @@ deploy() {
     show_access_info
 }
 
-# Main cleanup function
-cleanup() {
-    echo "🧹 Cleaning up Sroodle resources"
-    echo "================================"
-
-    cleanup_resources
-    print_success "Cleanup completed. You can now run ./deploy.sh deploy"
-}
-
-# Main redeploy function
-redeploy() {
-    echo "🔄 Redeploying Sroodle (cleanup + deploy)"
-    echo "========================================="
-
-    cleanup_resources
-    deploy
-}
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        deploy|cleanup|redeploy)
+        deploy)
             ACTION="$1"
             shift
             ;;
@@ -327,12 +295,6 @@ fi
 case $ACTION in
     deploy)
         deploy
-        ;;
-    cleanup)
-        cleanup
-        ;;
-    redeploy)
-        redeploy
         ;;
     *)
         print_error "Unknown action: $ACTION"
