@@ -22,6 +22,7 @@ REGISTRY="${APP_REGISTRY:-}"
 RELEASE_NAME="sroodle"
 NAMESPACE="sroodle"
 PLATFORM="linux/amd64"
+DOMAIN="${APP_DOMAIN}"
 
 # Action flags
 ACTION=""
@@ -56,6 +57,7 @@ show_usage() {
     echo
     echo "Options:"
     echo "  --registry REGISTRY     Container registry (default: APP_REGISTRY env var)"
+    echo "  --domain DOMAIN         Application domain (required: APP_DOMAIN env var)"
     echo "  --namespace NAMESPACE   Kubernetes namespace (default: sroodle)"
     echo "  --release-name NAME     Helm release name (default: sroodle)"
     echo "  --tag TAG              Image tag (default: latest)"
@@ -114,6 +116,11 @@ check_prerequisites() {
         exit 1
     fi
 
+    if [ -z "${DOMAIN}" ]; then
+        print_error "APP_DOMAIN environment variable is required"
+        exit 1
+    fi
+
     print_success "All prerequisites met"
 }
 
@@ -167,7 +174,7 @@ deploy_with_helm() {
         --set image.repository=${image_repo} \
         --set image.tag=${IMAGE_TAG} \
         --set ingress.enabled=true \
-        --set ingress.hosts[0].host=sroodle.local \
+        --set ingress.hosts[0].host=${DOMAIN} \
         --set ingress.hosts[0].paths[0].path=/ \
         --set ingress.hosts[0].paths[0].pathType=Prefix \
         --set railsMasterKey="${rails_master_key}" \
@@ -269,6 +276,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --registry)
             REGISTRY="$2"
+            shift 2
+            ;;
+        --domain)
+            DOMAIN="$2"
             shift 2
             ;;
         --namespace)
