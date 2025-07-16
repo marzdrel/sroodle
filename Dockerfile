@@ -49,7 +49,8 @@ RUN apt-get update -qq && \
 
 # Install npm dependencies (cached when package.json doesn't change)
 COPY package.json package-lock.json* ./
-RUN npm install --force
+RUN npm install --force --no-audit --no-fund --silent && \
+    rm -rf /root/.npm/_logs /root/.npm/_cacache
 
 # Main build stage combining all dependencies
 FROM base AS build
@@ -74,7 +75,13 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+# Clean up timestamped files and caches that break Docker layer caching
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
+    rm -rf /root/.npm/_logs /root/.npm/_cacache && \
+    rm -rf node_modules/.cache && \
+    rm -rf tmp/cache && \
+    find public/assets -name "*.map" -delete && \
+    find . -name "*.log" -delete
 
 # Final stage for app image
 FROM base
