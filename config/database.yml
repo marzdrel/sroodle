@@ -4,6 +4,11 @@ default: &default
   adapter: sqlite3
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
+  variables:
+    journal_mode: WAL
+    synchronous: NORMAL
+    temp_store: MEMORY
+    mmap_size: 268435456
 
 development:
   primary:
