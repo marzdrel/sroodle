@@ -7,7 +7,6 @@ gem "exid"
 gem "importmap-rails"
 gem "inertia_rails", "~> 3.9"
 gem "jbuilder"
-gem "kamal", require: false
 gem "propshaft"
 gem "puma", ">= 6.0"
 gem "rails", ">= 8.0.2"

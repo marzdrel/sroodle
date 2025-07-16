@@ -34,7 +34,8 @@ everyone.
 - **ESLint**: JavaScript and TypeScript linter for code quality
 - **Vitest & Testing Library**: Component testing framework for React
 - **Docker**: Containerized development environment
-- **Kamal**: Deployment orchestration
+- **Kubernetes**: Container orchestration and deployment
+- **Helm**: Package manager for Kubernetes
 - **Claude Code**: AI-powered code generation
 
 ## License
