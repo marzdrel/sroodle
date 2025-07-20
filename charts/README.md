@@ -14,7 +14,7 @@ This Helm chart deploys the Sroodle Rails application to a Kubernetes cluster.
    ```bash
    # Build the image (from sroodle directory)
    docker build -t $APP_REGISTRY/sroodle:latest .
-   
+
    # Push to your registry
    docker push $APP_REGISTRY/sroodle:latest
    ```
@@ -30,7 +30,7 @@ This Helm chart deploys the Sroodle Rails application to a Kubernetes cluster.
    ```bash
    # Install with default values
    helm install sroodle ./charts
-   
+
    # Or install with custom values
    helm install sroodle ./charts \
      --set image.repository=$APP_REGISTRY/sroodle \
