@@ -6,10 +6,15 @@ set -exuo pipefail
 
 RAILS_MASTER_KEY=$(cat ./config/master.key)
 RAILS_ENV="production"
+PLATFORM="linux/amd64"
 
 set -a
 source ./.env
 set +a
+
+docker build --platform ${PLATFORM} -t ${APP_NAME}:${APP_TAG} .
+docker tag ${APP_NAME}:${APP_TAG} ${APP_REGISTRY}/${APP_NAME}:${APP_TAG}
+docker push ${APP_REGISTRY}/${APP_NAME}:${APP_TAG}
 
 helm upgrade --install "${APP_NAME}-${RAILS_ENV}" ./charts \
   --namespace "${APP_NAME}-${RAILS_ENV}" \
