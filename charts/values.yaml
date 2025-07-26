@@ -1,0 +1,7 @@
+---
+image:
+  repository: sroodle
+  pullPolicy: Always
+  tag: latest
+
+replicaCount: 2
