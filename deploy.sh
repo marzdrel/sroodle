@@ -21,4 +21,5 @@ helm upgrade --install "${APP_NAME}-${RAILS_ENV}" ./charts \
   --create-namespace \
   --values ./charts/values.yaml \
   --set image.repository="${APP_REGISTRY}/${APP_NAME}" \
+  --set ingress.host="${APP_DOMAIN}" \
   --set secrets.railsMasterKey=${RAILS_MASTER_KEY}
