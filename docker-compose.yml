@@ -73,7 +73,7 @@ services:
     <<: *backend
     command: bin/vite dev
     ports:
-      - "3036:3036"
+      - ${COMPOSE_VITE_PORT:-3036}:3036
 
 volumes:
   bundle_cache:
