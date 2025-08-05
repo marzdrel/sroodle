@@ -157,7 +157,7 @@ GEM
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
-    inertia_rails (3.9.0)
+    inertia_rails (3.10.0)
       railties (>= 6)
     io-console (0.8.1)
     irb (1.15.2)
@@ -449,7 +449,7 @@ DEPENDENCIES
   exid
   foreman
   importmap-rails
-  inertia_rails (~> 3.9)
+  inertia_rails (~> 3.10)
   jbuilder
   propshaft
   pry
