@@ -1,7 +1,7 @@
 {{- define "base-container" -}}
 image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
 ports:
-  - containerPort: 3000
+  - containerPort: 80
     name: http
 env:
   - name: RAILS_ENV
