@@ -1,6 +1,9 @@
 {
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
     "@tailwindcss/vite": "^4.1.8",
@@ -44,7 +47,7 @@
     "date-fns": "^3.6.0",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
-    "react-day-picker": "^8.10.1",
+    "react-day-picker": "^9.11.2",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.4",
     "tailwind-merge": "^3.3.0",
