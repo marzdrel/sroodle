@@ -57,7 +57,7 @@ services:
         bin/rails server -b 0.0.0.0 -p 3000
       "
     ports:
-      - "3000:3000"
+      - "${COMPOSE_WEB_PORT:-3000}:3000"
     stdin_open: true
     tty: true
 
