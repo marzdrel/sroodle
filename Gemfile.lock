@@ -390,7 +390,7 @@ GEM
     tailwindcss-ruby (4.1.16-x86_64-darwin)
     tailwindcss-ruby (4.1.16-x86_64-linux-gnu)
     tailwindcss-ruby (4.1.16-x86_64-linux-musl)
-    test-unit (3.7.3)
+    test-unit (3.7.7)
       power_assert
     thor (1.4.0)
     thruster (0.1.17)
