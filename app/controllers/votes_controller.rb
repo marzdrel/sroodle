@@ -1,4 +1,6 @@
 class VotesController < ApplicationController
+  before_action :require_open_voting
+
   def new
     result = NewFacade.call(params, cookies)
 
@@ -39,5 +41,14 @@ class VotesController < ApplicationController
     else
       render inertia: "Vote/Edit", props: result.props
     end
+  end
+
+  private
+
+  def require_open_voting
+    poll = Poll.exid_loader(params.fetch(:id))
+    return if poll.voting_open?
+
+    redirect_to poll_path(poll), alert: "Voting on this poll has closed."
   end
 end

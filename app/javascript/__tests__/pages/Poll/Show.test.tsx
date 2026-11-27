@@ -28,7 +28,7 @@ const participants = [
 describe('Poll Show page', () => {
   test('renders the poll details', () => {
     renderWithInertia(
-      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={false} />
+      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={false} voting_open />
     );
 
     expect(screen.getByRole('heading', { name: 'Team Offsite' })).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe('Poll Show page', () => {
 
   test('shows the best date with its counts', () => {
     renderWithInertia(
-      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={false} />
+      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={false} voting_open />
     );
 
     const best = screen.getAllByTestId('best-option');
@@ -49,7 +49,7 @@ describe('Poll Show page', () => {
 
   test('shows every participant with their answers and the totals', () => {
     renderWithInertia(
-      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={true} />
+      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={true} voting_open />
     );
 
     const aliceRow = screen.getByText('Alice Smith').closest('tr')!;
@@ -63,20 +63,20 @@ describe('Poll Show page', () => {
 
   test('links to the vote form or to your answers', () => {
     const { unmount } = renderWithInertia(
-      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} />
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} voting_open />
     );
     expect(screen.getByRole('link', { name: 'Add your answers' })).toHaveAttribute('href', '/poll_123/vote');
     unmount();
 
     renderWithInertia(
-      <Show poll={poll} options={options} participants={participants} best_option_ids={[]} you_voted={true} />
+      <Show poll={poll} options={options} participants={participants} best_option_ids={[]} you_voted={true} voting_open />
     );
     expect(screen.getByRole('link', { name: 'Edit your answers' })).toHaveAttribute('href', '/poll_123/votes/edit');
   });
 
   test('shows empty states before anyone answers', () => {
     renderWithInertia(
-      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} />
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} voting_open />
     );
 
     expect(screen.getByText('No one is available yet.')).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe('Poll Show page', () => {
 
   test('shows all-day dates on the same calendar day in every time zone', () => {
     renderWithInertia(
-      <Show poll={poll} options={options} participants={participants} best_option_ids={[]} you_voted={false} />
+      <Show poll={poll} options={options} participants={participants} best_option_ids={[]} you_voted={false} voting_open />
     );
 
     expect(screen.getByText('Jun 15')).toBeInTheDocument();
@@ -94,22 +94,39 @@ describe('Poll Show page', () => {
 
   test('shows a Manage link only to the organizer', () => {
     const { unmount } = renderWithInertia(
-      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} />
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} voting_open />
     );
     expect(screen.queryByRole('link', { name: 'Manage poll' })).not.toBeInTheDocument();
     unmount();
 
     renderWithInertia(
-      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} admin_path="/poll_123/admin/secret" />
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} voting_open admin_path="/poll_123/admin/secret" />
     );
     expect(screen.getByRole('link', { name: 'Manage poll' })).toHaveAttribute('href', '/poll_123/admin/secret');
   });
 
   test('has a Share poll button', () => {
     renderWithInertia(
-      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} />
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} voting_open />
     );
 
     expect(screen.getByRole('button', { name: /share poll/i })).toBeInTheDocument();
+  });
+
+  test('shows the deadline while voting is open', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} voting_open />
+    );
+
+    expect(screen.getByTestId('deadline')).toHaveTextContent(/Voting closes .*Jun/);
+  });
+
+  test('hides the vote button once voting has closed', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={participants} best_option_ids={[]} you_voted={true} voting_open={false} />
+    );
+
+    expect(screen.getByText('Voting closed')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /your answers/ })).not.toBeInTheDocument();
   });
 });

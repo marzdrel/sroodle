@@ -9,7 +9,7 @@ class Poll::FormTest < ActiveSupport::TestCase
       email: "john@example.com",
       event: "Team Meeting",
       description: "Weekly team meeting to discuss project progress",
-      end_voting_at: "2023-10-15",
+      end_voting_at: 1.month.from_now.to_date.iso8601,
       dates: ["2023-10-01", "2023-10-02"]
     }
   end
@@ -67,17 +67,48 @@ class Poll::FormTest < ActiveSupport::TestCase
     assert_includes form.errors[:end_voting_at], "can't be blank"
   end
 
-  test "converts date string to end of day for end_voting_at" do
-    form = Poll::Form.new(@valid_attributes.merge(end_voting_at: "2023-10-15"))
+  test "ends voting at the end of the chosen day in UTC by default" do
+    day = 1.month.from_now.to_date
+    form = Poll::Form.new(@valid_attributes.merge(end_voting_at: day.iso8601))
 
     assert form.save
+    assert_equal Time.utc(day.year, day.month, day.day, 23, 59, 59), form.poll.end_voting_at.change(usec: 0)
+    assert_equal "UTC", form.poll.time_zone
+  end
 
-    poll = Poll.last
-    expected_date = Date.parse("2023-10-15")
-    assert_equal expected_date, poll.end_voting_at.to_date
-    assert_equal 23, poll.end_voting_at.hour
-    assert_equal 59, poll.end_voting_at.min
-    assert_equal 59, poll.end_voting_at.sec
+  test "ends voting at the end of the chosen day in the organizer's time zone" do
+    day = 1.month.from_now.to_date
+    form = Poll::Form.new(
+      @valid_attributes.merge(end_voting_at: day.iso8601, time_zone: "Europe/Warsaw")
+    )
+
+    assert form.save
+    poll = form.poll
+
+    assert_equal "Europe/Warsaw", poll.time_zone
+    local = poll.end_voting_at.in_time_zone("Europe/Warsaw")
+    assert_equal [day, 23, 59], [local.to_date, local.hour, local.min]
+  end
+
+  test "falls back to UTC for an unknown time zone" do
+    form = Poll::Form.new(@valid_attributes.merge(time_zone: "Mars/Olympus"))
+
+    assert form.save
+    assert_equal "UTC", form.poll.time_zone
+  end
+
+  test "is invalid with a deadline in the past" do
+    form = Poll::Form.new(@valid_attributes.merge(end_voting_at: 2.days.ago.to_date.iso8601))
+
+    assert_not form.valid?
+    assert_includes form.errors[:end_voting_at], "must be today or later"
+  end
+
+  test "is invalid with a deadline that is not a date" do
+    form = Poll::Form.new(@valid_attributes.merge(end_voting_at: "someday"))
+
+    assert_not form.valid?
+    assert_includes form.errors[:end_voting_at], "is not a valid date"
   end
 
   test "saves successfully with valid attributes" do
