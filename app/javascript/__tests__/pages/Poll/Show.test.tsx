@@ -10,6 +10,7 @@ const poll = {
   organizer_name: 'Jane Doe',
   created_at: '2030-05-15T10:00:00Z',
   end_voting_at: '2030-06-01T23:59:59Z',
+  path: '/poll_123',
   vote_path: '/poll_123/vote',
   edit_vote_path: '/poll_123/votes/edit',
 };
@@ -89,5 +90,26 @@ describe('Poll Show page', () => {
 
     expect(screen.getByText('Jun 15')).toBeInTheDocument();
     expect(screen.getByText('Jun 16')).toBeInTheDocument();
+  });
+
+  test('shows a Manage link only to the organizer', () => {
+    const { unmount } = renderWithInertia(
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} />
+    );
+    expect(screen.queryByRole('link', { name: 'Manage poll' })).not.toBeInTheDocument();
+    unmount();
+
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} admin_path="/poll_123/admin/secret" />
+    );
+    expect(screen.getByRole('link', { name: 'Manage poll' })).toHaveAttribute('href', '/poll_123/admin/secret');
+  });
+
+  test('has a Share poll button', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} />
+    );
+
+    expect(screen.getByRole('button', { name: /share poll/i })).toBeInTheDocument();
   });
 });

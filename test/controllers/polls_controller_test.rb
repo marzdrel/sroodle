@@ -25,6 +25,14 @@ class PollsControllerTest < ActionDispatch::IntegrationTest
     poll = Poll.order(:id).last
     assert_redirected_to poll_admin_path(poll, token: poll.admin_token)
     assert_equal "Carol", poll.organizer_name
+
+    follow_redirect!
+    assert_equal "Poll/Admin", inertia_component
+    assert_equal "Poll created. Save the admin link below.", inertia_props.dig("flash", "notice")
+    assert_equal "http://www.example.com/#{poll.to_param}", inertia_props.dig("links", "public")
+
+    get poll_path(poll)
+    assert_equal poll_admin_path(poll, token: poll.admin_token), inertia_props["admin_path"]
   end
 
   test "invalid input re-renders the form" do

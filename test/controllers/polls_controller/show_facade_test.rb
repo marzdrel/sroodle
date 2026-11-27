@@ -76,6 +76,15 @@ class PollsController
       assert_equal [false, true], result.data[:participants].map { it[:you] }
     end
 
+    test "includes the admin path only for the organizer's browser" do
+      assert_nil ShowFacade.call(@params, @cookies).data[:admin_path]
+
+      PollSession.new(@poll, @cookies).remember_admin
+      result = ShowFacade.call(@params, @cookies)
+
+      assert_equal "/#{@poll.to_param}/admin/#{@poll.admin_token}", result.data[:admin_path]
+    end
+
     test "raises RecordNotFound for an unknown poll" do
       params = ActionController::Parameters.new(id: Poll.new(eid: UUID7.generate).to_param)
 
