@@ -4,6 +4,9 @@
 # this browser. Both are stored in signed, permanent, HTTP-only cookies, so
 # nobody needs an account.
 class PollSession
+  # Captures the poll eid from either cookie name.
+  COOKIE_EID = /\Asroodle_(?:participant|admin)_([0-9a-f-]{36})\z/
+
   def initialize(poll, cookies)
     self.poll = poll
     self.cookies = cookies

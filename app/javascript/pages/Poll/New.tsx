@@ -25,6 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import YourPolls, { type MyPoll } from '@/components/YourPolls'
 import { cn } from '@/lib/utils'
 
 interface FormValues {
@@ -47,11 +48,12 @@ interface NewPollProps {
     end_voting_at?: string;
   };
   errors?: Record<string, string>;
+  my_polls?: MyPoll[];
   new_poll_path?: string;
   debug?: string;
 }
 
-export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, debug }: NewPollProps) {
+export default function New({ poll = {}, errors = {} as Record<string, string>, my_polls = [], new_poll_path, debug }: NewPollProps) {
   const [options, setOptions] = useState<OptionInput[]>([]);
   const [optionErrors, setOptionErrors] = useState<string | null>(errors.options || null);
 
@@ -106,6 +108,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
     <Layout new_poll_path={new_poll_path} debug={debug}>
       <Head title="Create New Poll" />
       <div className="max-w-4xl mx-auto">
+        <YourPolls polls={my_polls} />
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold">Create New Poll</h1>
