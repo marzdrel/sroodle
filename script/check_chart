@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Lints and renders the Helm chart, then checks the rules that keep SQLite
+# safe and secrets off the command line. Used by CI; needs helm.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+ARGS=(--set image.tag=ci-test --set ingress.host=polls.example.test)
+
+helm lint charts "${ARGS[@]}"
+rendered="$(helm template sroodle charts "${ARGS[@]}")"
+
+fail() {
+  echo "check_chart: $1" >&2
+  exit 1
+}
+
+grep -q '^  replicas: 1$' <<<"$rendered" || fail "the deployment must run exactly one replica"
+grep -q 'type: Recreate' <<<"$rendered" || fail "the deployment must use the Recreate strategy"
+grep -q 'image: "sroodle:ci-test"' <<<"$rendered" || fail "the image must use the given tag"
+grep -q 'ingressClassName: traefik' <<<"$rendered" || fail "the ingress must set ingressClassName"
+grep -q 'path: /up' <<<"$rendered" || fail "the deployment must have /up probes"
+! grep -q '^kind: Secret$' <<<"$rendered" || fail "the chart must not render the master key into a Secret"
+! grep -q 'SMTP_ADDRESS' <<<"$rendered" || fail "SMTP must stay off unless configured"
+
+if helm template sroodle charts --set ingress.host=polls.example.test >/dev/null 2>&1; then
+  fail "rendering without image.tag must fail"
+fi
+
+smtp="$(helm template sroodle charts "${ARGS[@]}" --set smtp.address=smtp.example.test)"
+grep -q 'name: SMTP_ADDRESS' <<<"$smtp" || fail "smtp.address must set SMTP_ADDRESS"
+grep -q 'key: smtp-password' <<<"$smtp" || fail "the SMTP password must come from the secret"
+
+bash -n deploy.sh || fail "deploy.sh has a syntax error"
+
+echo "check_chart: OK"

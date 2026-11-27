@@ -4,7 +4,11 @@ metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  # SQLite on a ReadWriteOnce volume: exactly one pod, and the old pod stops
+  # before the new one starts, so two processes never write the same files.
+  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -12,12 +16,21 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}
-      annotations:
-        rollme: {{ now | toString | quote }}
     spec:
       containers:
         - name: {{ .Release.Name }}-app
           {{- include "base-container" . | nindent 10 }}
+          readinessProbe:
+            httpGet:
+              path: /up
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /up
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
       volumes:
         - name: sqlite-storage
           persistentVolumeClaim:
