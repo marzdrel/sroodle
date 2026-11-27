@@ -3,6 +3,7 @@ import { CheckCircle2, HelpCircle, XCircle } from 'lucide-react'
 
 import Layout from '../Layout'
 
+import CopyButton from '@/components/CopyButton'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatOption } from '@/lib/options'
@@ -36,6 +37,7 @@ interface Poll {
   organizer_name: string;
   created_at: string;
   end_voting_at: string;
+  path: string;
   vote_path: string;
   edit_vote_path: string;
 }
@@ -46,6 +48,7 @@ interface ShowProps {
   participants: Participant[];
   best_option_ids: string[];
   you_voted: boolean;
+  admin_path?: string | null;
   new_poll_path?: string;
   debug?: string;
 }
@@ -74,7 +77,8 @@ function AnswerCell({ answer }: { answer?: Answer }) {
   )
 }
 
-export default function Show({ poll, options, participants, best_option_ids, you_voted, new_poll_path, debug }: ShowProps) {
+export default function Show({ poll, options, participants, best_option_ids, you_voted, admin_path, new_poll_path, debug }: ShowProps) {
+  const shareUrl = typeof window === 'undefined' ? poll.path : new URL(poll.path, window.location.origin).toString()
   const bestOptions = options.filter(option => best_option_ids.includes(option.id))
 
   return (
@@ -90,6 +94,12 @@ export default function Show({ poll, options, participants, best_option_ids, you
             <Link href={you_voted ? poll.edit_vote_path : poll.vote_path}>
               <Button>{you_voted ? 'Edit your answers' : 'Add your answers'}</Button>
             </Link>
+            <CopyButton value={shareUrl} label="Share poll" share={{ title: poll.name }} />
+            {admin_path && (
+              <Link href={admin_path}>
+                <Button variant="ghost">Manage poll</Button>
+              </Link>
+            )}
           </div>
         </div>
 

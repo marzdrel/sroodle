@@ -21,7 +21,8 @@ class PollsController
           options: serialized_options,
           participants: serialized_participants,
           best_option_ids: best_option_ids,
-          you_voted: current_participant.present?
+          you_voted: current_participant.present?,
+          admin_path: admin_path
         }
       )
     end
@@ -34,8 +35,19 @@ class PollsController
       @_poll ||= Poll.includes(:options, participants: :votes).exid_loader(params.fetch(:id))
     end
 
+    def session
+      @_session ||= PollSession.new(poll, cookies)
+    end
+
+    # Only for the organizer's own browser (it visited the admin link).
+    def admin_path
+      return unless session.admin?
+
+      routes.poll_admin_path(poll, token: poll.admin_token)
+    end
+
     def current_participant
-      @_current_participant ||= PollSession.new(poll, cookies).participant
+      @_current_participant ||= session.participant
     end
 
     def serialized_poll
@@ -46,6 +58,7 @@ class PollsController
         organizer_name: poll.organizer_name,
         created_at: poll.created_at,
         end_voting_at: poll.end_voting_at,
+        path: routes.poll_path(poll),
         vote_path: routes.new_poll_vote_path(poll),
         edit_vote_path: routes.edit_poll_vote_path(poll)
       }
