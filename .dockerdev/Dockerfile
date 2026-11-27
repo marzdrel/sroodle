@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=3.4.4
+ARG RUBY_VERSION=4.0.10
 FROM node:23-bookworm AS node-source
 FROM ruby:$RUBY_VERSION-bookworm AS sroodle-dev-base
 

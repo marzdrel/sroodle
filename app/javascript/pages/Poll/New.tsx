@@ -242,7 +242,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
                         disabled={(date) =>
                           date < new Date(new Date().setHours(0, 0, 0, 0))
                         }
-                        initialFocus
+                        autoFocus
                       />
                     </PopoverContent>
                   </Popover>

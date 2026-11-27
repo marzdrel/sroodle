@@ -18,9 +18,8 @@
     "jsx": "react-jsx",
 
     /* Path mapping */
-    "baseUrl": "./app/javascript",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./app/javascript/*"]
     },
 
     /* Linting */

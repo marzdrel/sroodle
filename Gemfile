@@ -48,6 +48,7 @@ end
 
 group :test do
   gem "capybara"
+  gem "minitest-mock"
   gem "selenium-webdriver"
   gem "shoulda"
   gem "shoulda-matchers"

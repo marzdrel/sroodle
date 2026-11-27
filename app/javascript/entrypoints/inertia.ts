@@ -1,12 +1,6 @@
-import { createInertiaApp } from '@inertiajs/react'
-import { createElement, ReactNode } from 'react'
+import { createInertiaApp, type ResolvedComponent } from '@inertiajs/react'
+import { createElement } from 'react'
 import { createRoot } from 'react-dom/client'
-
-// Temporary type definition, until @inertiajs/react provides one
-type ResolvedComponent = {
-  default: ReactNode
-  layout?: (page: ReactNode) => ReactNode
-}
 
 createInertiaApp({
   // Set default page title
@@ -20,7 +14,7 @@ createInertiaApp({
   // progress: false,
 
   resolve: (name) => {
-    const pages = import.meta.glob<ResolvedComponent>('../pages/**/*.tsx', {
+    const pages = import.meta.glob<{ default: ResolvedComponent }>('../pages/**/*.tsx', {
       eager: true,
     })
 
