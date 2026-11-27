@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class PollsController
+  # The public results page: every participant's answers and the totals per
+  # option. Emails are never included, only the names people chose to show.
   class ShowFacade
     def self.call(...)
       new(...).call
@@ -15,10 +17,12 @@ class PollsController
       FacadeResult.new(
         success?: true,
         data: {
-          poll: serialize(poll),
-          participants: mock_participants # This will be real data in the future
-        },
-        errors: {}
+          poll: serialized_poll,
+          options: serialized_options,
+          participants: serialized_participants,
+          best_option_ids: best_option_ids,
+          you_voted: current_participant.present?
+        }
       )
     end
 
@@ -27,77 +31,83 @@ class PollsController
     attr_accessor :params, :cookies
 
     def poll
-      @_poll ||= Poll.exid_loader(params.fetch(:id))
+      @_poll ||= Poll.includes(:options, participants: :votes).exid_loader(params.fetch(:id))
     end
 
-    def serialize(poll)
+    def current_participant
+      @_current_participant ||= PollSession.new(poll, cookies).participant
+    end
+
+    def serialized_poll
       {
         id: poll.to_param,
         name: poll.name,
-        event: poll.name, # Using name as event name for now
         description: poll.description,
-        creator: {
-          name: poll.organizer_name
-        },
+        organizer_name: poll.organizer_name,
         created_at: poll.created_at,
-        dates: mock_dates, # This will be real data in the future
-        vote_path: routes.new_poll_vote_path(poll)
+        end_voting_at: poll.end_voting_at,
+        vote_path: routes.new_poll_vote_path(poll),
+        edit_vote_path: routes.edit_poll_vote_path(poll)
       }
+    end
+
+    def serialized_options
+      poll.options.map do |option|
+        {
+          id: option.to_param,
+          start: option.start,
+          duration_minutes: option.duration_minutes,
+          counts: counts.fetch(option.id)
+        }
+      end
+    end
+
+    def serialized_participants
+      poll.participants.map do |participant|
+        {
+          id: participant.to_param,
+          name: participant.name,
+          you: participant == current_participant,
+          responses: participant.votes.to_h do |vote|
+            [option_eids.fetch(vote.option_id), vote.response]
+          end
+        }
+      end
+    end
+
+    def option_eids
+      @_option_eids ||= poll.options.to_h { [it.id, it.to_param] }
+    end
+
+    def counts
+      @_counts ||=
+        poll.options.to_h do |option|
+          responses = all_votes.select { it.option_id == option.id }.map(&:response)
+
+          [option.id, Poll::Vote::RESPONSES.index_with { responses.count(it) }]
+        end
+    end
+
+    def all_votes
+      @_all_votes ||= poll.participants.flat_map(&:votes)
+    end
+
+    # The options with the most "yes" answers, using "maybe" to break ties.
+    # Empty until at least one option has a "yes" or "maybe".
+    def best_option_ids
+      scores = poll.options.to_h do |option|
+        count = counts.fetch(option.id)
+        [option, [count["yes"], count["maybe"]]]
+      end
+
+      best = scores.values.max
+      return [] if best.nil? || best == [0, 0]
+
+      scores.select { |_, score| score == best }.keys.map(&:to_param)
     end
 
     def routes
       Rails.application.routes.url_helpers
-    end
-
-    # Mock data for UI development - will be replaced with real data later
-    def mock_dates
-      # Generate 5 dates starting from tomorrow
-      dates = []
-      5.times do |i|
-        date = (Date.today + i + 1).iso8601
-        dates << {
-          date: date,
-          responses: {
-            yes: rand(0..5),
-            maybe: rand(0..3),
-            no: rand(0..2)
-          }
-        }
-      end
-      dates
-    end
-
-    # Mock participants for UI development - will be replaced with real data later
-    def mock_participants
-      return [] if params[:empty_participants] # Allow testing empty state
-
-      first_names = ["Alice", "Bob", "Charlie", "David", "Emma"]
-      last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones"]
-
-      dates = mock_dates.map { |d| d[:date] }
-
-      participants = []
-      3.times do |i|
-        name = "#{first_names[i]} #{last_names[i]}"
-        email = "#{name.downcase.tr(" ", ".")}@example.com"
-
-        responses = dates.map do |date|
-          preferences = ["yes", "maybe", "no"]
-          {
-            date: date,
-            preference: preferences.sample
-          }
-        end
-
-        participants << {
-          id: i + 1,
-          name: name,
-          email: email,
-          responses: responses
-        }
-      end
-
-      participants
     end
   end
 end

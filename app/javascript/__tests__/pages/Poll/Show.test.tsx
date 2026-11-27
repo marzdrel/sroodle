@@ -1,128 +1,93 @@
-import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen, within } from '@testing-library/react';
 
 import Show from '@/pages/Poll/Show';
 import { renderWithInertia } from '@/test-utils/testing-library-utils';
 
-// Sample mock data
-const mockPoll = {
-  id: '1',
-  eid: 'poll_123456',
+const poll = {
+  id: 'poll_123',
   name: 'Team Offsite',
-  event: 'Team Offsite',
   description: 'Planning our annual team offsite event',
-  creator: {
-    name: 'Jane Doe'
-  },
-  created_at: '2025-05-15T10:00:00Z',
-  dates: [
-    {
-      date: '2025-06-15',
-      responses: {
-        yes: 3,
-        maybe: 1,
-        no: 0
-      }
-    },
-    {
-      date: '2025-06-22',
-      responses: {
-        yes: 2,
-        maybe: 2,
-        no: 1
-      }
-    }
-  ]
+  organizer_name: 'Jane Doe',
+  created_at: '2030-05-15T10:00:00Z',
+  end_voting_at: '2030-06-01T23:59:59Z',
+  vote_path: '/poll_123/vote',
+  edit_vote_path: '/poll_123/votes/edit',
 };
 
-const mockParticipants = [
-  {
-    id: 1,
-    name: 'Alice Smith',
-    email: 'alice.smith@example.com',
-    responses: [
-      {
-        date: '2025-06-15',
-        preference: 'yes'
-      },
-      {
-        date: '2025-06-22',
-        preference: 'maybe'
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Bob Johnson',
-    email: 'bob.johnson@example.com',
-    responses: [
-      {
-        date: '2025-06-15',
-        preference: 'yes'
-      },
-      {
-        date: '2025-06-22',
-        preference: 'no'
-      }
-    ]
-  }
+const options = [
+  { id: 'popt_1', start: '2030-06-15T00:00:00Z', duration_minutes: 1440, counts: { yes: 2, maybe: 0, no: 0 } },
+  { id: 'popt_2', start: '2030-06-16T00:00:00Z', duration_minutes: 1440, counts: { yes: 1, maybe: 1, no: 0 } },
 ];
 
-describe('Poll Show Component', () => {
-  test('renders poll details correctly', () => {
-    renderWithInertia(<Show poll={mockPoll} participants={mockParticipants} />);
+const participants = [
+  { id: 'part_1', name: 'Alice Smith', you: false, responses: { popt_1: 'yes' as const, popt_2: 'maybe' as const } },
+  { id: 'part_2', name: 'Bob Johnson', you: true, responses: { popt_1: 'yes' as const, popt_2: 'yes' as const } },
+];
 
-    // Check if poll title and description are rendered
-    expect(screen.getByText('Team Offsite')).toBeInTheDocument();
+describe('Poll Show page', () => {
+  test('renders the poll details', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={false} />
+    );
+
+    expect(screen.getByRole('heading', { name: 'Team Offsite' })).toBeInTheDocument();
     expect(screen.getByText('Planning our annual team offsite event')).toBeInTheDocument();
-
-    // Check if creator info is rendered
-    expect(screen.getByText(/Created by Jane Doe/)).toBeInTheDocument();
+    expect(screen.getByText('Organized by Jane Doe')).toBeInTheDocument();
   });
 
-  test('renders best dates section', () => {
-    renderWithInertia(<Show poll={mockPoll} participants={mockParticipants} />);
+  test('shows the best date with its counts', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={false} />
+    );
 
-    // Check if Best Dates section is rendered
-    expect(screen.getByText('Best Dates')).toBeInTheDocument();
-
-    // Check if date counts are rendered correctly
-    expect(screen.getByText('3 Yes')).toBeInTheDocument();
-    expect(screen.getByText('2 Yes')).toBeInTheDocument();
+    const best = screen.getAllByTestId('best-option');
+    expect(best).toHaveLength(1);
+    expect(best[0]).toHaveTextContent('Saturday, June 15, 2030');
+    expect(best[0]).toHaveTextContent('2 Yes');
   });
 
-  test('renders participants table correctly', () => {
-    renderWithInertia(<Show poll={mockPoll} participants={mockParticipants} />);
+  test('shows every participant with their answers and the totals', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={participants} best_option_ids={['popt_1']} you_voted={true} />
+    );
 
-    // Check if participants table is rendered
-    expect(screen.getByText('All Responses')).toBeInTheDocument();
+    const aliceRow = screen.getByText('Alice Smith').closest('tr')!;
+    expect(within(aliceRow).getByLabelText('Yes')).toBeInTheDocument();
+    expect(within(aliceRow).getByLabelText('Maybe')).toBeInTheDocument();
 
-    // Check if participant names are rendered
-    expect(screen.getByText('Alice Smith')).toBeInTheDocument();
-    expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
-
-    // Check if participant emails are rendered
-    expect(screen.getByText('alice.smith@example.com')).toBeInTheDocument();
-    expect(screen.getByText('bob.johnson@example.com')).toBeInTheDocument();
+    expect(screen.getByText('(you)')).toBeInTheDocument();
+    expect(screen.getByTestId('total-popt_1')).toHaveTextContent('2 / 0');
+    expect(screen.getByTestId('total-popt_2')).toHaveTextContent('1 / 1');
   });
 
-  test('handles empty participants list', () => {
-    renderWithInertia(<Show poll={mockPoll} participants={[]} />);
+  test('links to the vote form or to your answers', () => {
+    const { unmount } = renderWithInertia(
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} />
+    );
+    expect(screen.getByRole('link', { name: 'Add your answers' })).toHaveAttribute('href', '/poll_123/vote');
+    unmount();
 
-    // Check if empty state message is rendered
-    expect(screen.getByText('No responses yet')).toBeInTheDocument();
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={participants} best_option_ids={[]} you_voted={true} />
+    );
+    expect(screen.getByRole('link', { name: 'Edit your answers' })).toHaveAttribute('href', '/poll_123/votes/edit');
   });
 
-  test('has a working back button', async () => {
-    const user = userEvent.setup();
-    renderWithInertia(<Show poll={mockPoll} participants={mockParticipants} />);
+  test('shows empty states before anyone answers', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={[]} best_option_ids={[]} you_voted={false} />
+    );
 
-    const backButton = screen.getByRole('button', { name: /back to polls/i });
-    expect(backButton).toBeInTheDocument();
+    expect(screen.getByText('No one is available yet.')).toBeInTheDocument();
+    expect(screen.getByText('No answers yet. Be the first!')).toBeInTheDocument();
+  });
 
-    await user.click(backButton);
+  test('shows all-day dates on the same calendar day in every time zone', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={participants} best_option_ids={[]} you_voted={false} />
+    );
 
-    // Check that the link has the correct href
-    expect(backButton.closest('a')).toHaveAttribute('href', '/polls');
+    expect(screen.getByText('Jun 15')).toBeInTheDocument();
+    expect(screen.getByText('Jun 16')).toBeInTheDocument();
   });
 });

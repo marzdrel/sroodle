@@ -35,4 +35,16 @@ class PollsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "Poll/New", inertia_component
   end
+
+  test "the poll page shows the real answers" do
+    poll = polls(:one)
+
+    get poll_path(poll)
+
+    assert_response :success
+    assert_equal "Poll/Show", inertia_component
+    assert_equal %w[Alice Bob], inertia_props["participants"].map { it["name"] }
+    assert_equal 3, inertia_props["options"].size
+    assert_not_includes response.body, "alice@example.com"
+  end
 end

@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { formatOption } from '@/lib/options'
 
 interface PollOption {
   id: string;
@@ -131,27 +132,6 @@ export default function VoteForm({
     onChange(newResponses)
   }
 
-  const formatDateTime = (start: string, durationMinutes: number) => {
-    const startDate = new Date(start)
-    const endDate = new Date(startDate.getTime() + durationMinutes * 60000)
-
-    return {
-      date: startDate.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }),
-      time: `${startDate.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit'
-      })} - ${endDate.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit'
-      })}`
-    }
-  }
-
   const getResponseVariant = (response: string) => {
     switch (response) {
       case 'yes': return 'bg-green-100 text-green-800 border-green-200'
@@ -249,7 +229,7 @@ export default function VoteForm({
                 <FormMessage className="mt-2" />
                 <div className="space-y-4 mt-4">
                   {poll.options.map((option) => {
-                    const { date, time } = formatDateTime(option.start, option.duration_minutes)
+                    const { date, time } = formatOption(option)
                     const currentResponse = watchedData.vote?.responses?.[option.id] || ''
 
                     return (
@@ -257,7 +237,7 @@ export default function VoteForm({
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                           <div>
                             <h3 className="font-medium">{date}</h3>
-                            <p className="text-sm text-muted-foreground">{time}</p>
+                            <p className="text-sm text-muted-foreground">{time ?? 'All day'}</p>
                           </div>
 
                           <div className="flex gap-2">
