@@ -12,7 +12,6 @@ const mockPoll = {
   event: 'Team Offsite',
   description: 'Planning our annual team offsite event',
   creator: {
-    email: 'jane.doe@example.com',
     name: 'Jane Doe'
   },
   created_at: '2025-05-15T10:00:00Z',
@@ -79,7 +78,6 @@ describe('Poll Show Component', () => {
 
     // Check if creator info is rendered
     expect(screen.getByText(/Created by Jane Doe/)).toBeInTheDocument();
-    expect(screen.getByText(/jane.doe@example.com/)).toBeInTheDocument();
   });
 
   test('renders best dates section', () => {

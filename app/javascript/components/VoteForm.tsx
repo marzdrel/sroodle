@@ -49,25 +49,18 @@ interface VoteFormProps {
   poll: Poll;
   vote?: Vote;
   errors?: Record<string, string> | string[];
-  flash?: {
-    notice?: string;
-    alert?: string;
-  };
   mode: 'new' | 'edit';
   onSubmit: (data: VoteFormData) => void;
   processing: boolean;
-  logged_in?: boolean;
 }
 
 export default function VoteForm({
   poll,
   vote,
   errors = {},
-  flash,
   mode,
   onSubmit,
-  processing,
-  logged_in = false
+  processing
 }: VoteFormProps) {
   const form = useReactHookForm<VoteFormData>({
     defaultValues: {
@@ -170,18 +163,6 @@ export default function VoteForm({
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Flash Messages */}
-      {flash?.notice && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800 text-sm">{flash.notice}</p>
-        </div>
-      )}
-      {flash?.alert && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 text-sm">{flash.alert}</p>
-        </div>
-      )}
-
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">{poll.name}</h1>
@@ -224,7 +205,7 @@ export default function VoteForm({
                       />
                     </FormControl>
                     <FormDescription>
-                      Enter your full name.
+                      Shown next to your answers.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -245,11 +226,10 @@ export default function VoteForm({
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           field.onChange(e)
                         }}
-                        readOnly={logged_in}
                       />
                     </FormControl>
                     <FormDescription>
-                      We'll use this to send you poll updates.
+                      Optional. Only the organizer can see it.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

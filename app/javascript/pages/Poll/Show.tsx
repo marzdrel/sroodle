@@ -33,7 +33,6 @@ interface Poll {
   event: string;
   description: string;
   creator: {
-    email: string;
     name: string;
   };
   created_at: string;
@@ -46,12 +45,9 @@ interface ShowProps {
   participants?: Participant[];
   new_poll_path?: string;
   debug?: string;
-  user?: {
-    email?: string;
-  };
 }
 
-export default function Show({ poll, participants = [], new_poll_path, debug, user }: ShowProps) {
+export default function Show({ poll, participants = [], new_poll_path, debug }: ShowProps) {
   // Convert date strings to Date objects for the calendar
   const pollDates = poll.dates.map(d => new Date(d.date));
 
@@ -70,7 +66,7 @@ export default function Show({ poll, participants = [], new_poll_path, debug, us
   };
 
   return (
-    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
+    <Layout new_poll_path={new_poll_path} debug={debug}>
       <Head title={`${poll.event} - Poll`} />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -79,7 +75,7 @@ export default function Show({ poll, participants = [], new_poll_path, debug, us
             <div>
               <h1 className="text-3xl font-bold">{poll.event}</h1>
               <p className="text-sm text-muted-foreground mt-1">
-                Created by {poll.creator.name} ({poll.creator.email})
+                Created by {poll.creator.name}
               </p>
               <p className="text-sm text-muted-foreground">
                 Created on {new Date(poll.created_at).toLocaleDateString()}

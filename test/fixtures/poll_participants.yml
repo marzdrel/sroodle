@@ -1,0 +1,30 @@
+# Read about fixtures at
+# https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+---
+_fixture:
+  model_class: Poll::Participant
+
+alice_one:
+  poll: one
+  name: Alice
+  email: alice@example.com
+  token: aliceOneToken00000000000
+  eid: 01971640-0000-7000-8000-000000000001
+
+bob_one:
+  poll: one
+  name: Bob
+  token: bobOneToken0000000000000
+  eid: 01971640-0000-7000-8000-000000000002
+
+bob_two:
+  poll: two
+  name: Bob
+  token: bobTwoToken0000000000000
+  eid: 01971640-0000-7000-8000-000000000003
+
+alice_two:
+  poll: two
+  name: Alice
+  token: aliceTwoToken00000000000
+  eid: 01971640-0000-7000-8000-000000000004

@@ -21,8 +21,8 @@ class Poll::VoteTest < ActiveSupport::TestCase
     assert_must belong_to(:option), Poll::Vote.new
   end
 
-  test "belongs to user" do
-    assert_must belong_to(:user), Poll::Vote.new
+  test "belongs to participant" do
+    assert_must belong_to(:participant), Poll::Vote.new
   end
 
   test "poll association works" do
@@ -35,9 +35,16 @@ class Poll::VoteTest < ActiveSupport::TestCase
     assert_equal poll_options(:morning_meeting), vote.option
   end
 
-  test "user association works" do
+  test "rejects unknown responses" do
     vote = poll_votes(:alice_morning_yes)
-    assert_equal users(:alice), vote.user
+    vote.response = "perhaps"
+
+    assert_not vote.valid?
+  end
+
+  test "participant association works" do
+    vote = poll_votes(:alice_morning_yes)
+    assert_equal poll_participants(:alice_one), vote.participant
   end
 
   test "has valid response values from fixtures" do
@@ -50,22 +57,22 @@ class Poll::VoteTest < ActiveSupport::TestCase
     assert_equal "no", poll_votes(:alice_workshop_no).response
   end
 
-  test "different users can vote on same option" do
+  test "different participants can vote on same option" do
     alice_vote = poll_votes(:alice_morning_yes)
     bob_vote = poll_votes(:bob_morning_maybe)
 
     assert_equal alice_vote.option, bob_vote.option
-    assert_not_equal alice_vote.user, bob_vote.user
+    assert_not_equal alice_vote.participant, bob_vote.participant
     assert alice_vote.valid?
     assert bob_vote.valid?
   end
 
-  test "same user can vote on different options in same poll" do
+  test "same participant can vote on different options in same poll" do
     alice_morning = poll_votes(:alice_morning_yes)
     alice_afternoon = poll_votes(:alice_afternoon_maybe)
 
     assert_equal alice_morning.poll, alice_afternoon.poll
-    assert_equal alice_morning.user, alice_afternoon.user
+    assert_equal alice_morning.participant, alice_afternoon.participant
     assert_not_equal alice_morning.option, alice_afternoon.option
     assert alice_morning.valid?
     assert alice_afternoon.valid?

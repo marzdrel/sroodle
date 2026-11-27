@@ -13,26 +13,26 @@ class Poll
     attribute :end_voting_at, :string
     attribute :dates, default: []
 
+    attr_reader :poll
+
     validates :name, presence: true, length: {minimum: 2, maximum: 50}
-    validates :email, presence: true, format: {with: URI::MailTo::EMAIL_REGEXP}
+    validates :email, format: {with: URI::MailTo::EMAIL_REGEXP}, allow_blank: true
     validates :event, presence: true, length: {minimum: 5, maximum: 100}
-    validates :description, presence: false
     validates :end_voting_at, presence: true
     validate :at_least_two_dates
-
-    def at_least_two_dates
-      return if dates.is_a?(Array) && dates.length >= 2
-
-      errors.add(:dates, "must include at least 2 dates for voting")
-    end
+    validate :dates_are_valid
 
     def save
       return false unless valid?
 
-      ActiveRecord::Base.transaction do
-        user = find_or_create_user
-        create_poll(user)
-      end
+      @poll = Poll.create!(
+        name: event,
+        description: description,
+        organizer_name: name,
+        organizer_email: email.presence,
+        end_voting_at: end_voting_date,
+        options_attributes: options_attributes
+      )
 
       true
     rescue ActiveRecord::RecordInvalid => e
@@ -43,37 +43,31 @@ class Poll
 
     private
 
-    def options_attributes
-      dates.map do
-        {
-          start: Date.parse(it).beginning_of_day,
-          duration_minutes: 1440,
-          eid: UUID7.generate
-        }
-      end
+    def at_least_two_dates
+      return if dates.is_a?(Array) && dates.uniq.length >= 2
+
+      errors.add(:dates, "must include at least 2 dates for voting")
+    end
+
+    def dates_are_valid
+      return unless dates.is_a?(Array)
+
+      parsed_dates
     rescue Date::Error
       errors.add(:dates, "contains invalid date format")
     end
 
-    private
-
-    def find_or_create_user
-      user = User.find_by(email: email)
-      return user if user
-
-      password = SecureRandom.hex(8)
-      User.create!(email:, password:, status: "pending", eid: UUID7.generate)
+    def parsed_dates
+      dates.uniq.map { Date.iso8601(it) }
     end
 
-    def create_poll(user)
-      Poll.create!(
-        name: event,
-        description: description,
-        creator: user,
-        eid: UUID7.generate,
-        end_voting_at: end_voting_date,
-        options_attributes: options_attributes
-      )
+    def options_attributes
+      parsed_dates.sort.map do
+        {
+          start: it.beginning_of_day,
+          duration_minutes: 1440
+        }
+      end
     end
 
     def end_voting_date

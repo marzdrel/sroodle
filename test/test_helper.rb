@@ -11,7 +11,6 @@ require "rails/test_help"
 require "shoulda/matchers"
 require "shoulda/context"
 require "minitest/mock"
-require "clearance/test_unit"
 
 module ActiveSupport
   class TestCase
@@ -34,3 +33,22 @@ Shoulda::Matchers.configure do |config|
     with.library :rails
   end
 end
+
+module InertiaPageHelpers
+  # The Inertia page object of the last response, from either a JSON (Inertia
+  # visit) or an HTML (first load) response.
+  def inertia_page
+    return JSON.parse(response.body) if response.media_type == "application/json"
+
+    document = Nokogiri::HTML(response.body)
+    script = document.at_css("script[data-page]")
+
+    JSON.parse(script ? script.text : document.at_css("[data-page]")["data-page"])
+  end
+
+  def inertia_component = inertia_page["component"]
+
+  def inertia_props = inertia_page["props"]
+end
+
+ActionDispatch::IntegrationTest.include(InertiaPageHelpers)

@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 
 gem "bootsnap", require: false
-gem "clearance", ">= 2.10"
 gem "delight"
 gem "exid"
 gem "importmap-rails"

@@ -1,4 +1,5 @@
-import { Head, useForm } from '@inertiajs/react'
+import { Head, Link, router } from '@inertiajs/react'
+import { useState } from 'react'
 
 import Layout from '../Layout'
 
@@ -14,83 +15,69 @@ interface Poll {
   id: string;
   name: string;
   description: string;
+  path: string;
   options: PollOption[];
 }
 
-interface Vote {
+type Vote = {
   name: string;
   email: string;
   responses: Record<string, string>;
-}
+};
 
 interface EditProps {
   poll: Poll;
-  votes: Vote;
+  vote: Vote;
+  submit_path: string;
+  edit_link?: string;
   errors?: Record<string, string> | string[];
-  flash?: {
-    notice?: string;
-    alert?: string;
-  };
   new_poll_path?: string;
-  logged_in?: boolean;
   debug?: string;
-  user?: {
-    email?: string;
-  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface VoteFormData extends Record<string, any> {
-  vote: {
-    name: string;
-    email: string;
-    responses: Record<string, string>;
-  };
-  poll_id?: string;
+  vote: Vote;
 }
 
-export default function Edit({ poll, votes, errors = {}, flash, new_poll_path, logged_in = false, debug, user }: EditProps) {
-  const inertiaForm = useForm<VoteFormData>({
-    vote: {
-      name: votes?.name || '',
-      email: votes?.email || '',
-      responses: votes?.responses || {}
-    }
-  })
-
-  // Handle case where poll or vote might be undefined
-  if (!poll || !votes) {
-    return (
-      <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
-        <Head title="Edit Vote - Not Found" />
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center py-10">
-            <h1 className="text-2xl font-bold text-red-600">Vote not found</h1>
-            <p className="text-muted-foreground mt-2">The vote you're trying to edit doesn't exist.</p>
-          </div>
-        </div>
-      </Layout>
-    )
-  }
+export default function Edit({ poll, vote, submit_path, edit_link, errors = {}, new_poll_path, debug }: EditProps) {
+  const [processing, setProcessing] = useState(false)
 
   const handleSubmit = (formData: VoteFormData) => {
-    inertiaForm.setData(formData)
-    inertiaForm.patch(`/${poll.id}/votes`)
+    router.patch(submit_path, { vote: formData.vote }, {
+      onStart: () => setProcessing(true),
+      onFinish: () => setProcessing(false),
+    })
   }
 
+  const editUrl = edit_link && typeof window !== 'undefined'
+    ? new URL(edit_link, window.location.origin).toString()
+    : edit_link
+
   return (
-    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
+    <Layout new_poll_path={new_poll_path} debug={debug}>
       <Head title={`Edit Vote - ${poll.name}`} />
       <VoteForm
         poll={poll}
-        vote={votes}
+        vote={vote}
         errors={errors}
-        flash={flash}
         mode="edit"
         onSubmit={handleSubmit}
-        processing={inertiaForm.processing}
-        logged_in={logged_in}
+        processing={processing}
       />
+      <div className="max-w-4xl mx-auto mt-8 space-y-3 text-sm text-muted-foreground">
+        {editUrl && (
+          <p>
+            To change your answers from another device, open your personal link:{' '}
+            <code className="break-all text-foreground" data-testid="edit-link">{editUrl}</code>
+          </p>
+        )}
+        <p>
+          <Link href={poll.path} className="font-medium text-primary hover:underline">
+            See everyone's answers
+          </Link>
+        </p>
+      </div>
     </Layout>
   )
 }

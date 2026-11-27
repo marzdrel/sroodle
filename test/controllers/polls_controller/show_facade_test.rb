@@ -6,19 +6,19 @@ class PollsController
   class ShowFacadeTest < ActiveSupport::TestCase
     setup do
       @poll = polls(:one)
-      @user = users(:alice)
+      @cookies = ActionDispatch::TestRequest.create.cookie_jar
       @params = ActionController::Parameters.new({id: @poll.to_param})
     end
 
     test "returns successful result" do
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
 
       assert result.success?
       assert_empty result.errors
     end
 
     test "result data contains expected structure" do
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
 
       assert_kind_of Hash, result.data
       assert result.data.key?(:poll)
@@ -28,7 +28,7 @@ class PollsController
     end
 
     test "poll data contains all required fields" do
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
       poll_data = result.data[:poll]
 
       assert_equal @poll.to_param, poll_data[:id]
@@ -39,8 +39,7 @@ class PollsController
 
       # Verify creator data
       assert_kind_of Hash, poll_data[:creator]
-      assert_equal @poll.creator.email, poll_data[:creator][:email]
-      assert_equal @poll.creator.email.split("@").first, poll_data[:creator][:name]
+      assert_equal @poll.organizer_name, poll_data[:creator][:name]
 
       # Verify dates structure
       assert_kind_of Array, poll_data[:dates]
@@ -62,7 +61,7 @@ class PollsController
     end
 
     test "generates mock dates starting from tomorrow" do
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
       poll_data = result.data[:poll]
 
       # Check that dates start from tomorrow and are consecutive
@@ -73,7 +72,7 @@ class PollsController
     end
 
     test "mock dates contain random but valid response counts" do
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
       poll_data = result.data[:poll]
 
       poll_data[:dates].each do |date_entry|
@@ -85,7 +84,7 @@ class PollsController
     end
 
     test "participants data has expected structure" do
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
       participants = result.data[:participants]
 
       assert_equal 3, participants.length
@@ -113,7 +112,7 @@ class PollsController
     end
 
     test "participants have consistent email format" do
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
       participants = result.data[:participants]
 
       participants.each do |participant|
@@ -128,7 +127,7 @@ class PollsController
         empty_participants: true
       })
 
-      result = PollsController::ShowFacade.call(params_with_empty, @user)
+      result = PollsController::ShowFacade.call(params_with_empty, @cookies)
       participants = result.data[:participants]
 
       assert_empty participants
@@ -138,26 +137,25 @@ class PollsController
       invalid_params = ActionController::Parameters.new({id: "nonexistent"})
 
       assert_raises(Exid::DecodeError) do
-        PollsController::ShowFacade.call(invalid_params, @user)
+        PollsController::ShowFacade.call(invalid_params, @cookies)
       end
     end
 
     test "includes associated creator data" do
       # This test ensures the includes(:creator) is working
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
       poll_data = result.data[:poll]
 
-      # The facade should not trigger additional queries for creator
-      assert_equal @poll.creator.email, poll_data[:creator][:email]
+      assert_equal @poll.organizer_name, poll_data[:creator][:name]
     end
 
     test "can be called with class method" do
-      result = PollsController::ShowFacade.call(@params, @user)
+      result = PollsController::ShowFacade.call(@params, @cookies)
       assert result.success?
     end
 
     test "can be instantiated and called directly" do
-      facade = PollsController::ShowFacade.new(@params, @user)
+      facade = PollsController::ShowFacade.new(@params, @cookies)
       result = facade.call
 
       assert result.success?

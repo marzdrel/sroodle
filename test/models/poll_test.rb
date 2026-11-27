@@ -6,10 +6,10 @@ class PollTest < ActiveSupport::TestCase
     assert polls(:two).valid?, "polls(:two) should be valid"
   end
 
-  test "belongs to creator" do
-    assert_must belong_to(:creator), Poll.new
+  test "associations" do
     assert_must have_many(:options).dependent(:destroy), Poll.new
-    assert_must have_many(:votes).dependent(:destroy), Poll.new
+    assert_must have_many(:participants).dependent(:destroy), Poll.new
+    assert_must have_many(:votes).dependent(:delete_all), Poll.new
   end
 
   test "requires a name" do
@@ -21,6 +21,24 @@ class PollTest < ActiveSupport::TestCase
     )
   end
 
+  test "requires an organizer name" do
+    assert_must validate_presence_of(:organizer_name), Poll.new
+
+    assert_must(
+      validate_length_of(:organizer_name).is_at_least(2).is_at_most(50),
+      Poll.new
+    )
+  end
+
+  test "organizer email is optional but must be valid" do
+    poll = polls(:two)
+    assert_nil poll.organizer_email
+    assert poll.valid?
+
+    poll.organizer_email = "not-an-email"
+    assert_not poll.valid?
+  end
+
   test "has exid functionality" do
     poll = polls(:one)
 
@@ -28,9 +46,33 @@ class PollTest < ActiveSupport::TestCase
     assert_equal poll.exid_value, poll.to_param
   end
 
-  test "creator association works" do
+  test "generates an eid and an admin token on create" do
+    poll = Poll.create!(
+      name: "Board game night",
+      organizer_name: "Carol",
+      end_voting_at: 1.week.from_now
+    )
+
+    assert_match(/\A[0-9a-f-]{36}\z/, poll.eid)
+    assert_equal 24, poll.admin_token.length
+  end
+
+  test "admin_token? compares safely" do
     poll = polls(:one)
 
-    assert_equal users(:alice), poll.creator
+    assert poll.admin_token?(poll.admin_token)
+    assert_not poll.admin_token?("wrong")
+    assert_not poll.admin_token?(nil)
+    assert_not poll.admin_token?("")
+  end
+
+  test "destroying a poll removes its participants and votes" do
+    poll = polls(:one)
+
+    assert_difference -> { Poll::Participant.count }, -2 do
+      assert_difference -> { Poll::Vote.count }, -5 do
+        poll.destroy!
+      end
+    end
   end
 end
