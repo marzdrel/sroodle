@@ -59,12 +59,6 @@ export default function Layout({ children, new_poll_path = '/', debug }: LayoutP
               >
                 Create Poll
               </Link>
-              <Link
-                href="/about"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                About
-              </Link>
             </nav>
 
             {/* Mobile Menu Button */}
@@ -96,13 +90,6 @@ export default function Layout({ children, new_poll_path = '/', debug }: LayoutP
                 onClick={() => setIsMenuOpen(false)}
               >
                 Create Poll
-              </Link>
-              <Link
-                href="/about"
-                className="block py-2 text-base font-medium transition-colors hover:text-primary"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
               </Link>
             </div>
           </div>

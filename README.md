@@ -13,17 +13,18 @@ everyone.
 
 ## Features
 
-- **Easy Poll Creation**: Create polls for your events with a simple, intuitive form
-- **User Authentication**: Secure user accounts with email-based authentication
-- **Responsive Design**: Works perfectly on mobile, tablet, and desktop devices
-- **Real-time Validation**: Instant feedback on form inputs with clear error messages
-- **Modern UI**: Clean, accessible interface with smooth interactions
+- **No accounts**: Create a poll and get two links: a public one to share and a private admin link to manage it
+- **All-day dates or time slots**: Propose whole days, specific times, or both; times show in each person's time zone
+- **Yes / maybe / no answers**: Voters are remembered in their browser and get a personal link to edit their answers from another device
+- **Live results**: Everyone's answers, totals per option, and the best dates
+- **Organizer tools**: Edit the poll, remove answers, close voting by picking the final date, and offer it as a calendar (.ics) download
+- **Voting deadline**: Voting closes automatically at the end of the chosen day in the organizer's time zone
+- **Private by default**: There is no public list of polls; the home page only shows the polls your own browser created or answered
 
 ## Technology Stack
 
 - **Ruby on Rails 8**: Modern, full-featured web framework
 - **SQLite**: Lightweight database for development and production
-- **Clearance**: Simple email & password authentication
 - **Inertia.js**: SPA-like experience without building an API
 - **React**: Component-based UI library
 - **TypeScript**: Type-safe JavaScript
