@@ -13,7 +13,10 @@ class PollsController
           event: "Team Meeting",
           description: "Weekly team meeting to discuss project progress",
           end_voting_at: 1.month.from_now.to_date.iso8601,
-          dates: ["2023-10-01", "2023-10-02"]
+          options: [
+            {date: "2030-10-01", time: "", duration_minutes: 1440},
+            {date: "2030-10-02", time: "", duration_minutes: 1440}
+          ]
         }
       )
     end

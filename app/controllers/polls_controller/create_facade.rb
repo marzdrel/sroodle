@@ -35,7 +35,7 @@ class PollsController
       if form.poll
         {admin_path: routes.poll_admin_path(form.poll, token: form.poll.admin_token)}
       else
-        {poll: strong_params.to_h.except("dates")}
+        {poll: strong_params.to_h.except("options")}
       end
     end
 
@@ -62,7 +62,7 @@ class PollsController
           :end_voting_at,
           :time_zone,
           {
-            dates: []
+            options: [[:date, :time, :duration_minutes]]
           }
         ]
       )

@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { formatOption } from '@/lib/options'
+import { formatOption, hasTimedOptions, viewerTimeZone } from '@/lib/options'
 
 interface PollOption {
   id: string;
@@ -227,6 +227,11 @@ export default function VoteForm({
               <div className="p-6 border rounded-lg bg-card">
                 <FormLabel className="text-lg font-medium">Select Your Availability</FormLabel>
                 <FormMessage className="mt-2" />
+                {hasTimedOptions(poll.options) && (
+                  <p className="mt-1 text-xs text-muted-foreground" data-testid="time-zone-note">
+                    Times are shown in your time zone ({viewerTimeZone()}).
+                  </p>
+                )}
                 <div className="space-y-4 mt-4">
                   {poll.options.map((option) => {
                     const { date, time } = formatOption(option)

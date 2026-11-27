@@ -35,3 +35,11 @@ export function formatOption({ start, duration_minutes }: PollOptionTime): Forma
 
   return { date, shortDate, weekday, time: `${clock(startDate)} – ${clock(endDate)}` }
 }
+
+export function hasTimedOptions(options: PollOptionTime[]): boolean {
+  return options.some(option => option.duration_minutes < ALL_DAY)
+}
+
+export function viewerTimeZone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone
+}

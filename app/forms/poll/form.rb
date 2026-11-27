@@ -12,7 +12,7 @@ class Poll
     attribute :description, :string
     attribute :end_voting_at, :string
     attribute :time_zone, :string
-    attribute :dates, default: []
+    attribute :options, default: []
 
     attr_reader :poll
 
@@ -21,8 +21,7 @@ class Poll
     validates :event, presence: true, length: {minimum: 5, maximum: 100}
     validates :end_voting_at, presence: true
     validate :end_voting_in_the_future
-    validate :at_least_two_dates
-    validate :dates_are_valid
+    validate :options_are_valid
 
     def save
       return false unless valid?
@@ -46,31 +45,20 @@ class Poll
 
     private
 
-    def at_least_two_dates
-      return if dates.is_a?(Array) && dates.uniq.length >= 2
-
-      errors.add(:dates, "must include at least 2 dates for voting")
+    def options_input
+      @_options_input ||= Poll::OptionsInput.new(options, zone: zone)
     end
 
-    def dates_are_valid
-      return unless dates.is_a?(Array)
-
-      parsed_dates
-    rescue Date::Error
-      errors.add(:dates, "contains invalid date format")
-    end
-
-    def parsed_dates
-      dates.uniq.map { Date.iso8601(it) }
+    def options_are_valid
+      if !options_input.valid?
+        options_input.errors.each { errors.add(:options, it) }
+      elsif options_input.entries.size < 2
+        errors.add(:options, "must include at least 2 dates or times for voting")
+      end
     end
 
     def options_attributes
-      parsed_dates.sort.map do
-        {
-          start: it.beginning_of_day,
-          duration_minutes: 1440
-        }
-      end
+      options_input.entries.map(&:to_h)
     end
 
     # Voting ends at 23:59:59 of the chosen day in the organizer's time zone.

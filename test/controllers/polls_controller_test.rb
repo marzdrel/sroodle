@@ -17,7 +17,10 @@ class PollsControllerTest < ActionDispatch::IntegrationTest
           event: "Board game night",
           description: "",
           end_voting_at: 1.week.from_now.to_date.iso8601,
-          dates: [2.weeks.from_now.to_date.iso8601, 3.weeks.from_now.to_date.iso8601]
+          options: [
+            {date: 2.weeks.from_now.to_date.iso8601, time: "", duration_minutes: 1440},
+            {date: 3.weeks.from_now.to_date.iso8601, time: "18:00", duration_minutes: 90}
+          ]
         }
       }
     end

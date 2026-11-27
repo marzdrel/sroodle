@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form'
 
 import Layout from '../Layout'
 
-import { DateSelector } from '@/components/DateSelector'
+import { OptionsEditor, type OptionInput } from '@/components/OptionsEditor'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -34,7 +34,7 @@ interface FormValues {
     event: string;
     description: string;
     end_voting_at: string;
-    dates?: string[];
+    options?: OptionInput[];
   };
 }
 
@@ -52,8 +52,8 @@ interface NewPollProps {
 }
 
 export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, debug }: NewPollProps) {
-  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
-  const [dateErrors, setDateErrors] = useState<string | null>(errors.dates || null);
+  const [options, setOptions] = useState<OptionInput[]>([]);
+  const [optionErrors, setOptionErrors] = useState<string | null>(errors.options || null);
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -71,15 +71,15 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
     form.clearErrors();
 
     // Update date errors state
-    setDateErrors(errors.dates || null);
+    setOptionErrors(errors.options || null);
 
     if (errors) {
       Object.entries(errors).forEach(([field, message]) => {
         // Map field name to nested path in form
         const formPath = `poll.${field}` as keyof FormValues;
 
-        // Skip displaying dates error using form error as we show it separately
-        if (field !== 'dates') {
+        // The options error is shown next to the date picker instead
+        if (field !== 'options') {
           form.setError(formPath, {
             type: 'server',
             message
@@ -90,13 +90,13 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
   }, [errors, form]);
 
   function onSubmit(data: FormValues) {
-    // Add selected dates to form data
+    // Add the proposed dates and times to the form data
     const formData = {
       ...data,
       poll: {
         ...data.poll,
         time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        dates: selectedDates.map(date => format(date, 'yyyy-MM-dd'))
+        options
       }
     }
     router.post('/polls', formData)
@@ -250,28 +250,27 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
 
             <FormField
               control={form.control}
-              name="poll.dates"
+              name="poll.options"
               render={() => (
                 <FormItem className="space-y-1">
-                  <div className={`mt-8 border rounded-md p-6 bg-card/50 ${dateErrors ? 'border-destructive' : ''}`}>
+                  <div className={`mt-8 border rounded-md p-6 bg-card/50 ${optionErrors ? 'border-destructive' : ''}`}>
                     <FormLabel className="text-lg font-medium">Event Dates</FormLabel>
                     <FormDescription className="text-sm text-muted-foreground mt-1">
-                      Select possible dates for your event. Attendees will vote on their preferences.
+                      Pick possible days. Keep a day "All day" or add one or more start times.
                     </FormDescription>
-                    {dateErrors && (
-                      <p className="text-sm font-medium text-destructive mt-1 mb-4">{dateErrors}</p>
+                    {optionErrors && (
+                      <p className="text-sm font-medium text-destructive mt-1 mb-4">{optionErrors}</p>
                     )}
-                    {!dateErrors && <div className="mb-4"></div>}
-                    <DateSelector
-                      onChange={(dates: Date[]) => {
-                        setSelectedDates(dates);
-                        // Clear error when user selects at least 2 dates
-                        if (dates.length >= 2) {
-                          setDateErrors(null);
+                    {!optionErrors && <div className="mb-4"></div>}
+                    <OptionsEditor
+                      value={options}
+                      onChange={(next: OptionInput[]) => {
+                        setOptions(next);
+                        if (next.length >= 2) {
+                          setOptionErrors(null);
                         }
                       }}
-                      initialDates={[]}
-                      hasError={!!dateErrors}
+                      hasError={!!optionErrors}
                     />
                   </div>
                   <FormMessage />
