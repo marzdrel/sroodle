@@ -1,12 +1,40 @@
 ---
+# SQLite lives on a ReadWriteOnce volume, so the app always runs as a single
+# pod (see templates/deployment.yaml).
+
 image:
   repository: sroodle
-  pullPolicy: Always
-  tag: latest
-
-replicaCount: 2
+  # Required: an immutable tag such as the git SHA (deploy.sh sets it).
+  tag: ""
+  pullPolicy: IfNotPresent
 
 storage:
   size: 10Gi
   storageClass: local-path
   mountPath: /rails/storage
+
+ingress:
+  host: ""
+  className: traefik
+  annotations: {}
+
+secrets:
+  # Secret with the key "rails-master-key", and optionally "smtp-password".
+  # deploy.sh creates it from config/master.key. Defaults to
+  # "<release>-secrets".
+  existingSecret: ""
+
+# Optional, see README "Email". Leave address empty to disable email.
+smtp:
+  address: ""
+  port: 587
+  domain: ""
+  username: ""
+  mailFrom: ""
+
+resources:
+  requests:
+    memory: 1Gi
+    cpu: 500m
+  limits:
+    memory: 1Gi

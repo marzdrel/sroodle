@@ -37,6 +37,12 @@ Production reads these environment variables (each SMTP value can also come from
 
 In development, preview the emails at `/rails/mailers/poll_mailer`.
 
+## Deploying
+
+`deploy.sh` builds the Docker image, pushes it, and installs the Helm chart in `charts/`. It reads `.env` (`APP_NAME`, `APP_REGISTRY`, `APP_DOMAIN`, and optionally `APP_TAG`, which defaults to the current git SHA, and `SMTP_PASSWORD`). The Rails master key is put into a Kubernetes secret straight from `config/master.key`, so it never appears on a command line or in the Helm values.
+
+The app keeps SQLite on a `ReadWriteOnce` volume, so the chart always runs a single pod with the `Recreate` strategy. `script/check_chart` (run in CI) lints the chart and checks these rules.
+
 ## Technology Stack
 
 - **Ruby on Rails 8**: Modern, full-featured web framework
