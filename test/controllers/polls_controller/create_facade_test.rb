@@ -12,7 +12,7 @@ class PollsController
           email: "john@example.com",
           event: "Team Meeting",
           description: "Weekly team meeting to discuss project progress",
-          end_voting_at: "2023-10-15",
+          end_voting_at: 1.month.from_now.to_date.iso8601,
           dates: ["2023-10-01", "2023-10-02"]
         }
       )

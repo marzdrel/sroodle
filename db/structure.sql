@@ -30,10 +30,11 @@ CREATE INDEX "index_poll_votes_on_option_id" ON "poll_votes" ("option_id") /*app
 CREATE UNIQUE INDEX "index_poll_votes_on_eid" ON "poll_votes" ("eid") /*application='Sroodle'*/;
 CREATE INDEX "index_poll_votes_on_participant_id" ON "poll_votes" ("participant_id") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_poll_votes_on_option_participant" ON "poll_votes" ("option_id", "participant_id") /*application='Sroodle'*/;
-CREATE TABLE "polls" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "description" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "end_voting_at" datetime(6) NOT NULL, "eid" text, "admin_token" varchar NOT NULL, "organizer_name" varchar NOT NULL, "organizer_email" varchar);
+CREATE TABLE "polls" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "description" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "end_voting_at" datetime(6) NOT NULL, "eid" text, "admin_token" varchar NOT NULL, "organizer_name" varchar NOT NULL, "organizer_email" varchar, "time_zone" varchar DEFAULT 'UTC' NOT NULL /*application='Sroodle'*/);
 CREATE UNIQUE INDEX "index_polls_on_eid" ON "polls" ("eid") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_polls_on_admin_token" ON "polls" ("admin_token") /*application='Sroodle'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20261127150000'),
 ('20261127140000'),
 ('20250602135050'),
 ('20250602134455'),

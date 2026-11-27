@@ -60,6 +60,7 @@ class PollsController
           :description,
           :event,
           :end_voting_at,
+          :time_zone,
           {
             dates: []
           }

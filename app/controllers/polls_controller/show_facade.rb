@@ -22,6 +22,7 @@ class PollsController
           participants: serialized_participants,
           best_option_ids: best_option_ids,
           you_voted: current_participant.present?,
+          voting_open: poll.voting_open?,
           admin_path: admin_path
         }
       )

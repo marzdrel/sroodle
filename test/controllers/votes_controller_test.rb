@@ -108,6 +108,33 @@ class VotesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "voting is blocked after the deadline" do
+    @poll.update_columns(end_voting_at: 1.minute.ago)
+
+    get new_poll_vote_path(@poll)
+    assert_redirected_to poll_path(@poll)
+    assert_equal "Voting on this poll has closed.", flash[:alert]
+
+    assert_no_difference -> { Poll::Participant.count } do
+      post poll_votes_path(@poll), params: vote_params("Carol", "yes")
+    end
+    assert_redirected_to poll_path(@poll)
+  end
+
+  test "editing is blocked after the deadline" do
+    alice = poll_participants(:alice_one)
+    get participant_link_path(@poll, token: alice.token)
+    @poll.update_columns(end_voting_at: 1.minute.ago)
+
+    get edit_poll_vote_path(@poll)
+    assert_redirected_to poll_path(@poll)
+
+    assert_no_changes -> { alice.votes.order(:id).pluck(:response) } do
+      patch update_poll_votes_path(@poll), params: vote_params("Alice", "no")
+    end
+    assert_redirected_to poll_path(@poll)
+  end
+
   private
 
   def vote_params(name, answer)

@@ -1,5 +1,6 @@
 # rubocop:disable Layout/LineLength
 # == Schema Information
+# Schema version: 20261127150000
 #
 # Table name: polls
 #
@@ -13,6 +14,7 @@
 #  admin_token     :string           not null
 #  organizer_name  :string           not null
 #  organizer_email :string
+#  time_zone       :string           default("UTC"), not null
 #
 # Indexes
 #
@@ -57,11 +59,28 @@ class Poll < ApplicationRecord
   )
 
   validates :end_voting_at, presence: true
+  validate :time_zone_exists
 
   def to_param = exid_value
+
+  def voting_open?
+    end_voting_at.future?
+  end
+
+  def zone
+    ActiveSupport::TimeZone[time_zone.to_s] || ActiveSupport::TimeZone["UTC"]
+  end
 
   def admin_token?(candidate)
     candidate.present? &&
       ActiveSupport::SecurityUtils.secure_compare(admin_token, candidate.to_s)
+  end
+
+  private
+
+  def time_zone_exists
+    return if ActiveSupport::TimeZone[time_zone.to_s]
+
+    errors.add(:time_zone, "is not a known time zone")
   end
 end

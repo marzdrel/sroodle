@@ -48,6 +48,7 @@ interface ShowProps {
   participants: Participant[];
   best_option_ids: string[];
   you_voted: boolean;
+  voting_open: boolean;
   admin_path?: string | null;
   new_poll_path?: string;
   debug?: string;
@@ -57,6 +58,12 @@ const ANSWER_STYLES: Record<Answer, { className: string; label: string; icon: Re
   yes: { className: 'bg-green-100 text-green-800', label: 'Yes', icon: <CheckCircle2 className="h-4 w-4" /> },
   maybe: { className: 'bg-yellow-100 text-yellow-800', label: 'Maybe', icon: <HelpCircle className="h-4 w-4" /> },
   no: { className: 'bg-red-100 text-red-800', label: 'No', icon: <XCircle className="h-4 w-4" /> },
+}
+
+function formatDeadline(endVotingAt: string) {
+  return new Date(endVotingAt).toLocaleString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+  })
 }
 
 function AnswerCell({ answer }: { answer?: Answer }) {
@@ -77,7 +84,7 @@ function AnswerCell({ answer }: { answer?: Answer }) {
   )
 }
 
-export default function Show({ poll, options, participants, best_option_ids, you_voted, admin_path, new_poll_path, debug }: ShowProps) {
+export default function Show({ poll, options, participants, best_option_ids, you_voted, voting_open, admin_path, new_poll_path, debug }: ShowProps) {
   const shareUrl = typeof window === 'undefined' ? poll.path : new URL(poll.path, window.location.origin).toString()
   const bestOptions = options.filter(option => best_option_ids.includes(option.id))
 
@@ -89,11 +96,20 @@ export default function Show({ poll, options, participants, best_option_ids, you
           <div>
             <h1 className="text-3xl font-bold">{poll.name}</h1>
             <p className="mt-1 text-sm text-muted-foreground">Organized by {poll.organizer_name}</p>
+            <p className="mt-1 text-sm" data-testid="deadline">
+              {voting_open ? (
+                <span className="text-muted-foreground">Voting closes {formatDeadline(poll.end_voting_at)}</span>
+              ) : (
+                <Badge variant="secondary">Voting closed</Badge>
+              )}
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href={you_voted ? poll.edit_vote_path : poll.vote_path}>
-              <Button>{you_voted ? 'Edit your answers' : 'Add your answers'}</Button>
-            </Link>
+            {voting_open && (
+              <Link href={you_voted ? poll.edit_vote_path : poll.vote_path}>
+                <Button>{you_voted ? 'Edit your answers' : 'Add your answers'}</Button>
+              </Link>
+            )}
             <CopyButton value={shareUrl} label="Share poll" share={{ title: poll.name }} />
             {admin_path && (
               <Link href={admin_path}>

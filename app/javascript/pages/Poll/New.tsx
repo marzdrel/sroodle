@@ -95,7 +95,8 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
       ...data,
       poll: {
         ...data.poll,
-        dates: selectedDates.map(date => date.toISOString().split('T')[0])
+        time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        dates: selectedDates.map(date => format(date, 'yyyy-MM-dd'))
       }
     }
     router.post('/polls', formData)
@@ -240,7 +241,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
                     </PopoverContent>
                   </Popover>
                   <FormDescription>
-                    Select the date when voting should close (voting will end at 11:59 PM on this date).
+                    Voting closes at 11:59 PM on this day, in your time zone.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

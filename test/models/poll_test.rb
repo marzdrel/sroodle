@@ -75,4 +75,21 @@ class PollTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test "voting is open until the deadline" do
+    poll = polls(:one)
+    assert poll.voting_open?
+
+    poll.end_voting_at = 1.second.ago
+    assert_not poll.voting_open?
+  end
+
+  test "requires a known time zone" do
+    poll = polls(:one)
+    poll.time_zone = "America/Indiana/Indianapolis"
+    assert poll.valid?
+
+    poll.time_zone = "Mars/Olympus"
+    assert_not poll.valid?
+  end
 end
