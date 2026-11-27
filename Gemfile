@@ -3,7 +3,6 @@ source "https://rubygems.org"
 gem "bootsnap", require: false
 gem "delight"
 gem "exid"
-gem "importmap-rails"
 gem "inertia_rails", "~> 3.15"
 gem "jbuilder"
 gem "propshaft"
@@ -13,11 +12,9 @@ gem "solid_cable"
 gem "solid_cache"
 gem "solid_queue"
 gem "sqlite3", ">= 2.1"
-gem "stimulus-rails"
 gem "tailwindcss-rails", "~> 4.4"
 # gem "tailwindcss-ruby", "~> 4.1"
 gem "thruster", require: false
-gem "turbo-rails"
 gem "tzinfo-data", platforms: %i[windows jruby]
 gem "vite_rails", "~> 3.0"
 
