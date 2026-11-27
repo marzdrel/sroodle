@@ -1,10 +1,4 @@
 class PollsController < ApplicationController
-  def index
-    result = IndexFacade.call(params)
-
-    render inertia: "Poll/Index", props: result.props
-  end
-
   def show
     result = ShowFacade.call(params, cookies)
 
@@ -23,7 +17,7 @@ class PollsController < ApplicationController
   end
 
   def new
-    result = NewFacade.call(params)
+    result = NewFacade.call(params, cookies)
 
     render inertia: "Poll/New", props: result.props
   end

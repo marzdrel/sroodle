@@ -6,6 +6,32 @@ class PollsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_equal "Poll/New", inertia_component
+    assert_equal [], inertia_props["my_polls"]
+  end
+
+  test "there is no public list of polls" do
+    get "/polls"
+
+    assert_response :not_found
+  end
+
+  test "the home page lists the polls this browser created" do
+    post polls_path, params: {
+      poll: {
+        name: "Carol",
+        event: "Board game night",
+        end_voting_at: 1.week.from_now.to_date.iso8601,
+        options: [
+          {date: 2.weeks.from_now.to_date.iso8601, time: "", duration_minutes: 1440},
+          {date: 3.weeks.from_now.to_date.iso8601, time: "", duration_minutes: 1440}
+        ]
+      }
+    }
+
+    get new_poll_path
+
+    assert_equal ["Board game night"], inertia_props["my_polls"].map { it["name"] }
+    assert_no_match(/@example\.com/, response.body)
   end
 
   test "creating a poll redirects the organizer to the admin page" do
