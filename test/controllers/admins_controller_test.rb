@@ -149,4 +149,11 @@ class AdminsControllerTest < ActionDispatch::IntegrationTest
     assert_equal ["Alice", "Bob"], inertia_props["participants"].map { it["name"] }
     assert_equal "alice@example.com", inertia_props.dig("participants", 0, "email")
   end
+
+  test "picking a date emails the participants who left an email" do
+    assert_enqueued_emails 1 do
+      post close_poll_admin_path(@poll, token: @poll.admin_token),
+        params: {option_id: poll_options(:afternoon_meeting).to_param}
+    end
+  end
 end

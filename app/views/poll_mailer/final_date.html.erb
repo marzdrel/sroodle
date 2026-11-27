@@ -1,0 +1,7 @@
+<p>Hi <%= @participant.name %>,</p>
+
+<p><%= @poll.organizer_name %> picked the date for <strong><%= @poll.name %></strong>:</p>
+
+<p style="font-size: 18px;"><strong><%= option_label(@option) %></strong></p>
+
+<p><%= link_to "See the poll", @poll_url %> · <%= link_to "Add it to your calendar", @calendar_url %></p>

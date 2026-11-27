@@ -34,6 +34,15 @@ class AdminsController
 
       self.errors = {}
       poll.close!(option)
+      notify_participants
+
+      true
+    end
+
+    def notify_participants
+      poll.participants.where.not(email: [nil, ""]).find_each do |participant|
+        PollMailer.with(poll: poll, participant: participant).final_date.deliver_later
+      end
     end
   end
 end

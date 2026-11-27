@@ -154,7 +154,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
                     />
                   </FormControl>
                   <FormDescription>
-                    Optional. Never shown to voters.
+                    Optional. We'll email you the poll and admin links. Never shown to voters.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

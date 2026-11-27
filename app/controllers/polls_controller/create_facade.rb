@@ -14,6 +14,7 @@ class PollsController
     def call
       if form.save
         PollSession.new(form.poll, cookies).remember_admin
+        send_links_email
       end
 
       FacadeResult.new(
@@ -26,6 +27,12 @@ class PollsController
     private
 
     attr_accessor :params, :cookies
+
+    def send_links_email
+      return if form.poll.organizer_email.blank?
+
+      PollMailer.with(poll: form.poll).created.deliver_later
+    end
 
     def form
       @_form ||= Poll::Form.new(strong_params)
