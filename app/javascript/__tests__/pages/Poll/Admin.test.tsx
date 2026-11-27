@@ -1,4 +1,6 @@
-import { screen } from '@testing-library/react';
+import { router } from '@inertiajs/react';
+import { screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import Admin from '@/pages/Poll/Admin';
 import { renderWithInertia } from '@/test-utils/testing-library-utils';
@@ -10,7 +12,6 @@ const poll = {
   organizer_name: 'Carol',
   end_voting_at: '2030-01-10T23:59:59Z',
   path: '/poll_123',
-  options: [],
 };
 
 const links = {
@@ -19,9 +20,27 @@ const links = {
   admin: 'https://sroodle.test/poll_123/admin/secret',
 };
 
+const options = [
+  { id: 'popt_1', start: '2030-01-12T00:00:00Z', duration_minutes: 1440, counts: { yes: 3, maybe: 0, no: 1 } },
+  { id: 'popt_2', start: '2030-01-13T00:00:00Z', duration_minutes: 1440, counts: { yes: 1, maybe: 2, no: 1 } },
+];
+
+const baseProps = {
+  poll,
+  links,
+  participants_count: 4,
+  options,
+  best_option_ids: ['popt_1'],
+  closed: false,
+  voting_open: true,
+  final_option_id: null,
+  close_path: '/poll_123/admin/secret/close',
+  reopen_path: '/poll_123/admin/secret/reopen',
+};
+
 describe('Poll Admin page', () => {
   test('shows the public poll link and the private admin link', () => {
-    renderWithInertia(<Admin poll={poll} links={links} participants_count={0} />);
+    renderWithInertia(<Admin {...baseProps} />);
 
     expect(screen.getByText('Board game night')).toBeInTheDocument();
     expect(screen.getByText(links.public)).toBeInTheDocument();
@@ -29,17 +48,40 @@ describe('Poll Admin page', () => {
     expect(screen.getByText(/don't share it/)).toBeInTheDocument();
   });
 
-  test('shows how many people answered', () => {
-    renderWithInertia(<Admin poll={poll} links={links} participants_count={1} />);
-    expect(screen.getByText('1 person has answered')).toBeInTheDocument();
-  });
-
-  test('shows a flash notice from the server', () => {
-    renderWithInertia(<Admin poll={poll} links={links} participants_count={3} />, {
+  test('shows how many people answered and a flash notice', () => {
+    renderWithInertia(<Admin {...baseProps} participants_count={1} />, {
       inertiaProps: { flash: { notice: 'Poll created. Save the admin link below.' } },
     });
 
+    expect(screen.getByText(/1 person has answered/)).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('Poll created');
-    expect(screen.getByText('3 people have answered')).toBeInTheDocument();
+  });
+
+  test('lists the dates with counts and marks the best one', () => {
+    renderWithInertia(<Admin {...baseProps} />);
+
+    const best = screen.getByTestId('option-popt_1');
+    expect(within(best).getByText('Best')).toBeInTheDocument();
+    expect(best).toHaveTextContent('3 yes · 0 maybe · 1 no');
+    expect(within(screen.getByTestId('option-popt_2')).queryByText('Best')).not.toBeInTheDocument();
+  });
+
+  test('picking a date posts it to the close path', async () => {
+    renderWithInertia(<Admin {...baseProps} />);
+
+    const second = screen.getByTestId('option-popt_2');
+    await userEvent.click(within(second).getByRole('button', { name: 'Pick this date' }));
+
+    expect(router.post).toHaveBeenCalledWith('/poll_123/admin/secret/close', { option_id: 'popt_2' });
+  });
+
+  test('a closed poll shows the chosen date and can be reopened', async () => {
+    renderWithInertia(<Admin {...baseProps} closed voting_open={false} final_option_id="popt_2" />);
+
+    expect(within(screen.getByTestId('option-popt_2')).getByText('Chosen')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Pick this date' })).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Reopen voting' }));
+    expect(router.post).toHaveBeenCalledWith('/poll_123/admin/secret/reopen');
   });
 });

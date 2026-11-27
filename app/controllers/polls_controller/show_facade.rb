@@ -18,11 +18,13 @@ class PollsController
         success?: true,
         data: {
           poll: serialized_poll,
-          options: serialized_options,
+          options: results.serialized_options,
           participants: serialized_participants,
-          best_option_ids: best_option_ids,
+          best_option_ids: results.best_options.map(&:to_param),
           you_voted: current_participant.present?,
           voting_open: poll.voting_open?,
+          final_option_id: poll.final_option&.to_param,
+          calendar_path: (routes.poll_calendar_path(poll) if poll.final_option),
           admin_path: admin_path
         }
       )
@@ -33,7 +35,7 @@ class PollsController
     attr_accessor :params, :cookies
 
     def poll
-      @_poll ||= Poll.includes(:options, participants: :votes).exid_loader(params.fetch(:id))
+      @_poll ||= Poll.includes(:options, :final_option, participants: :votes).exid_loader(params.fetch(:id))
     end
 
     def session
@@ -65,17 +67,6 @@ class PollsController
       }
     end
 
-    def serialized_options
-      poll.options.map do |option|
-        {
-          id: option.to_param,
-          start: option.start,
-          duration_minutes: option.duration_minutes,
-          counts: counts.fetch(option.id)
-        }
-      end
-    end
-
     def serialized_participants
       poll.participants.map do |participant|
         {
@@ -93,31 +84,8 @@ class PollsController
       @_option_eids ||= poll.options.to_h { [it.id, it.to_param] }
     end
 
-    def counts
-      @_counts ||=
-        poll.options.to_h do |option|
-          responses = all_votes.select { it.option_id == option.id }.map(&:response)
-
-          [option.id, Poll::Vote::RESPONSES.index_with { responses.count(it) }]
-        end
-    end
-
-    def all_votes
-      @_all_votes ||= poll.participants.flat_map(&:votes)
-    end
-
-    # The options with the most "yes" answers, using "maybe" to break ties.
-    # Empty until at least one option has a "yes" or "maybe".
-    def best_option_ids
-      scores = poll.options.to_h do |option|
-        count = counts.fetch(option.id)
-        [option, [count["yes"], count["maybe"]]]
-      end
-
-      best = scores.values.max
-      return [] if best.nil? || best == [0, 0]
-
-      scores.select { |_, score| score == best }.keys.map(&:to_param)
+    def results
+      @_results ||= PollResults.new(poll)
     end
 
     def routes

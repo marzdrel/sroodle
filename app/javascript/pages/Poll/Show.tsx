@@ -49,6 +49,8 @@ interface ShowProps {
   best_option_ids: string[];
   you_voted: boolean;
   voting_open: boolean;
+  final_option_id?: string | null;
+  calendar_path?: string | null;
   admin_path?: string | null;
   new_poll_path?: string;
   debug?: string;
@@ -84,9 +86,11 @@ function AnswerCell({ answer }: { answer?: Answer }) {
   )
 }
 
-export default function Show({ poll, options, participants, best_option_ids, you_voted, voting_open, admin_path, new_poll_path, debug }: ShowProps) {
+export default function Show({ poll, options, participants, best_option_ids, you_voted, voting_open, final_option_id, calendar_path, admin_path, new_poll_path, debug }: ShowProps) {
   const shareUrl = typeof window === 'undefined' ? poll.path : new URL(poll.path, window.location.origin).toString()
   const bestOptions = options.filter(option => best_option_ids.includes(option.id))
+  const finalOption = options.find(option => option.id === final_option_id)
+  const finalFormatted = finalOption ? formatOption(finalOption) : null
 
   return (
     <Layout new_poll_path={new_poll_path} debug={debug}>
@@ -118,6 +122,19 @@ export default function Show({ poll, options, participants, best_option_ids, you
             )}
           </div>
         </div>
+
+        {finalFormatted && (
+          <section className="rounded-lg border-2 border-green-300 bg-green-50 p-6" data-testid="final-date">
+            <p className="text-sm font-medium text-green-800">The date is set</p>
+            <p className="mt-1 text-2xl font-bold text-green-900">{finalFormatted.date}</p>
+            {finalFormatted.time && <p className="text-green-900">{finalFormatted.time}</p>}
+            {calendar_path && (
+              <a href={calendar_path} className="mt-3 inline-block text-sm font-medium text-green-800 underline">
+                Add to calendar (.ics)
+              </a>
+            )}
+          </section>
+        )}
 
         {poll.description && (
           <p className="whitespace-pre-line rounded-lg bg-muted/50 p-4 text-sm">{poll.description}</p>

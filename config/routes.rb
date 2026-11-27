@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   constraints id: /poll_[^\/]+/ do
     get "/:id", to: "polls#show", as: :poll
+    get "/:id/event.ics", to: "polls#calendar", as: :poll_calendar
 
     get "/:id/vote", to: "votes#new", as: :new_poll_vote
     post "/:id/votes", to: "votes#create", as: :poll_votes
@@ -14,6 +15,8 @@ Rails.application.routes.draw do
     get "/:id/p/:token", to: "participants#show", as: :participant_link
 
     get "/:id/admin/:token", to: "admins#show", as: :poll_admin
+    post "/:id/admin/:token/close", to: "admins#close", as: :close_poll_admin
+    post "/:id/admin/:token/reopen", to: "admins#reopen", as: :reopen_poll_admin
   end
 
   root "polls#new", as: :new_poll

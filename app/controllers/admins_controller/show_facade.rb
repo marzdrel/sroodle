@@ -2,6 +2,8 @@
 
 class AdminsController
   class ShowFacade
+    include FindPoll
+
     def self.call(...)
       new(...).call
     end
@@ -22,9 +24,16 @@ class AdminsController
           links: {
             public: routes.poll_url(poll, host: request.base_url),
             vote: routes.new_poll_vote_url(poll, host: request.base_url),
-            admin: request.original_url
+            admin: routes.poll_admin_url(poll, token: poll.admin_token, host: request.base_url)
           },
-          participants_count: poll.participants.count
+          participants_count: poll.participants.size,
+          options: results.serialized_options,
+          best_option_ids: results.best_options.map(&:to_param),
+          closed: poll.closed?,
+          voting_open: poll.voting_open?,
+          final_option_id: poll.final_option&.to_param,
+          close_path: routes.close_poll_admin_path(poll, token: poll.admin_token),
+          reopen_path: routes.reopen_poll_admin_path(poll, token: poll.admin_token)
         }
       )
     end
@@ -33,17 +42,12 @@ class AdminsController
 
     attr_accessor :params, :cookies, :request
 
-    def poll
-      @_poll ||= find_poll
+    def poll_scope
+      Poll.includes(:options, :final_option, participants: :votes)
     end
 
-    # Raises RecordNotFound (404) for a wrong token, the same as for an
-    # unknown poll, so the response doesn't reveal which part was wrong.
-    def find_poll
-      poll = Poll.includes(:options).exid_loader(params.fetch(:id))
-      raise ActiveRecord::RecordNotFound unless poll.admin_token?(params[:token])
-
-      poll
+    def results
+      @_results ||= PollResults.new(poll)
     end
 
     def routes
