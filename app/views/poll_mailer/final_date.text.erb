@@ -1,0 +1,8 @@
+Hi <%= @participant.name %>,
+
+<%= @poll.organizer_name %> picked the date for "<%= @poll.name %>":
+
+<%= option_label(@option) %>
+
+See the poll: <%= @poll_url %>
+Add it to your calendar: <%= @calendar_url %>

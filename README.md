@@ -21,6 +21,22 @@ everyone.
 - **Voting deadline**: Voting closes automatically at the end of the chosen day in the organizer's time zone
 - **Private by default**: There is no public list of polls; the home page only shows the polls your own browser created or answered
 
+## Email
+
+Email is optional. When it's set up, Sroodle sends the organizer their public and admin links after they create a poll (if they gave an email address), and tells participants who left an email address when the final date is picked. Emails are sent by a background job, so a Solid Queue worker must run in production (set `SOLID_QUEUE_IN_PUMA=true` to run it inside Puma).
+
+Production reads these environment variables (each SMTP value can also come from `smtp.*` in the Rails credentials):
+
+| Variable | Purpose |
+|---|---|
+| `APP_HOST` | Host used in links inside emails (always `https`) |
+| `MAIL_FROM` | Sender, defaults to `Sroodle <no-reply@APP_HOST>` |
+| `SMTP_ADDRESS` | SMTP server; without it, sending is turned off |
+| `SMTP_PORT` | Defaults to 587 (STARTTLS) |
+| `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD` | SMTP login |
+
+In development, preview the emails at `/rails/mailers/poll_mailer`.
+
 ## Technology Stack
 
 - **Ruby on Rails 8**: Modern, full-featured web framework

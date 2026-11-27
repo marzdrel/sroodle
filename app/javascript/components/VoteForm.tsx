@@ -209,7 +209,7 @@ export default function VoteForm({
                       />
                     </FormControl>
                     <FormDescription>
-                      Optional. Only the organizer can see it.
+                      Optional. Only the organizer sees it; we'll email you the final date.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

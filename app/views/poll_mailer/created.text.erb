@@ -1,0 +1,11 @@
+Hi <%= @poll.organizer_name %>,
+
+Your poll "<%= @poll.name %>" is ready.
+
+Share this link with everyone you want to invite:
+<%= @public_url %>
+
+Your private admin link (don't share it; it's the only way to manage the poll):
+<%= @admin_url %>
+
+Voting closes <%= @poll.end_voting_at.in_time_zone(@poll.zone).strftime("%A, %B %-d at %H:%M") %> (<%= @poll.time_zone %>).

@@ -110,4 +110,30 @@ class PollsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "text/calendar", response.media_type
     assert_includes response.body, "SUMMARY:Team offsite planning"
   end
+
+  test "creating a poll emails the links when an email is given" do
+    assert_enqueued_emails 1 do
+      post polls_path, params: {poll: poll_params.merge(email: "carol@example.com")}
+    end
+  end
+
+  test "creating a poll without an email sends nothing" do
+    assert_no_enqueued_emails do
+      post polls_path, params: {poll: poll_params.merge(email: "")}
+    end
+  end
+
+  private
+
+  def poll_params
+    {
+      name: "Carol",
+      event: "Board game night",
+      end_voting_at: 1.week.from_now.to_date.iso8601,
+      options: [
+        {date: 2.weeks.from_now.to_date.iso8601, time: "", duration_minutes: 1440},
+        {date: 3.weeks.from_now.to_date.iso8601, time: "", duration_minutes: 1440}
+      ]
+    }
+  end
 end
