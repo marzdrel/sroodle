@@ -36,6 +36,11 @@ const baseProps = {
   final_option_id: null,
   close_path: '/poll_123/admin/secret/close',
   reopen_path: '/poll_123/admin/secret/reopen',
+  edit_path: '/poll_123/admin/secret/edit',
+  destroy_path: '/poll_123/admin/secret',
+  participants: [
+    { id: 'part_1', name: 'Dave', email: 'dave@example.com', remove_path: '/poll_123/admin/secret/participants/part_1' },
+  ],
 };
 
 describe('Poll Admin page', () => {
@@ -83,5 +88,36 @@ describe('Poll Admin page', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Reopen voting' }));
     expect(router.post).toHaveBeenCalledWith('/poll_123/admin/secret/reopen');
+  });
+
+  test('links to the edit page and lists participants', () => {
+    renderWithInertia(<Admin {...baseProps} />);
+
+    expect(screen.getByRole('link', { name: 'Edit poll' })).toHaveAttribute('href', '/poll_123/admin/secret/edit');
+    const row = screen.getByTestId('participant-part_1');
+    expect(row).toHaveTextContent('Dave');
+    expect(row).toHaveTextContent('dave@example.com');
+  });
+
+  test('removing a participant asks first', async () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    renderWithInertia(<Admin {...baseProps} />);
+
+    await userEvent.click(within(screen.getByTestId('participant-part_1')).getByRole('button', { name: 'Remove' }));
+
+    expect(confirm).toHaveBeenCalled();
+    expect(router.delete).toHaveBeenCalledWith('/poll_123/admin/secret/participants/part_1');
+    confirm.mockRestore();
+  });
+
+  test('deleting the poll does nothing when not confirmed', async () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    vi.mocked(router.delete).mockClear();
+    renderWithInertia(<Admin {...baseProps} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Delete poll' }));
+
+    expect(router.delete).not.toHaveBeenCalled();
+    confirm.mockRestore();
   });
 });
