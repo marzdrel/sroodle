@@ -36,6 +36,13 @@ interface Links {
   admin: string;
 }
 
+interface Participant {
+  id: string;
+  name: string;
+  email: string | null;
+  remove_path: string;
+}
+
 interface AdminProps {
   poll: Poll;
   links: Links;
@@ -47,6 +54,9 @@ interface AdminProps {
   final_option_id: string | null;
   close_path: string;
   reopen_path: string;
+  edit_path: string;
+  destroy_path: string;
+  participants: Participant[];
   new_poll_path?: string;
   debug?: string;
 }
@@ -66,8 +76,21 @@ function LinkRow({ label, url, hint, copyLabel }: { label: string; url: string; 
 
 export default function Admin({
   poll, links, participants_count, options, best_option_ids, closed, voting_open,
-  final_option_id, close_path, reopen_path, new_poll_path, debug,
+  final_option_id, close_path, reopen_path, edit_path, destroy_path, participants,
+  new_poll_path, debug,
 }: AdminProps) {
+  const destroyPoll = () => {
+    if (window.confirm('Delete this poll and all answers? This cannot be undone.')) {
+      router.delete(destroy_path)
+    }
+  }
+
+  const removeParticipant = (participant: Participant) => {
+    if (window.confirm(`Remove ${participant.name}'s answers?`)) {
+      router.delete(participant.remove_path)
+    }
+  }
+
   const pickDate = (optionId: string) => {
     router.post(close_path, { option_id: optionId })
   }
@@ -90,9 +113,14 @@ export default function Admin({
               {closed ? 'Closed' : voting_open ? 'Voting open' : 'Voting deadline passed'}
             </p>
           </div>
-          <Link href={poll.path}>
-            <Button variant="outline">View results</Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link href={edit_path}>
+              <Button variant="outline">Edit poll</Button>
+            </Link>
+            <Link href={poll.path}>
+              <Button variant="outline">View results</Button>
+            </Link>
+          </div>
         </div>
 
         <section className="space-y-4 rounded-lg border p-6">
@@ -156,6 +184,25 @@ export default function Admin({
           </ul>
         </section>
 
+        <section className="space-y-4 rounded-lg border p-6">
+          <h2 className="text-lg font-medium">Participants</h2>
+          {participants.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nobody has answered yet.</p>
+          ) : (
+            <ul className="divide-y">
+              {participants.map(participant => (
+                <li key={participant.id} className="flex items-center justify-between py-2" data-testid={`participant-${participant.id}`}>
+                  <div>
+                    <div className="font-medium">{participant.name}</div>
+                    {participant.email && <div className="text-xs text-muted-foreground">{participant.email}</div>}
+                  </div>
+                  <Button size="sm" variant="ghost" onClick={() => removeParticipant(participant)}>Remove</Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
         <section className="space-y-4 rounded-lg border border-amber-300 bg-amber-50 p-6">
           <h2 className="text-lg font-medium">Your private admin link</h2>
           <LinkRow
@@ -164,6 +211,14 @@ export default function Admin({
             copyLabel="Copy admin link"
             hint="Save this link and don't share it. It's the only way to manage this poll."
           />
+        </section>
+
+        <section className="flex flex-col gap-2 rounded-lg border border-red-200 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-medium">Delete poll</h2>
+            <p className="text-sm text-muted-foreground">Removes the poll and every answer for good.</p>
+          </div>
+          <Button variant="destructive" onClick={destroyPoll}>Delete poll</Button>
         </section>
       </div>
     </Layout>

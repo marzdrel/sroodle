@@ -33,7 +33,19 @@ class AdminsController
           voting_open: poll.voting_open?,
           final_option_id: poll.final_option&.to_param,
           close_path: routes.close_poll_admin_path(poll, token: poll.admin_token),
-          reopen_path: routes.reopen_poll_admin_path(poll, token: poll.admin_token)
+          reopen_path: routes.reopen_poll_admin_path(poll, token: poll.admin_token),
+          edit_path: routes.edit_poll_admin_path(poll, token: poll.admin_token),
+          destroy_path: routes.destroy_poll_admin_path(poll, token: poll.admin_token),
+          participants: poll.participants.map do |participant|
+            {
+              id: participant.to_param,
+              name: participant.name,
+              email: participant.email,
+              remove_path: routes.remove_participant_poll_admin_path(
+                poll, token: poll.admin_token, participant_id: participant.to_param
+              )
+            }
+          end
         }
       )
     end

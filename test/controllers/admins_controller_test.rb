@@ -68,4 +68,85 @@ class AdminsControllerTest < ActionDispatch::IntegrationTest
     assert_equal({"yes" => 1, "maybe" => 1, "no" => 0}, options.first["counts"])
     assert_equal 2, inertia_props["best_option_ids"].size
   end
+
+  test "the edit page shows the current values" do
+    get edit_poll_admin_path(@poll, token: @poll.admin_token)
+
+    assert_response :success
+    assert_equal "Poll/Edit", inertia_component
+    assert_equal "Team offsite planning", inertia_props.dig("values", "event")
+    assert_equal 3, inertia_props.dig("values", "options").size
+    assert_equal "09:00", inertia_props.dig("values", "options", 0, "time")
+  end
+
+  test "the organizer can update the poll" do
+    get edit_poll_admin_path(@poll, token: @poll.admin_token)
+    values = inertia_props["values"]
+
+    patch update_poll_admin_path(@poll, token: @poll.admin_token),
+      params: {poll: values.merge("event" => "Offsite, take two")}
+
+    assert_redirected_to poll_admin_path(@poll, token: @poll.admin_token)
+    assert_equal "Offsite, take two", @poll.reload.name
+  end
+
+  test "invalid edits re-render the form with errors" do
+    patch update_poll_admin_path(@poll, token: @poll.admin_token),
+      params: {poll: {event: "", end_voting_at: 1.week.from_now.to_date.iso8601, options: []}}
+
+    assert_response :success
+    assert_equal "Poll/Edit", inertia_component
+    assert inertia_props.dig("errors", "event").present?
+    assert inertia_props.dig("errors", "options").present?
+    assert_equal "Team offsite planning", @poll.reload.name
+  end
+
+  test "the organizer can delete the poll" do
+    assert_difference -> { Poll.count }, -1 do
+      delete destroy_poll_admin_path(@poll, token: @poll.admin_token)
+    end
+
+    assert_redirected_to new_poll_path
+  end
+
+  test "the organizer can remove a participant" do
+    bob = poll_participants(:bob_one)
+
+    assert_difference -> { @poll.participants.count }, -1 do
+      delete remove_participant_poll_admin_path(@poll, token: @poll.admin_token, participant_id: bob.to_param)
+    end
+
+    assert_redirected_to poll_admin_path(@poll, token: @poll.admin_token)
+    assert_equal "Removed Bob's answers.", flash[:notice]
+  end
+
+  test "removing a participant of another poll is not found" do
+    assert_no_difference -> { Poll::Participant.count } do
+      delete remove_participant_poll_admin_path(
+        @poll, token: @poll.admin_token, participant_id: poll_participants(:bob_two).to_param
+      )
+    end
+
+    assert_response :not_found
+  end
+
+  test "editing and deleting need the admin token" do
+    get edit_poll_admin_path(@poll, token: "wrong")
+    assert_response :not_found
+
+    patch update_poll_admin_path(@poll, token: "wrong"), params: {poll: {event: "Hacked poll"}}
+    assert_response :not_found
+
+    assert_no_difference -> { Poll.count } do
+      delete destroy_poll_admin_path(@poll, token: "wrong")
+    end
+    assert_response :not_found
+  end
+
+  test "the admin page lists participants with their emails" do
+    get poll_admin_path(@poll, token: @poll.admin_token)
+
+    assert_equal ["Alice", "Bob"], inertia_props["participants"].map { it["name"] }
+    assert_equal "alice@example.com", inertia_props.dig("participants", 0, "email")
+  end
 end

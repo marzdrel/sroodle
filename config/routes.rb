@@ -17,6 +17,14 @@ Rails.application.routes.draw do
     get "/:id/admin/:token", to: "admins#show", as: :poll_admin
     post "/:id/admin/:token/close", to: "admins#close", as: :close_poll_admin
     post "/:id/admin/:token/reopen", to: "admins#reopen", as: :reopen_poll_admin
+    get "/:id/admin/:token/edit", to: "admins#edit", as: :edit_poll_admin
+    patch "/:id/admin/:token", to: "admins#update", as: :update_poll_admin
+    delete "/:id/admin/:token", to: "admins#destroy", as: :destroy_poll_admin
+    delete(
+      "/:id/admin/:token/participants/:participant_id",
+      to: "admins#remove_participant",
+      as: :remove_participant_poll_admin
+    )
   end
 
   root "polls#new", as: :new_poll
