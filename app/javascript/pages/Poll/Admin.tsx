@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react'
 
 import Layout from '../Layout'
 
+import CopyButton from '@/components/CopyButton'
 import { Button } from '@/components/ui/button'
 
 interface PollOption {
@@ -34,11 +35,14 @@ interface AdminProps {
   debug?: string;
 }
 
-function LinkRow({ label, url, hint }: { label: string; url: string; hint: string }) {
+function LinkRow({ label, url, hint, copyLabel }: { label: string; url: string; hint: string; copyLabel: string }) {
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <div className="text-sm font-medium">{label}</div>
-      <code className="block break-all rounded-md bg-muted px-3 py-2 text-sm">{url}</code>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <code className="block flex-1 break-all rounded-md bg-muted px-3 py-2 text-sm">{url}</code>
+        <CopyButton value={url} label={copyLabel} />
+      </div>
       <p className="text-xs text-muted-foreground">{hint}</p>
     </div>
   )
@@ -67,6 +71,7 @@ export default function Admin({ poll, links, participants_count, new_poll_path, 
           <LinkRow
             label="Poll link"
             url={links.public}
+            copyLabel="Copy poll link"
             hint="Send this to everyone you want to invite. They can vote and see the results."
           />
         </section>
@@ -76,6 +81,7 @@ export default function Admin({ poll, links, participants_count, new_poll_path, 
           <LinkRow
             label="Admin link"
             url={links.admin}
+            copyLabel="Copy admin link"
             hint="Save this link and don't share it. It's the only way to manage this poll."
           />
         </section>
