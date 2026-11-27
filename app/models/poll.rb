@@ -1,6 +1,6 @@
 # rubocop:disable Layout/LineLength
 # == Schema Information
-# Schema version: 20261127150000
+# Schema version: 20261127160000
 #
 # Table name: polls
 #
@@ -15,11 +15,18 @@
 #  organizer_name  :string           not null
 #  organizer_email :string
 #  time_zone       :string           default("UTC"), not null
+#  closed_at       :datetime
+#  final_option_id :integer
 #
 # Indexes
 #
-#  index_polls_on_admin_token  (admin_token) UNIQUE
-#  index_polls_on_eid          (eid) UNIQUE
+#  index_polls_on_admin_token      (admin_token) UNIQUE
+#  index_polls_on_eid              (eid) UNIQUE
+#  index_polls_on_final_option_id  (final_option_id)
+#
+# Foreign Keys
+#
+#  final_option_id  (final_option_id => poll_options.id) ON DELETE => nullify
 #
 # rubocop:enable Layout/LineLength
 
@@ -47,6 +54,8 @@ class Poll < ApplicationRecord
 
   has_many :votes, class_name: "Poll::Vote", dependent: :delete_all
 
+  belongs_to :final_option, class_name: "Poll::Option", optional: true
+
   accepts_nested_attributes_for :options
 
   validates :name, presence: true, length: {minimum: 5, maximum: 100}
@@ -63,8 +72,21 @@ class Poll < ApplicationRecord
 
   def to_param = exid_value
 
+  validate :final_option_belongs_to_poll
+
   def voting_open?
-    end_voting_at.future?
+    !closed? && end_voting_at.future?
+  end
+
+  def closed? = closed_at.present?
+
+  # Ends voting and records the chosen date.
+  def close!(option)
+    update!(closed_at: Time.current, final_option: option)
+  end
+
+  def reopen!
+    update!(closed_at: nil, final_option: nil)
   end
 
   def zone
@@ -77,6 +99,12 @@ class Poll < ApplicationRecord
   end
 
   private
+
+  def final_option_belongs_to_poll
+    return if final_option.nil? || final_option.poll_id == id
+
+    errors.add(:final_option, "must be one of this poll's options")
+  end
 
   def time_zone_exists
     return if ActiveSupport::TimeZone[time_zone.to_s]

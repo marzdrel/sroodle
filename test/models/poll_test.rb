@@ -92,4 +92,34 @@ class PollTest < ActiveSupport::TestCase
     poll.time_zone = "Mars/Olympus"
     assert_not poll.valid?
   end
+
+  test "closing records the final option and stops voting" do
+    poll = polls(:one)
+    option = poll_options(:afternoon_meeting)
+
+    poll.close!(option)
+
+    assert poll.closed?
+    assert_equal option, poll.reload.final_option
+    assert_not poll.voting_open?
+  end
+
+  test "reopening clears the final option" do
+    poll = polls(:one)
+    poll.close!(poll_options(:morning_meeting))
+
+    poll.reopen!
+
+    assert_not poll.closed?
+    assert_nil poll.final_option
+    assert poll.voting_open?
+  end
+
+  test "the final option must belong to the poll" do
+    poll = polls(:one)
+
+    assert_raises(ActiveRecord::RecordInvalid) do
+      poll.close!(poll_options(:quick_standup))
+    end
+  end
 end

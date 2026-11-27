@@ -135,6 +135,14 @@ class VotesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to poll_path(@poll)
   end
 
+  test "voting is blocked once the organizer picks a date" do
+    @poll.close!(poll_options(:morning_meeting))
+
+    get new_poll_vote_path(@poll)
+
+    assert_redirected_to poll_path(@poll)
+  end
+
   private
 
   def vote_params(name, answer)

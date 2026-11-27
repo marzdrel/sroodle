@@ -55,4 +55,30 @@ class PollsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 3, inertia_props["options"].size
     assert_not_includes response.body, "alice@example.com"
   end
+
+  test "the poll page shows the final date once picked" do
+    poll = polls(:one)
+    option = poll_options(:evening_meeting)
+    poll.close!(option)
+
+    get poll_path(poll)
+
+    assert_equal option.to_param, inertia_props["final_option_id"]
+    assert_equal poll_calendar_path(poll), inertia_props["calendar_path"]
+    assert_not inertia_props["voting_open"]
+  end
+
+  test "the calendar file is only available once a date is picked" do
+    poll = polls(:one)
+
+    get poll_calendar_path(poll)
+    assert_response :not_found
+
+    poll.close!(poll_options(:evening_meeting))
+    get poll_calendar_path(poll)
+
+    assert_response :success
+    assert_equal "text/calendar", response.media_type
+    assert_includes response.body, "SUMMARY:Team offsite planning"
+  end
 end
