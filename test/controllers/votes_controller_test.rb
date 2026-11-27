@@ -143,6 +143,20 @@ class VotesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to poll_path(@poll)
   end
 
+  test "a failed update keeps the previous answers" do
+    alice = poll_participants(:alice_one)
+    get participant_link_path(@poll, token: alice.token)
+    responses = @poll.options.to_h { [it.to_param, "maybe"] }
+
+    assert_no_changes -> { alice.votes.order(:option_id).pluck(:response) } do
+      patch update_poll_votes_path(@poll), params: {vote: {name: "", responses: responses}}
+    end
+
+    assert_response :success
+    assert_equal "Vote/Edit", inertia_component
+    assert inertia_props.dig("errors", "name").present?
+  end
+
   private
 
   def vote_params(name, answer)
