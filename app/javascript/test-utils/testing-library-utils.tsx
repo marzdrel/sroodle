@@ -1,6 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { render, RenderOptions, screen, waitFor, fireEvent, within, act } from '@testing-library/react';
 import type { ReactElement } from 'react';
+import type { Mock } from 'vitest';
 
 // Create a custom wrapper for rendering with test props
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
@@ -8,7 +9,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 }
 
 // Mock usePage to return our test props
-const mockUsePage = usePage as unknown as jest.Mock;
+const mockUsePage = usePage as unknown as Mock;
 
 export function renderWithInertia(
   ui: ReactElement,
