@@ -148,4 +148,26 @@ describe('Poll Show page', () => {
     expect(final).toHaveTextContent('Sunday, June 16, 2030');
     expect(within(final).getByRole('link', { name: /add to calendar/i })).toHaveAttribute('href', '/poll_123/event.ics');
   });
+
+  test('shows timed options with their times and a time zone note', () => {
+    const timed = [
+      { id: 'popt_1', start: '2030-06-15T18:00:00Z', duration_minutes: 90, counts: { yes: 1, maybe: 0, no: 0 } },
+      { id: 'popt_2', start: '2030-06-16T00:00:00Z', duration_minutes: 1440, counts: { yes: 0, maybe: 0, no: 0 } },
+    ];
+
+    renderWithInertia(
+      <Show poll={poll} options={timed} participants={participants} best_option_ids={[]} you_voted={false} voting_open />
+    );
+
+    expect(screen.getByTestId('time-zone-note')).toBeInTheDocument();
+    expect(screen.getByText(/–/, { selector: 'th div' })).toBeInTheDocument();
+  });
+
+  test('has no time zone note when every option is all day', () => {
+    renderWithInertia(
+      <Show poll={poll} options={options} participants={participants} best_option_ids={[]} you_voted={false} voting_open />
+    );
+
+    expect(screen.queryByTestId('time-zone-note')).not.toBeInTheDocument();
+  });
 });

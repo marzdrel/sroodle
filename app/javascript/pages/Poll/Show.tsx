@@ -6,7 +6,7 @@ import Layout from '../Layout'
 import CopyButton from '@/components/CopyButton'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { formatOption } from '@/lib/options'
+import { formatOption, hasTimedOptions, viewerTimeZone } from '@/lib/options'
 
 type Answer = 'yes' | 'maybe' | 'no'
 
@@ -138,6 +138,12 @@ export default function Show({ poll, options, participants, best_option_ids, you
 
         {poll.description && (
           <p className="whitespace-pre-line rounded-lg bg-muted/50 p-4 text-sm">{poll.description}</p>
+        )}
+
+        {hasTimedOptions(options) && (
+          <p className="text-xs text-muted-foreground" data-testid="time-zone-note">
+            Times are shown in your time zone ({viewerTimeZone()}).
+          </p>
         )}
 
         <section className="rounded-lg border bg-card p-6">

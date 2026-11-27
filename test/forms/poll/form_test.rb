@@ -10,7 +10,10 @@ class Poll::FormTest < ActiveSupport::TestCase
       event: "Team Meeting",
       description: "Weekly team meeting to discuss project progress",
       end_voting_at: 1.month.from_now.to_date.iso8601,
-      dates: ["2023-10-01", "2023-10-02"]
+      options: [
+        {date: "2030-10-01", time: "", duration_minutes: 1440},
+        {date: "2030-10-02", time: "", duration_minutes: 1440}
+      ]
     }
   end
 
@@ -142,21 +145,53 @@ class Poll::FormTest < ActiveSupport::TestCase
 
   test "creates one all-day option per unique date, sorted" do
     form = Poll::Form.new(
-      @valid_attributes.merge(dates: ["2023-10-03", "2023-10-01", "2023-10-03"])
+      @valid_attributes.merge(
+        options: ["2030-10-03", "2030-10-01", "2030-10-03"].map { {date: it, time: "", duration_minutes: 1440} }
+      )
     )
 
     assert form.save
     assert_equal(
-      [Date.new(2023, 10, 1), Date.new(2023, 10, 3)],
-      form.poll.options.map { it.start.to_date }
+      [Time.utc(2030, 10, 1), Time.utc(2030, 10, 3)],
+      form.poll.options.map(&:start)
     )
     assert(form.poll.options.all? { it.duration_minutes == 1440 })
   end
 
-  test "is invalid when a date can't be parsed" do
-    form = Poll::Form.new(@valid_attributes.merge(dates: ["2023-10-01", "nope"]))
+  test "creates timed options in the organizer's time zone" do
+    form = Poll::Form.new(
+      @valid_attributes.merge(
+        time_zone: "Europe/Warsaw",
+        options: [
+          {date: "2030-07-01", time: "18:00", duration_minutes: 90},
+          {date: "2030-07-01", time: "09:30", duration_minutes: 60},
+          {date: "2030-07-02", time: "", duration_minutes: 1440}
+        ]
+      )
+    )
+
+    assert form.save
+    starts = form.poll.options.map(&:start)
+
+    assert_equal [Time.utc(2030, 7, 1, 7, 30), Time.utc(2030, 7, 1, 16, 0), Time.utc(2030, 7, 2)], starts
+    assert_equal [60, 90, 1440], form.poll.options.map(&:duration_minutes)
+  end
+
+  test "is invalid with fewer than two options" do
+    form = Poll::Form.new(
+      @valid_attributes.merge(options: [{date: "2030-10-01", time: "", duration_minutes: 1440}])
+    )
 
     assert_not form.valid?
-    assert_includes form.errors[:dates], "contains invalid date format"
+    assert_includes form.errors[:options], "must include at least 2 dates or times for voting"
+  end
+
+  test "is invalid when a date can't be parsed" do
+    form = Poll::Form.new(
+      @valid_attributes.merge(options: [{date: "2030-10-01", time: ""}, {date: "nope", time: ""}])
+    )
+
+    assert_not form.valid?
+    assert_includes form.errors[:options], "contains invalid date format"
   end
 end

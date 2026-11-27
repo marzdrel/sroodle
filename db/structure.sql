@@ -1,13 +1,5 @@
 CREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL);
 CREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY);
-CREATE TABLE "poll_options" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "poll_id" integer NOT NULL, "start" datetime(6) NOT NULL, "duration_minutes" integer NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "eid" text, CONSTRAINT "fk_rails_aa85becb42"
-FOREIGN KEY ("poll_id")
-  REFERENCES "polls" ("id")
-, CONSTRAINT valid_duration_minutes CHECK (duration_minutes IN (30, 60, 90, 120, 1440)));
-CREATE INDEX "index_poll_options_on_poll_id" ON "poll_options" ("poll_id") /*application='Sroodle'*/;
-CREATE UNIQUE INDEX "index_poll_options_on_poll_id_and_start" ON "poll_options" ("poll_id", "start") /*application='Sroodle'*/;
-CREATE INDEX "index_poll_options_on_start" ON "poll_options" ("start") /*application='Sroodle'*/;
-CREATE UNIQUE INDEX "index_poll_options_on_eid" ON "poll_options" ("eid") /*application='Sroodle'*/;
 CREATE TABLE "poll_participants" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "poll_id" integer NOT NULL, "name" varchar NOT NULL, "email" varchar, "token" varchar NOT NULL, "eid" text NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_d5d8b76b96"
 FOREIGN KEY ("poll_id")
   REFERENCES "polls" ("id")
@@ -37,7 +29,16 @@ FOREIGN KEY ("final_option_id")
 CREATE UNIQUE INDEX "index_polls_on_eid" ON "polls" ("eid") /*application='Sroodle'*/;
 CREATE UNIQUE INDEX "index_polls_on_admin_token" ON "polls" ("admin_token") /*application='Sroodle'*/;
 CREATE INDEX "index_polls_on_final_option_id" ON "polls" ("final_option_id") /*application='Sroodle'*/;
+CREATE TABLE "poll_options" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "poll_id" integer NOT NULL, "start" datetime(6) NOT NULL, "duration_minutes" integer NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "eid" text, CONSTRAINT "fk_rails_aa85becb42"
+FOREIGN KEY ("poll_id")
+  REFERENCES "polls" ("id")
+, CONSTRAINT valid_duration_minutes CHECK (duration_minutes BETWEEN 15 AND 1440));
+CREATE INDEX "index_poll_options_on_poll_id" ON "poll_options" ("poll_id") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_options_on_poll_id_and_start" ON "poll_options" ("poll_id", "start") /*application='Sroodle'*/;
+CREATE INDEX "index_poll_options_on_start" ON "poll_options" ("start") /*application='Sroodle'*/;
+CREATE UNIQUE INDEX "index_poll_options_on_eid" ON "poll_options" ("eid") /*application='Sroodle'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20261127170000'),
 ('20261127160000'),
 ('20261127150000'),
 ('20261127140000'),
