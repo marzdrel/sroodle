@@ -5,6 +5,7 @@ _fixture:
   model_class: Poll::Participant
 
 alice_one:
+  created_at: <%= 3.days.ago %>
   poll: one
   name: Alice
   email: alice@example.com
@@ -12,18 +13,21 @@ alice_one:
   eid: 01971640-0000-7000-8000-000000000001
 
 bob_one:
+  created_at: <%= 2.days.ago %>
   poll: one
   name: Bob
   token: bobOneToken0000000000000
   eid: 01971640-0000-7000-8000-000000000002
 
 bob_two:
+  created_at: <%= 3.days.ago %>
   poll: two
   name: Bob
   token: bobTwoToken0000000000000
   eid: 01971640-0000-7000-8000-000000000003
 
 alice_two:
+  created_at: <%= 2.days.ago %>
   poll: two
   name: Alice
   token: aliceTwoToken00000000000

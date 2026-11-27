@@ -6,160 +6,82 @@ class PollsController
   class ShowFacadeTest < ActiveSupport::TestCase
     setup do
       @poll = polls(:one)
+      @params = ActionController::Parameters.new(id: @poll.to_param)
       @cookies = ActionDispatch::TestRequest.create.cookie_jar
-      @params = ActionController::Parameters.new({id: @poll.to_param})
     end
 
-    test "returns successful result" do
-      result = PollsController::ShowFacade.call(@params, @cookies)
+    test "returns the poll without any email addresses" do
+      result = ShowFacade.call(@params, @cookies)
 
       assert result.success?
-      assert_empty result.errors
+      assert_equal "Team offsite planning", result.data[:poll][:name]
+      assert_equal "Alice", result.data[:poll][:organizer_name]
+      assert_no_match(/@/, result.props.to_json)
     end
 
-    test "result data contains expected structure" do
-      result = PollsController::ShowFacade.call(@params, @cookies)
+    test "lists the real options in date order with counts" do
+      result = ShowFacade.call(@params, @cookies)
+      options = result.data[:options]
 
-      assert_kind_of Hash, result.data
-      assert result.data.key?(:poll)
-      assert result.data.key?(:participants)
-      assert_kind_of Hash, result.data[:poll]
-      assert_kind_of Array, result.data[:participants]
+      assert_equal(
+        [:morning_meeting, :afternoon_meeting, :evening_meeting].map { poll_options(it).to_param },
+        options.map { it[:id] }
+      )
+
+      assert_equal({"yes" => 1, "maybe" => 1, "no" => 0}, options[0][:counts])
+      assert_equal({"yes" => 1, "maybe" => 1, "no" => 0}, options[1][:counts])
+      assert_equal({"yes" => 0, "maybe" => 0, "no" => 1}, options[2][:counts])
     end
 
-    test "poll data contains all required fields" do
-      result = PollsController::ShowFacade.call(@params, @cookies)
-      poll_data = result.data[:poll]
+    test "lists every participant with their answers" do
+      result = ShowFacade.call(@params, @cookies)
+      alice, bob = result.data[:participants]
 
-      assert_equal @poll.to_param, poll_data[:id]
-      assert_equal @poll.name, poll_data[:name]
-      assert_equal @poll.name, poll_data[:event]
-      assert_equal @poll.description, poll_data[:description]
-      assert_equal @poll.created_at, poll_data[:created_at]
+      assert_equal "Alice", alice[:name]
+      assert_equal "yes", alice[:responses][poll_options(:morning_meeting).to_param]
+      assert_equal "no", alice[:responses][poll_options(:evening_meeting).to_param]
 
-      # Verify creator data
-      assert_kind_of Hash, poll_data[:creator]
-      assert_equal @poll.organizer_name, poll_data[:creator][:name]
+      assert_equal "Bob", bob[:name]
+      assert_nil bob[:responses][poll_options(:evening_meeting).to_param]
+    end
 
-      # Verify dates structure
-      assert_kind_of Array, poll_data[:dates]
-      assert_equal 5, poll_data[:dates].length
+    test "picks the options with the most yes answers, maybe breaking ties" do
+      result = ShowFacade.call(@params, @cookies)
 
-      poll_data[:dates].each do |date_entry|
-        assert_kind_of Hash, date_entry
-        assert date_entry.key?(:date)
-        assert date_entry.key?(:responses)
-        assert_kind_of Hash, date_entry[:responses]
-        assert date_entry[:responses].key?(:yes)
-        assert date_entry[:responses].key?(:maybe)
-        assert date_entry[:responses].key?(:no)
+      assert_equal(
+        [poll_options(:morning_meeting).to_param, poll_options(:afternoon_meeting).to_param],
+        result.data[:best_option_ids]
+      )
+
+      poll_votes(:bob_morning_maybe).update!(response: "no")
+      result = ShowFacade.call(@params, @cookies)
+
+      assert_equal [poll_options(:afternoon_meeting).to_param], result.data[:best_option_ids]
+    end
+
+    test "has no best option before anyone answers yes or maybe" do
+      @poll.votes.update_all(response: "no")
+
+      result = ShowFacade.call(@params, @cookies)
+
+      assert_empty result.data[:best_option_ids]
+    end
+
+    test "marks the participant using this browser" do
+      PollSession.new(@poll, @cookies).remember_participant(poll_participants(:bob_one))
+
+      result = ShowFacade.call(@params, @cookies)
+
+      assert result.data[:you_voted]
+      assert_equal [false, true], result.data[:participants].map { it[:you] }
+    end
+
+    test "raises RecordNotFound for an unknown poll" do
+      params = ActionController::Parameters.new(id: Poll.new(eid: UUID7.generate).to_param)
+
+      assert_raises(ActiveRecord::RecordNotFound) do
+        ShowFacade.call(params, @cookies)
       end
-
-      # Verify vote path
-      expected_vote_path = Rails.application.routes.url_helpers.new_poll_vote_path(@poll)
-      assert_equal expected_vote_path, poll_data[:vote_path]
-    end
-
-    test "generates mock dates starting from tomorrow" do
-      result = PollsController::ShowFacade.call(@params, @cookies)
-      poll_data = result.data[:poll]
-
-      # Check that dates start from tomorrow and are consecutive
-      expected_dates = 5.times.map { |i| (Date.today + i + 1).iso8601 }
-      actual_dates = poll_data[:dates].map { |d| d[:date] }
-
-      assert_equal expected_dates, actual_dates
-    end
-
-    test "mock dates contain random but valid response counts" do
-      result = PollsController::ShowFacade.call(@params, @cookies)
-      poll_data = result.data[:poll]
-
-      poll_data[:dates].each do |date_entry|
-        responses = date_entry[:responses]
-        assert responses[:yes].between?(0, 5)
-        assert responses[:maybe].between?(0, 3)
-        assert responses[:no].between?(0, 2)
-      end
-    end
-
-    test "participants data has expected structure" do
-      result = PollsController::ShowFacade.call(@params, @cookies)
-      participants = result.data[:participants]
-
-      assert_equal 3, participants.length
-
-      participants.each do |participant|
-        assert_kind_of Hash, participant
-        assert participant.key?(:id)
-        assert participant.key?(:name)
-        assert participant.key?(:email)
-        assert participant.key?(:responses)
-
-        assert_kind_of Integer, participant[:id]
-        assert_kind_of String, participant[:name]
-        assert_kind_of String, participant[:email]
-        assert_kind_of Array, participant[:responses]
-
-        # Verify participant responses match the poll dates
-        assert_equal 5, participant[:responses].length
-        participant[:responses].each do |response|
-          assert response.key?(:date)
-          assert response.key?(:preference)
-          assert ["yes", "maybe", "no"].include?(response[:preference])
-        end
-      end
-    end
-
-    test "participants have consistent email format" do
-      result = PollsController::ShowFacade.call(@params, @cookies)
-      participants = result.data[:participants]
-
-      participants.each do |participant|
-        expected_email = "#{participant[:name].downcase.tr(" ", ".")}@example.com"
-        assert_equal expected_email, participant[:email]
-      end
-    end
-
-    test "handles empty participants when param is set" do
-      params_with_empty = ActionController::Parameters.new({
-        id: @poll.to_param,
-        empty_participants: true
-      })
-
-      result = PollsController::ShowFacade.call(params_with_empty, @cookies)
-      participants = result.data[:participants]
-
-      assert_empty participants
-    end
-
-    test "raises error when poll is not found" do
-      invalid_params = ActionController::Parameters.new({id: "nonexistent"})
-
-      assert_raises(Exid::DecodeError) do
-        PollsController::ShowFacade.call(invalid_params, @cookies)
-      end
-    end
-
-    test "includes associated creator data" do
-      # This test ensures the includes(:creator) is working
-      result = PollsController::ShowFacade.call(@params, @cookies)
-      poll_data = result.data[:poll]
-
-      assert_equal @poll.organizer_name, poll_data[:creator][:name]
-    end
-
-    test "can be called with class method" do
-      result = PollsController::ShowFacade.call(@params, @cookies)
-      assert result.success?
-    end
-
-    test "can be instantiated and called directly" do
-      facade = PollsController::ShowFacade.new(@params, @cookies)
-      result = facade.call
-
-      assert result.success?
-      assert_kind_of Hash, result.data
     end
   end
 end
