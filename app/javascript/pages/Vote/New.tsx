@@ -1,4 +1,5 @@
-import { Head, useForm, router } from '@inertiajs/react'
+import { Head, router } from '@inertiajs/react'
+import { useState } from 'react'
 
 import Layout from '../Layout'
 
@@ -17,70 +18,46 @@ interface Poll {
   options: PollOption[];
 }
 
+type Vote = {
+  name: string;
+  email: string;
+  responses: Record<string, string>;
+};
+
 interface NewProps {
   poll: Poll;
+  vote?: Vote;
+  submit_path: string;
   errors?: Record<string, string> | string[];
-  flash?: {
-    notice?: string;
-    alert?: string;
-  };
   new_poll_path?: string;
-  logged_in?: boolean;
   debug?: string;
-  user?: {
-    email?: string;
-  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface VoteFormData extends Record<string, any> {
-  vote: {
-    name: string;
-    email: string;
-    responses: Record<string, string>;
-  };
-  poll_id?: string;
+  vote: Vote;
 }
 
-export default function New({ poll, errors = {}, flash, new_poll_path, logged_in = false, debug, user }: NewProps) {
-  const inertiaForm = useForm<VoteFormData>({
-    vote: {
-      name: '',
-      email: '',
-      responses: {}
-    }
-  })
-
-  // Handle case where poll might be undefined
-  if (!poll) {
-    return (
-      <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
-        <Head title="Vote - Poll Not Found" />
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center py-10">
-            <h1 className="text-2xl font-bold text-red-600">Poll not found</h1>
-            <p className="text-muted-foreground mt-2">The poll you're looking for doesn't exist.</p>
-          </div>
-        </div>
-      </Layout>
-    )
-  }
+export default function New({ poll, vote, submit_path, errors = {}, new_poll_path, debug }: NewProps) {
+  const [processing, setProcessing] = useState(false)
 
   const handleSubmit = (formData: VoteFormData) => {
-    router.post(`/polls/${poll.id}/votes`, formData)
+    router.post(submit_path, { vote: formData.vote }, {
+      onStart: () => setProcessing(true),
+      onFinish: () => setProcessing(false),
+    })
   }
 
   return (
-    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
+    <Layout new_poll_path={new_poll_path} debug={debug}>
       <Head title={`Vote on ${poll.name}`} />
       <VoteForm
         poll={poll}
+        vote={vote}
         errors={errors}
-        flash={flash}
         mode="new"
         onSubmit={handleSubmit}
-        processing={inertiaForm.processing}
-        logged_in={logged_in}
+        processing={processing}
       />
     </Layout>
   )

@@ -1,27 +1,26 @@
-import { Link, router } from '@inertiajs/react'
+import { Link, usePage } from '@inertiajs/react'
 import { Menu, X } from "lucide-react"
 import React, { useState } from 'react'
 
 import DevelopmentUI from "@/components/DevelopmentUI"
-import { Button } from "@/components/ui/button"
 
 
 interface LayoutProps {
   children: React.ReactNode;
   new_poll_path?: string;
   debug?: string;
-  user?: {
-    email?: string;
+}
+
+interface SharedProps {
+  flash?: {
+    notice?: string;
+    alert?: string;
   };
 }
 
-export default function Layout({ children, new_poll_path, debug, user }: LayoutProps) {
-  console.warn("Layout props:", { children, new_poll_path, debug, user });
+export default function Layout({ children, new_poll_path = '/', debug }: LayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  const handleLogout = () => {
-    router.delete('/logout')
-  }
+  const flash = (usePage().props as SharedProps).flash || {}
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -90,25 +89,6 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
               </button>
             </div>
 
-            {/* User Email & Auth Buttons */}
-            <div className="hidden md:flex items-center space-x-3">
-              {user?.email && (
-                <span className="text-sm text-muted-foreground mr-2">
-                  {user.email}
-                </span>
-              )}
-              {user?.email ? (
-                <Button size="sm" onClick={handleLogout}>
-                  Logout
-                </Button>
-              ) : (
-                <Link href="/login">
-                  <Button size="sm">
-                    Login
-                  </Button>
-                </Link>
-              )}
-            </div>
           </div>
         </div>
 
@@ -137,19 +117,6 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
               >
                 About
               </Link>
-              <div className="pt-4 flex flex-col space-y-2">
-                {user?.email ? (
-                  <Button className="w-full" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                ) : (
-                  <Link href="/login" className="w-full">
-                    <Button className="w-full">
-                      Login
-                    </Button>
-                  </Link>
-                )}
-              </div>
             </div>
           </div>
         )}
@@ -159,6 +126,16 @@ export default function Layout({ children, new_poll_path, debug, user }: LayoutP
       <main className="flex-grow py-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="bg-card rounded-lg shadow p-4 sm:p-8 min-h-[400px]">
+            {flash.notice && (
+              <div role="status" className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800 text-sm">{flash.notice}</p>
+              </div>
+            )}
+            {flash.alert && (
+              <div role="alert" className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800 text-sm">{flash.alert}</p>
+              </div>
+            )}
             {children}
           </div>
         </div>

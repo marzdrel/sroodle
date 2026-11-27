@@ -31,10 +31,9 @@ class Poll::FormTest < ActiveSupport::TestCase
     assert_includes form.errors[:name], "is too short (minimum is 2 characters)"
   end
 
-  test "is invalid without an email" do
+  test "is valid without an email" do
     form = Poll::Form.new(@valid_attributes.merge(email: ""))
-    assert_not form.valid?
-    assert_includes form.errors[:email], "can't be blank"
+    assert form.valid?
   end
 
   test "is invalid with an invalid email format" do
@@ -94,32 +93,39 @@ class Poll::FormTest < ActiveSupport::TestCase
     assert_equal @valid_attributes[:description], poll.description
   end
 
-  test "creates a new user if the email doesn't exist" do
-    form = Poll::Form.new(
-      @valid_attributes.merge(
-        email: "new_user@example.com"
-      )
-    )
+  test "stores the organizer on the poll" do
+    form = Poll::Form.new(@valid_attributes)
 
-    assert_difference -> { User.count }, 1 do
-      assert form.save
-    end
-
-    user = User.find_by(email: "new_user@example.com")
-    assert user.present?
+    assert form.save
+    assert_equal "John Doe", form.poll.organizer_name
+    assert_equal "john@example.com", form.poll.organizer_email
+    assert form.poll.admin_token.present?
   end
 
-  test "uses existing user if the email exists" do
+  test "stores a blank email as nil" do
+    form = Poll::Form.new(@valid_attributes.merge(email: ""))
+
+    assert form.save
+    assert_nil form.poll.organizer_email
+  end
+
+  test "creates one all-day option per unique date, sorted" do
     form = Poll::Form.new(
-      @valid_attributes.merge(
-        email: users(:alice).email
-      )
+      @valid_attributes.merge(dates: ["2023-10-03", "2023-10-01", "2023-10-03"])
     )
 
-    assert_equal User.count, 2
+    assert form.save
+    assert_equal(
+      [Date.new(2023, 10, 1), Date.new(2023, 10, 3)],
+      form.poll.options.map { it.start.to_date }
+    )
+    assert(form.poll.options.all? { it.duration_minutes == 1440 })
+  end
 
-    assert_no_difference -> { User.count } do
-      assert form.save
-    end
+  test "is invalid when a date can't be parsed" do
+    form = Poll::Form.new(@valid_attributes.merge(dates: ["2023-10-01", "nope"]))
+
+    assert_not form.valid?
+    assert_includes form.errors[:dates], "contains invalid date format"
   end
 end

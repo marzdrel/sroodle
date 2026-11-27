@@ -10,8 +10,8 @@ const mockPolls = [
     id: 1,
     name: 'Team Meeting',
     description: 'Weekly team sync-up to discuss progress and blockers',
-    creator: {
-      email: 'jane.doe@example.com'
+    organizer: {
+      name: 'Jane Doe'
     },
     created_at: '2025-05-15T10:00:00Z',
     end_voting_at: '2025-05-20T18:00:00Z',
@@ -22,8 +22,8 @@ const mockPolls = [
     id: 2,
     name: 'Product Launch',
     description: 'Planning session for the upcoming product launch',
-    creator: {
-      email: 'john.smith@example.com'
+    organizer: {
+      name: 'John Smith'
     },
     created_at: '2025-05-16T14:30:00Z',
     end_voting_at: '2025-05-25T17:00:00Z',
@@ -48,9 +48,9 @@ describe('Poll Index Component', () => {
     expect(screen.getByText('Team Meeting')).toBeInTheDocument();
     expect(screen.getByText('Product Launch')).toBeInTheDocument();
 
-    // Check if creator emails are rendered
-    expect(screen.getByText(/jane.doe@example.com/)).toBeInTheDocument();
-    expect(screen.getByText(/john.smith@example.com/)).toBeInTheDocument();
+    // Check if organizer names are rendered
+    expect(screen.getByText(/Created by Jane Doe/)).toBeInTheDocument();
+    expect(screen.getByText(/Created by John Smith/)).toBeInTheDocument();
 
     // Check if View Poll buttons are present (2 polls × 2 responsive versions = 4 buttons)
     const viewButtons = screen.getAllByRole('button', { name: /view poll/i });

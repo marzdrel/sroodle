@@ -1,72 +1,43 @@
 class VotesController < ApplicationController
-  def index
-    redirect_to new_poll_vote_path(params.fetch(:poll_id))
-  end
-
   def new
-    result = NewFacade.call(params, current_user)
-
-    sign_in(User.first) unless current_user
-
-    # If the the current user already voted on this poll, redirect to edit
-    # instead.
+    result = NewFacade.call(params, cookies)
 
     if result.success?
-      render(
-        inertia: "Vote/New",
-        props: result.props
-      )
+      render inertia: "Vote/New", props: result.props
     else
-      redirect_to edit_poll_vote_path
+      redirect_to edit_poll_vote_path(params.fetch(:id))
+    end
+  end
+
+  def create
+    result = SaveFacade.call(params, cookies, mode: :create)
+
+    if result.success?
+      redirect_to edit_poll_vote_path(params.fetch(:id)), notice: "Thanks! Your answers are saved."
+    else
+      render inertia: "Vote/New", props: result.props
     end
   end
 
   def edit
-    result = EditFacade.call(params, current_user)
-
-    render(
-      inertia: "Vote/Edit",
-      props: result.props.merge(flash: flash.to_hash)
-    )
-  end
-
-  def create
-    result = CreateFacade.call(params, current_user)
+    result = EditFacade.call(params, cookies)
 
     if result.success?
-      redirect_to(
-        edit_poll_vote_path(params.fetch(:poll_id)),
-        notice: "Vote was successfully created."
-      )
+      render inertia: "Vote/Edit", props: result.props
     else
-      render(
-        inertia: "Vote/New",
-        props: {
-          poll: result.data[:poll],
-          errors: result.errors,
-          flash: {alert: "Unable to create vote."},
-          new_poll_path: new_poll_path
-        }
-      )
+      redirect_to new_poll_vote_path(params.fetch(:id))
     end
   end
 
   def update
-    result = UpdateFacade.call(params, current_user)
+    result = SaveFacade.call(params, cookies, mode: :update)
 
     if result.success?
-      redirect_to(
-        edit_poll_vote_path,
-        notice: "Vote was successfully updated."
-      )
+      redirect_to edit_poll_vote_path(params.fetch(:id)), notice: "Your answers are updated."
+    elsif result.data[:participant_missing]
+      redirect_to new_poll_vote_path(params.fetch(:id))
     else
-      render(
-        inertia: "Vote/Edit",
-        props: result.props.merge(
-          votes: result.data[:vote],
-          flash: {alert: "Unable to update vote."}
-        )
-      )
+      render inertia: "Vote/Edit", props: result.props
     end
   end
 end

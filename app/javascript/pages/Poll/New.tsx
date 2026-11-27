@@ -49,12 +49,9 @@ interface NewPollProps {
   errors?: Record<string, string>;
   new_poll_path?: string;
   debug?: string;
-  user?: {
-    email?: string;
-  };
 }
 
-export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, debug, user }: NewPollProps) {
+export default function New({ poll = {}, errors = {} as Record<string, string>, new_poll_path, debug }: NewPollProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [dateErrors, setDateErrors] = useState<string | null>(errors.dates || null);
 
@@ -62,7 +59,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
     defaultValues: {
       poll: {
         name: poll.name || '',
-        email: poll.email || user?.email || '',
+        email: poll.email || '',
         event: poll.event || '',
         description: poll.description || '',
         end_voting_at: poll.end_voting_at || ''
@@ -105,7 +102,7 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
   }
 
   return (
-    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
+    <Layout new_poll_path={new_poll_path} debug={debug}>
       <Head title="Create New Poll" />
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
@@ -127,12 +124,12 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
               name="poll.name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Your name</FormLabel>
                   <FormControl>
                     <Input placeholder="Your name" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Enter your full name.
+                    Shown to voters as the organizer.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -150,14 +147,10 @@ export default function New({ poll = {}, errors = {} as Record<string, string>, 
                       type="email"
                       placeholder="your.email@example.com"
                       {...field}
-                      disabled={!!user?.email}
                     />
                   </FormControl>
                   <FormDescription>
-                    {user?.email
-                      ? "Using your account email for poll updates."
-                      : "We'll use this to send you poll updates."
-                    }
+                    Optional. Never shown to voters.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

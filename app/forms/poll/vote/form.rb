@@ -2,84 +2,81 @@
 
 class Poll
   class Vote
+    # Saves one participant's answers to a poll. Creates the participant on the
+    # first vote and replaces their answers on later ones, in one transaction.
     class Form
       include ActiveModel::Model
       include ActiveModel::Attributes
       include ActiveModel::Validations
 
-      def initialize(attributes, current_user:)
-        super(attributes)
-        @current_user = current_user
-      end
-
       attribute :name, :string
       attribute :email, :string
       attribute :responses, default: {}
-      attribute :poll_id, :string
 
       validates :name, presence: true, length: {minimum: 2, maximum: 50}
-      validates :email, presence: true, format: {with: URI::MailTo::EMAIL_REGEXP}
+      validates :email, format: {with: URI::MailTo::EMAIL_REGEXP}, allow_blank: true
 
       validate :responses_for_all_options
       validate :valid_response_values
 
-      attr_accessor :current_user, :votes
+      attr_reader :poll, :participant
 
-      def poll
-        @_poll ||= Poll.exid_loader(poll_id)
-      end
+      def initialize(attributes = {}, poll:, participant: nil)
+        super(attributes)
 
-      def responses_for_all_options
-        poll_option_ids = poll.options.map(&:exid_value)
-        response_option_ids = responses.keys.map(&:to_s)
-
-        missing_responses = poll_option_ids - response_option_ids
-        return unless missing_responses.any?
-
-        errors.add(:responses, "must include a response for all proposed dates")
-      end
-
-      def valid_response_values
-        invalid_responses = responses.values.reject { |value| %w[yes maybe no].include?(value) }
-
-        return unless invalid_responses.any?
-
-        errors.add(:responses, "must be 'yes', 'maybe', or 'no'")
+        @poll = poll
+        @participant = participant
       end
 
       def save
         return false unless valid?
 
         ActiveRecord::Base.transaction do
-          self.votes = current_user.votes.create!(votes_attributes)
+          @participant ||= poll.participants.build
+          participant.update!(name: name, email: email.presence)
+          participant.votes.delete_all
+          participant.votes.create!(votes_attributes)
         end
 
         true
       rescue ActiveRecord::RecordInvalid => e
         errors.add(:base, e.message)
+
         false
       end
 
       private
 
-      def votes_attributes
-        responses.map do |option_eid, response|
-          {
-            option: poll.options.exid_loader(option_eid),
-            response: response,
-            eid: UUID7.generate,
-            poll: poll
-          }
-        end
+      def options_by_eid
+        @_options_by_eid ||= poll.options.index_by(&:exid_value)
       end
 
-      # def find_or_create_user
-      #   user = User.find_by(email: email)
-      #   return user if user
-      #
-      #   password = SecureRandom.hex(8)
-      #   User.create!(email: email, password: password, status: "pending")
-      # end
+      def normalized_responses
+        responses.to_h.transform_keys(&:to_s)
+      end
+
+      def responses_for_all_options
+        missing = options_by_eid.keys - normalized_responses.keys
+        return if missing.empty?
+
+        errors.add(:responses, "must include a response for all proposed dates")
+      end
+
+      def valid_response_values
+        invalid = normalized_responses.values - Poll::Vote::RESPONSES
+        return if invalid.empty?
+
+        errors.add(:responses, "must be 'yes', 'maybe', or 'no'")
+      end
+
+      def votes_attributes
+        normalized_responses.filter_map do |option_eid, response|
+          option = options_by_eid[option_eid]
+          next unless option
+
+          {poll: poll, option: option, response: response}
+        end
+      end
     end
   end
 end

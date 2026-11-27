@@ -10,8 +10,8 @@ interface Poll {
   id: number;
   name: string;
   description: string;
-  creator: {
-    email: string;
+  organizer: {
+    name: string;
   };
   created_at: string;
   end_voting_at: string;
@@ -23,9 +23,6 @@ interface IndexProps {
   polls: Poll[];
   new_poll_path?: string;
   debug?: string;
-  user?: {
-    email?: string;
-  };
 }
 
 function DeadlineDisplay({ endVotingAt }: { endVotingAt: string }) {
@@ -81,9 +78,9 @@ function DeadlineDisplay({ endVotingAt }: { endVotingAt: string }) {
   )
 }
 
-export default function Index({ polls = [], new_poll_path, debug, user }: IndexProps) {
+export default function Index({ polls = [], new_poll_path, debug }: IndexProps) {
   return (
-    <Layout new_poll_path={new_poll_path} debug={debug} user={user}>
+    <Layout new_poll_path={new_poll_path} debug={debug}>
       <Head title="Browse Polls" />
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
@@ -153,7 +150,7 @@ export default function Index({ polls = [], new_poll_path, debug, user }: IndexP
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Created by {poll.creator.email} on {new Date(poll.created_at).toISOString().split('T')[0]}
+                  Created by {poll.organizer.name} on {new Date(poll.created_at).toISOString().split('T')[0]}
                 </p>
                 <p className="mt-2 text-sm line-clamp-2">{poll.description}</p>
                 <div className="mt-3">

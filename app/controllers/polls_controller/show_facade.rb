@@ -6,15 +6,14 @@ class PollsController
       new(...).call
     end
 
-    def initialize(params, current_user)
+    def initialize(params, cookies)
       self.params = params
-      self.current_user = current_user
+      self.cookies = cookies
     end
 
     def call
       FacadeResult.new(
         success?: true,
-        current_user: current_user,
         data: {
           poll: serialize(poll),
           participants: mock_participants # This will be real data in the future
@@ -25,10 +24,10 @@ class PollsController
 
     private
 
-    attr_accessor :params, :current_user
+    attr_accessor :params, :cookies
 
     def poll
-      @_poll ||= Poll.includes(:creator).exid_loader(params.fetch(:id))
+      @_poll ||= Poll.exid_loader(params.fetch(:id))
     end
 
     def serialize(poll)
@@ -38,8 +37,7 @@ class PollsController
         event: poll.name, # Using name as event name for now
         description: poll.description,
         creator: {
-          email: poll.creator.email,
-          name: poll.creator.email.split("@").first # Mock name for now
+          name: poll.organizer_name
         },
         created_at: poll.created_at,
         dates: mock_dates, # This will be real data in the future

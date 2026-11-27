@@ -30,6 +30,7 @@
 class Poll
   class Option < ApplicationRecord
     include Exid::Record.new("popt", :eid)
+    include GeneratesEid
 
     self.table_name = "poll_options"
 
@@ -38,7 +39,7 @@ class Poll
     has_many(
       :votes,
       class_name: "Poll::Vote",
-      dependent: :destroy
+      dependent: :delete_all
     )
 
     def to_param = exid_value

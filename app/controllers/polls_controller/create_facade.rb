@@ -6,28 +6,37 @@ class PollsController
       new(...).call
     end
 
-    def initialize(params, current_user)
+    def initialize(params, cookies)
       self.params = params
-      self.current_user = current_user
+      self.cookies = cookies
     end
 
     def call
-      form.save
+      if form.save
+        PollSession.new(form.poll, cookies).remember_admin
+      end
 
       FacadeResult.new(
+        success?: form.poll.present?,
         errors: errors,
-        success?: form.valid?,
-        current_user: current_user,
-        data: {}
+        data: data
       )
     end
 
     private
 
-    attr_accessor :params, :current_user
+    attr_accessor :params, :cookies
 
     def form
       @_form ||= Poll::Form.new(strong_params)
+    end
+
+    def data
+      if form.poll
+        {admin_path: routes.poll_admin_path(form.poll, token: form.poll.admin_token)}
+      else
+        {poll: strong_params.to_h.except("dates")}
+      end
     end
 
     def errors
@@ -56,6 +65,10 @@ class PollsController
           }
         ]
       )
+    end
+
+    def routes
+      Rails.application.routes.url_helpers
     end
   end
 end

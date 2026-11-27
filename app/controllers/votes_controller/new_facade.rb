@@ -6,49 +6,38 @@ class VotesController
       new(...).call
     end
 
-    def initialize(params, current_user)
+    def initialize(params, cookies)
       self.params = params
-      self.current_user = current_user
+      self.cookies = cookies
     end
 
+    # Fails when this browser already answered the poll, so the controller
+    # can send the participant to their edit page instead.
     def call
       FacadeResult.new(
-        success?: user_has_not_voted?,
-        current_user: current_user,
+        success?: session.participant.nil?,
         data: {
-          poll: serialized_poll
-        },
-        errors: []
+          poll: PollProps.call(poll),
+          vote: {name: "", email: "", responses: {}},
+          submit_path: routes.poll_votes_path(poll)
+        }
       )
     end
 
     private
 
-    attr_accessor :params, :current_user
-
-    def user_has_not_voted?
-      return true unless current_user
-
-      poll.votes.joins(:user).where(users: {id: current_user.id}).empty?
-    end
+    attr_accessor :params, :cookies
 
     def poll
-      @_poll ||= Poll.includes(:options, :votes).exid_loader(params.fetch(:id))
+      @_poll ||= Poll.includes(:options).exid_loader(params.fetch(:id))
     end
 
-    def serialized_poll
-      {
-        id: poll.to_param,
-        name: poll.name,
-        description: poll.description,
-        options: poll.options.map do |option|
-          {
-            id: option.to_param,
-            start: option.start,
-            duration_minutes: option.duration_minutes
-          }
-        end
-      }
+    def session
+      @_session ||= PollSession.new(poll, cookies)
+    end
+
+    def routes
+      Rails.application.routes.url_helpers
     end
   end
 end
